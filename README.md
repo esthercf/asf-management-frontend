@@ -1,5 +1,85 @@
-# Vue 3 + Vite
+# StudySpace – Room Booking Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A Vue 3 frontend for a study room booking system, with a **User Dashboard** and a **Staff Dashboard**.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Tech stack
+
+| Tool | Purpose |
+|------|---------|
+| Vue 3 (Composition API) | UI framework |
+| Vue Router 4 | Client-side routing |
+| Pinia | State management (shared rooms & bookings) |
+| Vite | Dev server & build tool |
+
+## Project structure
+
+```
+src/
+├── assets/
+│   └── main.css          # Global design tokens & utility classes
+├── router/
+│   └── index.js          # Routes: /login, /user, /staff
+├── stores/
+│   └── roomStore.js      # Pinia store: rooms & bookings state + actions
+├── views/
+│   ├── LoginPage.vue     # Role selector (User vs Staff)
+│   ├── UserDashboard.vue # Browse rooms · Book · My Bookings · Cancel
+│   └── StaffDashboard.vue# Overview · Room CRUD · All Bookings · Add booking
+└── main.js               # App entry point
+```
+
+## Getting started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+Then open http://localhost:5173 in your browser.
+
+## Connecting to your backend
+
+All data is currently mocked inside `src/stores/roomStore.js`. To wire up your real API:
+
+1. Open `roomStore.js`
+2. Replace the mock `rooms` and `bookings` arrays with `fetch()` calls to your API
+3. Update each action (`addBooking`, `cancelBooking`, `addRoom`, `updateRoom`, `deleteRoom`) to call the corresponding API endpoint
+
+Example:
+```js
+// Instead of:
+rooms.value = [ /* mock data */ ]
+
+// Do:
+const res = await fetch('/api/rooms')
+rooms.value = await res.json()
+```
+
+## Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/login` | LoginPage | Role selector |
+| `/user` | UserDashboard | Student view |
+| `/staff` | StaffDashboard | Staff admin view |
+
+## Features
+
+### User Dashboard
+- Browse all rooms with availability status
+- Filter by availability and capacity
+- Book a room (date, time, purpose)
+- View and cancel upcoming bookings
+
+### Staff Dashboard
+- Overview with live stats and quick room status toggle
+- Full room management: add, edit, delete rooms
+- All bookings table with search
+- Create a booking on behalf of any user
+- Cancel any booking

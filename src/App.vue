@@ -1,11 +1,7 @@
 <template>
-  <div class="p-m-4">
-    <h2>Welcome to ASF1.1</h2>
-    <Button label="Click Me" icon="pi pi-check" />
-  </div>
+  <RouterView />
 </template>
 
 <script setup>
-import Button from 'primevue/button'
+import { RouterView } from 'vue-router'
 </script>
-
