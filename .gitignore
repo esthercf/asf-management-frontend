@@ -1,0 +1,8 @@
+node_modules/
+dist/
+
+# Environment files (keep .env.example, ignore the rest)
+.env.development
+.env.staging
+.env.production
+.env.local
