@@ -4,8 +4,8 @@
       <div class="login-logo">
         <div class="logo-icon">📚</div>
         <div>
-          <div class="logo-name">StudySpace</div>
-          <div class="logo-tagline">Room Booking System</div>
+          <div class="logo-name">Room Booking</div>
+          <div class="logo-tagline">Andorra Sax Fest Room Booking System</div>
         </div>
       </div>
 
@@ -33,7 +33,8 @@
       <div class="art-blob blob2"></div>
       <div class="art-blob blob3"></div>
       <div class="art-text">
-        <p class="art-quote">"A quiet space to think clearly."</p>
+        <p class="art-quote">
+        "Prepare with focus, perform with brilliance."</p>
         <p class="art-rooms">Book your study room in seconds</p>
       </div>
     </div>
