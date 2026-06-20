@@ -41,10 +41,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useBookingApi } from '@/composables/useBookingApi'
+import { useBookingApi } from '../composables/useBookingApi'
+import { useAuthStore } from '../stores/auth.store'
+const auth = useAuthStore()
 
 const router  = useRouter()
 const api     = useBookingApi()
@@ -63,11 +65,9 @@ async function login() {
   loading.value = true
   try {
     const session = await api.login(email.value, password.value)
-    // Roles come back as an array — if any role is staff/manager/root, go to staff dashboard
-    const staffRoles = ['root', 'manager', 'staff', 'admin']
-    const isStaff = (session.roles ?? []).some(r => staffRoles.includes(r?.toLowerCase()))
-    router.push(isStaff ? '/staff' : '/user')
-  } catch (e) {
+    auth.setSession(session)              // ✅ this line was missing — saves to store + localStorage
+    router.push(auth.isStaff ? '/staff' : '/user')   // ✅ use store getter instead of manual check
+  } catch (e: any) {
     error.value = e.message ?? 'Login failed. Please try again.'
   } finally {
     loading.value = false

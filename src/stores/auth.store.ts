@@ -43,7 +43,8 @@ export const useAuthStore = defineStore('auth', {
         async refresh() {
             const api = useBookingApi()
             try {
-                const session = await api.refresh(this.accessToken!, this.refreshToken!)
+                // backend expects { userId, refreshToken }
+                const session = await api.refresh(this.userId!, this.refreshToken!)
                 this.setSession(session)
             } catch {
                 this.clear()

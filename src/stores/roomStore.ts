@@ -26,7 +26,7 @@ export const useRoomStore = defineStore('rooms', () => {
     try {
       loading.value = true
       const result = await api.getRooms(params)
-      rooms.value = result.items   // DatatableResult<RoomDto>
+      rooms.value = result.data   // DatatableResult<RoomDto>
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)
     } finally {
@@ -38,7 +38,7 @@ export const useRoomStore = defineStore('rooms', () => {
     try {
       loading.value = true
       const result = await api.getBookings(params)
-      bookings.value = result.items   // DatatableResult<BookingDto>
+      bookings.value = result.data   // DatatableResult<BookingDto>
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)
     } finally {

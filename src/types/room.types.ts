@@ -53,3 +53,11 @@ export interface AvailableRoomDto {
   available: AvailableBookingDto[]
 }
 
+export interface RoomFormState {
+  name:       string
+  roomNumber: number | null
+  floor:      number | null
+  size:       RoomSizeEnum
+  comments:   string
+  windows:    boolean
+}

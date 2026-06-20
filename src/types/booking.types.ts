@@ -126,3 +126,23 @@ export interface UserBaseDto {
   firstnames: string
   surnames: string
 }
+
+export interface GetAvailabilityParams {
+  roomId?: string
+  page?:   number
+  limit?:  number
+}
+
+// ── New Booking flow ──────────────────────────────────
+export interface DayOption {
+  iso:        string
+  weekday:    string
+  dayNum:     number
+  month:      string
+  slotsCount: number
+}
+
+export interface SlotOption extends AvailableBookingDto {
+  roomCount: number
+  key:       number
+}

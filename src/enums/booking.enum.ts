@@ -1,12 +1,15 @@
 export enum UsageEnum {
-  STUDY      = 'STUDY',
-  MEETING    = 'MEETING',
-  REHEARSAL  = 'REHEARSAL',
-  OTHER      = 'OTHER',
+  STUDY = 'STUDY',
+  MASTERCLASS = 'MASTERCLASS',
+  WORKSHOP = 'WORKSHOP',
+  LUTIER = 'LUTIER',
+  ARTIST = 'ARTIST',
+  MANAGER = 'MANAGER',
 }
 
 export enum RoomSizeEnum {
-  SMALL      = 'SMALL',
-  MEDIUM     = 'MEDIUM',
-  LARGE      = 'LARGE',
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  BIG = 'big',
+  BNAIG = 'N/A',
 }

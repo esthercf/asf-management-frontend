@@ -19,7 +19,8 @@
       </div>
       <div class="nav-item" :class="{ active: view === 'bookings' }" @click="view = 'bookings'; loadBookings()">
         <span class="nav-icon">📅</span> All Bookings
-        <span v-if="bookings.length" class="badge badge-lav" style="margin-left:auto; padding:.15rem .55rem;">{{ bookings.length }}</span>
+        <span v-if="bookings.length" class="badge badge-lav" style="margin-left:auto; padding:.15rem .55rem;">{{
+          bookings.length }}</span>
       </div>
       <div class="nav-item" :class="{ active: view === 'newbooking' }" @click="startNewBooking">
         <span class="nav-icon">➕</span> New Booking
@@ -33,7 +34,8 @@
             <div class="role">Admin</div>
           </div>
         </div>
-        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:.75rem; justify-content:center;" @click="$router.push('/login')">
+        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:.75rem; justify-content:center;"
+          @click="$router.push('/login')">
           ← Switch role
         </button>
       </div>
@@ -73,13 +75,17 @@
           <button class="btn btn-primary btn-sm" @click="startNewBooking">+ New Booking</button>
         </div>
 
-        <div v-if="loadingAvailability" class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>
+        <div v-if="loadingAvailability" class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>Loading…</p>
+        </div>
         <div v-else class="room-grid">
           <div v-for="room in availability" :key="room.id" class="card room-card">
             <div class="room-card-header">
               <div>
                 <div class="room-name">{{ room.name }}</div>
-                <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}</div>
+                <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : ''
+                  }}</div>
               </div>
               <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
             </div>
@@ -112,7 +118,10 @@
           <button class="btn btn-primary" @click="openAddRoom">+ Add Room</button>
         </div>
 
-        <div v-if="loadingRooms" class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>
+        <div v-if="loadingRooms" class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>Loading…</p>
+        </div>
         <div v-else class="card" style="overflow:hidden;">
           <table class="data-table">
             <thead>
@@ -122,6 +131,7 @@
                 <th>Floor</th>
                 <th>Size</th>
                 <th>Windows</th>
+                <th>Comments</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -133,6 +143,7 @@
                 <td>{{ room.floor ?? '—' }}</td>
                 <td>{{ room.size ?? 'N/A' }}</td>
                 <td>{{ room.windows ? '🪟 Yes' : 'No' }}</td>
+                <td>{{ room.comments || '—' }}</td>
                 <td>
                   <span class="badge" :class="room.active ? 'badge-green' : 'badge-coral'">
                     {{ room.active ? 'Active' : 'Inactive' }}
@@ -148,7 +159,8 @@
             </tbody>
           </table>
           <div v-if="filteredRooms.length === 0" class="empty-state">
-            <div class="empty-icon">🔍</div><p>No rooms found.</p>
+            <div class="empty-icon">🔍</div>
+            <p>No rooms found.</p>
           </div>
         </div>
       </div>
@@ -168,7 +180,10 @@
           <button class="btn btn-primary" @click="startNewBooking">+ New Booking</button>
         </div>
 
-        <div v-if="loadingBookings" class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>
+        <div v-if="loadingBookings" class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>Loading…</p>
+        </div>
         <div v-else class="card" style="overflow:hidden;">
           <table class="data-table">
             <thead>
@@ -186,9 +201,9 @@
                 <td>
                   <div style="display:flex; align-items:center; gap:.6rem;">
                     <div class="avatar avatar-sage" style="width:28px; height:28px; font-size:.7rem;">
-                      {{ initials(booking.user?.name ?? booking.userId?.toString() ?? '?') }}
+                      {{ initials(booking.user?.firstnames ?? booking.userId?.toString() ?? '?') }}
                     </div>
-                    {{ booking.user?.name ?? booking.userId ?? '—' }}
+                    {{ booking.user?.firstnames ?? booking.userId ?? '—' }}
                   </div>
                 </td>
                 <td><strong>{{ booking.name || 'Room #' + booking.roomNumber }}</strong></td>
@@ -202,7 +217,8 @@
             </tbody>
           </table>
           <div v-if="filteredBookings.length === 0" class="empty-state">
-            <div class="empty-icon">📭</div><p>No bookings found.</p>
+            <div class="empty-icon">📭</div>
+            <p>No bookings found.</p>
           </div>
         </div>
       </div>
@@ -241,14 +257,9 @@
         <div v-if="nbStep === 1" class="step-panel">
           <h2 class="section-title">Select a day</h2>
           <div class="day-grid">
-            <button
-              v-for="d in availableDays"
-              :key="d.iso"
-              class="day-card"
-              :class="{ selected: nbDay?.iso === d.iso, disabled: d.slotsCount === 0 }"
-              :disabled="d.slotsCount === 0"
-              @click="nbSelectDay(d)"
-            >
+            <button v-for="d in availableDays" :key="d.iso" class="day-card"
+              :class="{ selected: nbDay?.iso === d.iso, disabled: d.slotsCount === 0 }" :disabled="d.slotsCount === 0"
+              @click="nbSelectDay(d)">
               <div class="day-card-weekday">{{ d.weekday }}</div>
               <div class="day-card-num">{{ d.dayNum }}</div>
               <div class="day-card-month">{{ d.month }}</div>
@@ -265,13 +276,8 @@
           <button class="back-btn" @click="nbStep = 1">← Back</button>
           <h2 class="section-title">Available slots — {{ nbDay?.weekday }}, {{ nbDay?.dayNum }} {{ nbDay?.month }}</h2>
           <div class="slot-grid">
-            <button
-              v-for="slot in nbSlotsForDay"
-              :key="slot.key"
-              class="slot-card"
-              :class="{ selected: nbSlot?.startTime === slot.startTime }"
-              @click="nbSelectSlot(slot)"
-            >
+            <button v-for="slot in nbSlotsForDay" :key="slot.key" class="slot-card"
+              :class="{ selected: nbSlot?.startTime === slot.startTime }" @click="nbSelectSlot(slot)">
               <div class="slot-time">{{ formatMinutes(slot.startTime) }}</div>
               <div class="slot-dash">–</div>
               <div class="slot-time">{{ formatMinutes(slot.endTime) }}</div>
@@ -279,7 +285,8 @@
             </button>
           </div>
           <div v-if="nbSlotsForDay.length === 0" class="empty-state">
-            <div class="empty-icon">🕐</div><p>No slots for this day.</p>
+            <div class="empty-icon">🕐</div>
+            <p>No slots for this day.</p>
           </div>
         </div>
 
@@ -288,17 +295,13 @@
           <button class="back-btn" @click="nbStep = 2">← Back</button>
           <h2 class="section-title">Choose a room</h2>
           <div class="room-grid">
-            <button
-              v-for="room in nbRoomsForSlot"
-              :key="room.id"
-              class="card room-card room-select-card"
-              :class="{ selected: nbRoom?.id?.toString() === room.id?.toString() }"
-              @click="nbSelectRoom(room)"
-            >
+            <button v-for="room in nbRoomsForSlot" :key="room.id" class="card room-card room-select-card"
+              :class="{ selected: nbRoom?.id?.toString() === room.id?.toString() }" @click="nbSelectRoom(room)">
               <div class="room-card-header">
                 <div>
                   <div class="room-name">{{ room.name }}</div>
-                  <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}</div>
+                  <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor :
+                    '' }}</div>
                 </div>
                 <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
               </div>
@@ -327,7 +330,8 @@
               <span class="confirm-icon">🕐</span>
               <div>
                 <div class="confirm-label">Slot</div>
-                <div class="confirm-value">{{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}</div>
+                <div class="confirm-value">{{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}
+                </div>
               </div>
             </div>
             <div class="confirm-row">
@@ -423,10 +427,9 @@
             <div class="form-group">
               <label class="form-label">Size</label>
               <select class="form-input" v-model="roomForm.size">
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="big">Big</option>
-                <option value="N/A">N/A</option>
+                <option v-for="size in roomSizeOptions" :key="size" :value="size">
+                  {{ sizeLabel(size) }}
+                </option>
               </select>
             </div>
           </div>
@@ -440,6 +443,7 @@
               Has windows
             </label>
           </div>
+          <div v-if="roomError" class="error-banner">⚠️ {{ roomError }}</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="roomModal = false">Cancel</button>
             <button class="btn btn-primary" @click="saveRoom">
@@ -452,19 +456,44 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useBookingApi } from '@/composables/useBookingApi'
+import { useBookingApi } from '../composables/useBookingApi'
+import type {
+  RoomDto,
+  BookingDto,
+  AvailableRoomDto,
+  AvailableBookingDto,
+  SlotOption,
+  DayOption,
+} from '../types/booking.types'
+import { RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
+import { RoomFormState } from '../types/room.types'
+import { extractErrorMessage } from '../utiles/error.utiles'
 
+const roomSizeOptions = Object.values(RoomSizeEnum)
+
+function sizeLabel(size: RoomSizeEnum): string {
+  const labels: Record<RoomSizeEnum, string> = {
+    [RoomSizeEnum.SMALL]:  'Small',
+    [RoomSizeEnum.MEDIUM]: 'Medium',
+    [RoomSizeEnum.BIG]:    'Big',
+    [RoomSizeEnum.BNAIG]:  'N/A',
+  }
+  return labels[size]
+}
+
+const roomError = ref('')
 const api = useBookingApi()
 
 // ── View state ────────────────────────────────────────
-const view = ref('overview')
+type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking'
+const view = ref<ViewName>('overview')
 
 // ── Data ──────────────────────────────────────────────
-const rooms       = ref([])
-const bookings    = ref([])
-const availability = ref([])
+const rooms        = ref<RoomDto[]>([])
+const bookings     = ref<BookingDto[]>([])
+const availability = ref<AvailableRoomDto[]>([])
 
 const loadingRooms        = ref(false)
 const loadingBookings     = ref(false)
@@ -481,9 +510,13 @@ onMounted(() => {
 
 async function loadAvailability() {
   loadingAvailability.value = true
-  try { availability.value = await api.getAvailability() ?? [] }
-  catch (e) { console.error(e) }
-  finally { loadingAvailability.value = false }
+  try {
+    availability.value = await api.getAvailability({ page: 1, limit: 1000 }) ?? []
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to load availability.')
+  } finally {
+    loadingAvailability.value = false
+  }
 }
 
 async function loadRooms() {
@@ -491,8 +524,11 @@ async function loadRooms() {
   try {
     const data = await api.getRooms({ limit: 200 })
     rooms.value = data?.data ?? []
-  } catch (e) { console.error(e) }
-  finally { loadingRooms.value = false }
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to load rooms.')
+  } finally {
+    loadingRooms.value = false
+  }
 }
 
 async function loadBookings() {
@@ -500,8 +536,11 @@ async function loadBookings() {
   try {
     const data = await api.getBookings({ limit: 200, textFilter: bookingSearch.value || undefined })
     bookings.value = data?.data ?? []
-  } catch (e) { console.error(e) }
-  finally { loadingBookings.value = false }
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to load bookings.')
+  } finally {
+    loadingBookings.value = false
+  }
 }
 
 const totalFreeSlots = computed(() =>
@@ -516,55 +555,98 @@ const filteredRooms = computed(() =>
 const filteredBookings = computed(() => {
   const q = bookingSearch.value.toLowerCase()
   return bookings.value.filter(b =>
-    (b.user?.name ?? '').toLowerCase().includes(q) ||
+    (b.user?.firstnames ?? '').toLowerCase().includes(q) ||
     (b.name ?? '').toLowerCase().includes(q)
   )
 })
 
 // ── Room CRUD ─────────────────────────────────────────
-const roomModal  = ref(false)
-const editingRoom = ref(null)
-const roomForm   = ref({ name: '', roomNumber: null, floor: null, size: 'medium', comments: '', windows: false })
+
+const roomModal   = ref(false)
+const editingRoom = ref<RoomDto | null>(null)
+const roomForm    = ref<RoomFormState>({
+  name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false,
+})
 
 function openAddRoom() {
   editingRoom.value = null
-  roomForm.value = { name: '', roomNumber: null, floor: null, size: 'medium', comments: '', windows: false }
+  roomForm.value = { name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false }
+  roomError.value = ''
   roomModal.value = true
 }
-function openEditRoom(room) {
+
+function openEditRoom(room: RoomDto) {
   editingRoom.value = room
-  roomForm.value = { name: room.name, roomNumber: room.roomNumber, floor: room.floor, size: room.size ?? 'medium', comments: room.comments ?? '', windows: !!room.windows }
+  roomForm.value = {
+    name:       room.name,
+    roomNumber: room.roomNumber,
+    floor:      room.floor ?? null,
+    size:       room.size ?? RoomSizeEnum.MEDIUM,
+    comments:   room.comments ?? '',
+    windows:    !!room.windows,
+  }
+  roomError.value = ''
   roomModal.value = true
 }
+
+function toApiPayload(form: RoomFormState) {
+  return {
+    name:       form.name,
+    roomNumber: form.roomNumber ?? undefined,
+    floor:      form.floor ?? undefined,
+    size:       form.size,
+    comments:   form.comments || undefined,
+    windows:    form.windows,
+  }
+}
+
 async function saveRoom() {
+  roomError.value = ''
   try {
+    const payload = toApiPayload(roomForm.value)
+       console.log('PAYLOAD BEING SENT:', payload)   // ← add this
+
     if (editingRoom.value) {
-      await api.updateRoom(editingRoom.value.id, roomForm.value)
+      await api.updateRoom(editingRoom.value.id, payload)
     } else {
-      await api.createRoom(roomForm.value)
+      await api.createRoom(payload)
     }
     roomModal.value = false
     await loadRooms()
-  } catch (e) { console.error(e) }
-}
-async function removeRoom(id) {
-  if (!confirm('Delete this room?')) return
-  try { await api.deleteRoom(id); await loadRooms() } catch (e) { console.error(e) }
-}
-async function removeBooking(id) {
-  if (!confirm('Cancel this booking?')) return
-  try { await api.deleteBooking(id); await loadBookings() } catch (e) { console.error(e) }
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to save room.')
+  }
 }
 
-// ── New Booking flow ──────────────────────────────────
-const nbStep       = ref(1)
-const nbDay        = ref(null)
-const nbSlot       = ref(null)
-const nbRoom       = ref(null)
-const nbUserName   = ref('')
-const nbUsage      = ref('STUDY')
-const nbConfirming = ref(false)
-const nbLastBooking = ref(null)
+async function removeRoom(id: string) {
+  if (!confirm('Delete this room?')) return
+  try {
+    await api.deleteRoom(id)
+    await loadRooms()
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to delete room.')
+  }
+}
+
+async function removeBooking(id: string) {
+  if (!confirm('Cancel this booking?')) return
+  try {
+    await api.deleteBooking(id)
+    await loadBookings()
+  } catch (e) {
+    roomError.value = extractErrorMessage(e, 'Failed to cancel booking.')
+  }
+}
+
+
+const nbStep        = ref(1)
+const nbDay         = ref<DayOption  | null>(null)
+const nbSlot        = ref<SlotOption | null>(null)
+const nbRoom        = ref<AvailableRoomDto | null>(null)
+const nbUserName    = ref('')
+const nbUsage       = ref<UsageEnum>(UsageEnum.STUDY)
+const nbConfirming  = ref(false)
+const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
 
 function startNewBooking() {
   nbStep.value = 1
@@ -572,37 +654,37 @@ function startNewBooking() {
   nbSlot.value = null
   nbRoom.value = null
   nbUserName.value = ''
-  nbUsage.value = 'STUDY'
+  nbUsage.value = UsageEnum.STUDY
   view.value = 'newbooking'
   loadAvailability()
 }
 
 // Build unique days from availability
-const availableDays = computed(() => {
-  const dayMap = new Map()
+const availableDays = computed<DayOption[]>(() => {
+  const dayMap = new Map<string, DayOption>()
   for (const room of availability.value) {
     for (const slot of (room.available ?? [])) {
       const key = slot.date
       if (!dayMap.has(key)) {
         const d = new Date(slot.date + 'T00:00:00')
         dayMap.set(key, {
-          iso:       slot.date,
-          weekday:   d.toLocaleDateString('en', { weekday: 'short' }),
-          dayNum:    slot.day,
-          month:     d.toLocaleDateString('en', { month: 'short' }),
+          iso:        slot.date,
+          weekday:    d.toLocaleDateString('en', { weekday: 'short' }),
+          dayNum:     slot.day,
+          month:      d.toLocaleDateString('en', { month: 'short' }),
           slotsCount: 0,
         })
       }
-      dayMap.get(key).slotsCount++
+      dayMap.get(key)!.slotsCount++
     }
   }
   return Array.from(dayMap.values()).sort((a, b) => a.iso.localeCompare(b.iso))
 })
 
 // Build unique time slots for the selected day, with count of rooms available per slot
-const nbSlotsForDay = computed(() => {
+const nbSlotsForDay = computed<SlotOption[]>(() => {
   if (!nbDay.value) return []
-  const slotMap = new Map()
+  const slotMap = new Map<number, SlotOption>()
   for (const room of availability.value) {
     for (const slot of (room.available ?? [])) {
       if (slot.date !== nbDay.value.iso) continue
@@ -610,34 +692,34 @@ const nbSlotsForDay = computed(() => {
       if (!slotMap.has(key)) {
         slotMap.set(key, { ...slot, roomCount: 0, key })
       }
-      slotMap.get(key).roomCount++
+      slotMap.get(key)!.roomCount++
     }
   }
   return Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
 })
 
 // Rooms that have the selected slot free
-const nbRoomsForSlot = computed(() => {
+const nbRoomsForSlot = computed<AvailableRoomDto[]>(() => {
   if (!nbDay.value || !nbSlot.value) return []
   return availability.value.filter(room =>
-    room.available?.some(s => s.date === nbDay.value.iso && s.startTime === nbSlot.value.startTime)
+    room.available?.some(s => s.date === nbDay.value!.iso && s.startTime === nbSlot.value!.startTime)
   )
 })
 
-function nbSelectDay(day) {
+function nbSelectDay(day: DayOption) {
   nbDay.value = day
   nbSlot.value = null
   nbRoom.value = null
   nbStep.value = 2
 }
 
-function nbSelectSlot(slot) {
+function nbSelectSlot(slot: SlotOption) {
   nbSlot.value = slot
   nbRoom.value = null
   nbStep.value = 3
 }
 
-function nbSelectRoom(room) {
+function nbSelectRoom(room: AvailableRoomDto) {
   nbRoom.value = room
   nbStep.value = 4
 }
@@ -660,107 +742,324 @@ async function nbConfirm() {
 
     nbLastBooking.value = {
       dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
-      timeLabel:  `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
+      timeLabel: `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
       roomName:  `${nbRoom.value.name} (#${nbRoom.value.roomNumber})`,
     }
     nbStep.value = 5
     loadBookings()
     loadAvailability()
   } catch (e) {
-    console.error('Booking failed', e)
+    roomError.value = extractErrorMessage(e, 'Booking failed.')
   } finally {
     nbConfirming.value = false
   }
 }
 
 // ── Helpers ───────────────────────────────────────────
-function formatMinutes(mins) {
+function formatMinutes(mins: number | undefined | null): string {
   if (mins == null) return ''
-  return `${Math.floor(mins / 60).toString().padStart(2,'0')}:${(mins % 60).toString().padStart(2,'0')}`
+  return `${Math.floor(mins / 60).toString().padStart(2, '0')}:${(mins % 60).toString().padStart(2, '0')}`
 }
-function formatDate(dateStr) {
+
+function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' })
 }
-function initials(name = '') {
+
+function initials(name = ''): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
-function sizeEmoji(size) {
-  return { small: '🟢', medium: '🔵', big: '🟣' }[size] ?? '🏠'
+
+function sizeEmoji(size: RoomSizeEnum | undefined): string {
+  const emojis: Record<RoomSizeEnum, string> = {
+    [RoomSizeEnum.SMALL]:  '🟢',
+    [RoomSizeEnum.MEDIUM]: '🔵',
+    [RoomSizeEnum.BIG]:    '🟣',
+    [RoomSizeEnum.BNAIG]:  '🏠',
+  }
+  return size ? (emojis[size] ?? '🏠') : '🏠'
 }
 </script>
 
 <style scoped>
 .steps-row {
-  display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2.5rem;
 }
-.step { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
-.step-num {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 2px solid var(--border); background: var(--white);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: .85rem; color: var(--muted); transition: var(--transition);
-}
-.step.active .step-num { border-color: var(--navy); background: var(--navy); color: var(--white); }
-.step.done   .step-num { border-color: var(--gold); background: var(--gold); color: var(--navy-deep); }
-.step-label { font-size: .75rem; font-weight: 700; color: var(--muted); }
-.step.active .step-label { color: var(--navy); }
-.step-line { flex: 1; height: 2px; background: var(--border); margin: 0 .75rem; margin-bottom: 1.2rem; transition: var(--transition); }
-.step-line.active { background: var(--gold); }
 
-.step-panel { animation: fadeIn .2s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--muted);
+  transition: var(--transition);
+}
+
+.step.active .step-num {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: var(--white);
+}
+
+.step.done .step-num {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--navy-deep);
+}
+
+.step-label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.step.active .step-label {
+  color: var(--navy);
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 .75rem;
+  margin-bottom: 1.2rem;
+  transition: var(--transition);
+}
+
+.step-line.active {
+  background: var(--gold);
+}
+
+.step-panel {
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .back-btn {
-  font-size: .82rem; font-weight: 700; color: var(--muted);
-  cursor: pointer; margin-bottom: 1.25rem;
-  display: inline-flex; align-items: center; gap: .3rem; transition: var(--transition);
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  transition: var(--transition);
 }
-.back-btn:hover { color: var(--navy); }
+
+.back-btn:hover {
+  color: var(--navy);
+}
 
 /* Day cards */
-.day-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
-.day-card {
-  background: var(--white); border: 2px solid var(--border); border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem; min-width: 110px;
-  display: flex; flex-direction: column; align-items: center; gap: .35rem;
-  cursor: pointer; transition: var(--transition); font-family: var(--font-body);
+.day-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
-.day-card:hover:not(.disabled) { border-color: var(--navy); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.day-card.selected { border-color: var(--navy); background: var(--navy); }
+
+.day-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+.day-card:hover:not(.disabled) {
+  border-color: var(--navy);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.day-card.selected {
+  border-color: var(--navy);
+  background: var(--navy);
+}
+
 .day-card.selected .day-card-weekday,
-.day-card.selected .day-card-month { color: rgba(255,255,255,.65); }
-.day-card.selected .day-card-num { color: var(--white); }
-.day-card.disabled { opacity: .45; cursor: not-allowed; }
-.day-card-weekday { font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-.day-card-num { font-family: var(--font-display); font-size: 2rem; line-height: 1; color: var(--ink); }
-.day-card-month { font-size: .78rem; font-weight: 700; color: var(--muted); }
-.day-card-slots { margin-top: .4rem; }
+.day-card.selected .day-card-month {
+  color: rgba(255, 255, 255, .65);
+}
+
+.day-card.selected .day-card-num {
+  color: var(--white);
+}
+
+.day-card.disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.day-card-weekday {
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.day-card-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.day-card-month {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.day-card-slots {
+  margin-top: .4rem;
+}
 
 /* Slot cards */
-.slot-grid { display: flex; flex-wrap: wrap; gap: .85rem; margin-bottom: 1.5rem; }
-.slot-card {
-  background: var(--white); border: 2px solid var(--border); border-radius: var(--radius-md);
-  padding: 1rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: .2rem;
-  cursor: pointer; transition: var(--transition); font-family: var(--font-body); min-width: 120px;
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .85rem;
+  margin-bottom: 1.5rem;
 }
-.slot-card:hover { border-color: var(--navy); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
-.slot-card.selected { border-color: var(--gold); background: var(--gold-100); }
-.slot-time { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); }
-.slot-dash { color: var(--muted); font-weight: 700; font-size: .8rem; }
-.slot-rooms-count { font-size: .72rem; font-weight: 700; color: var(--muted); }
+
+.slot-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+  min-width: 120px;
+}
+
+.slot-card:hover {
+  border-color: var(--navy);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.slot-card.selected {
+  border-color: var(--gold);
+  background: var(--gold-100);
+}
+
+.slot-time {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.slot-dash {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: .8rem;
+}
+
+.slot-rooms-count {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
 
 /* Room select cards */
-.room-select-card { cursor: pointer; text-align: left; }
-.room-select-card:hover { border-color: var(--navy); transform: translateY(-2px); }
-.room-select-card.selected { border-color: var(--gold); background: var(--gold-50); box-shadow: 0 0 0 3px rgba(232,184,75,.2); }
+.room-select-card {
+  cursor: pointer;
+  text-align: left;
+}
+
+.room-select-card:hover {
+  border-color: var(--navy);
+  transform: translateY(-2px);
+}
+
+.room-select-card.selected {
+  border-color: var(--gold);
+  background: var(--gold-50);
+  box-shadow: 0 0 0 3px rgba(232, 184, 75, .2);
+}
 
 /* Confirm */
-.confirm-card { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-width: 480px; }
-.confirm-row { display: flex; align-items: center; gap: 1rem; }
-.confirm-icon { font-size: 1.4rem; flex-shrink: 0; }
-.confirm-label { font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-.confirm-value { font-weight: 700; font-size: .95rem; color: var(--ink); margin-top: .1rem; }
+.confirm-card {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 480px;
+}
 
-.success-panel { text-align: left; }
-.success-icon { font-size: 3rem; margin-bottom: .75rem; }
+.confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.confirm-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.confirm-label {
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.confirm-value {
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--ink);
+  margin-top: .1rem;
+}
+
+.success-panel {
+  text-align: left;
+}
+
+.success-icon {
+  font-size: 3rem;
+  margin-bottom: .75rem;
+}
 </style>
