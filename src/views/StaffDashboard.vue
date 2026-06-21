@@ -85,7 +85,7 @@
               <div>
                 <div class="room-name">{{ room.name }}</div>
                 <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : ''
-                  }}</div>
+                }}</div>
               </div>
               <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
             </div>
@@ -211,7 +211,9 @@
                 <td>{{ formatMinutes(booking.startTime) }} – {{ formatMinutes(booking.endTime) }}</td>
                 <td><span class="badge badge-sky">{{ booking.usage }}</span></td>
                 <td>
-                  <button class="btn btn-danger btn-sm" @click="removeBooking(booking.id)">Cancel</button>
+                  <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
+                    :title="isPastBooking(booking) ? 'Cannot cancel past bookings' : ''"
+                    @click="removeBooking(booking.id)">Cancel</button>
                 </td>
               </tr>
             </tbody>
@@ -255,6 +257,8 @@
 
         <!-- Step 1: Day -->
         <div v-if="nbStep === 1" class="step-panel">
+          <button class="back-btn" @click="view = 'overview'">← Cancel</button>
+
           <h2 class="section-title">Select a day</h2>
           <div class="day-grid">
             <button v-for="d in availableDays" :key="d.iso" class="day-card"
@@ -475,10 +479,10 @@ const roomSizeOptions = Object.values(RoomSizeEnum)
 
 function sizeLabel(size: RoomSizeEnum): string {
   const labels: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]:  'Small',
+    [RoomSizeEnum.SMALL]: 'Small',
     [RoomSizeEnum.MEDIUM]: 'Medium',
-    [RoomSizeEnum.BIG]:    'Big',
-    [RoomSizeEnum.BNAIG]:  'N/A',
+    [RoomSizeEnum.BIG]: 'Big',
+    [RoomSizeEnum.BNAIG]: 'N/A',
   }
   return labels[size]
 }
@@ -491,15 +495,15 @@ type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking'
 const view = ref<ViewName>('overview')
 
 // ── Data ──────────────────────────────────────────────
-const rooms        = ref<RoomDto[]>([])
-const bookings     = ref<BookingDto[]>([])
+const rooms = ref<RoomDto[]>([])
+const bookings = ref<BookingDto[]>([])
 const availability = ref<AvailableRoomDto[]>([])
 
-const loadingRooms        = ref(false)
-const loadingBookings     = ref(false)
+const loadingRooms = ref(false)
+const loadingBookings = ref(false)
 const loadingAvailability = ref(false)
 
-const roomSearch    = ref('')
+const roomSearch = ref('')
 const bookingSearch = ref('')
 
 onMounted(() => {
@@ -508,12 +512,18 @@ onMounted(() => {
   loadBookings()
 })
 
+function isPastBooking(booking: BookingDto): boolean {
+  const bookingDate = new Date(booking.date + 'T00:00:00')
+  bookingDate.setMinutes(booking.endTime)
+  return bookingDate < new Date()
+}
+
 async function loadAvailability() {
   loadingAvailability.value = true
   try {
     availability.value = await api.getAvailability({ page: 1, limit: 1000 }) ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to load availability.')
+    roomError.value = extractErrorMessage(e)
   } finally {
     loadingAvailability.value = false
   }
@@ -525,7 +535,7 @@ async function loadRooms() {
     const data = await api.getRooms({ limit: 200 })
     rooms.value = data?.data ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to load rooms.')
+    roomError.value = extractErrorMessage(e)
   } finally {
     loadingRooms.value = false
   }
@@ -537,7 +547,7 @@ async function loadBookings() {
     const data = await api.getBookings({ limit: 200, textFilter: bookingSearch.value || undefined })
     bookings.value = data?.data ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to load bookings.')
+    roomError.value = extractErrorMessage(e)
   } finally {
     loadingBookings.value = false
   }
@@ -562,9 +572,9 @@ const filteredBookings = computed(() => {
 
 // ── Room CRUD ─────────────────────────────────────────
 
-const roomModal   = ref(false)
+const roomModal = ref(false)
 const editingRoom = ref<RoomDto | null>(null)
-const roomForm    = ref<RoomFormState>({
+const roomForm = ref<RoomFormState>({
   name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false,
 })
 
@@ -578,12 +588,12 @@ function openAddRoom() {
 function openEditRoom(room: RoomDto) {
   editingRoom.value = room
   roomForm.value = {
-    name:       room.name,
+    name: room.name,
     roomNumber: room.roomNumber,
-    floor:      room.floor ?? null,
-    size:       room.size ?? RoomSizeEnum.MEDIUM,
-    comments:   room.comments ?? '',
-    windows:    !!room.windows,
+    floor: room.floor ?? null,
+    size: room.size ?? RoomSizeEnum.MEDIUM,
+    comments: room.comments ?? '',
+    windows: !!room.windows,
   }
   roomError.value = ''
   roomModal.value = true
@@ -591,12 +601,12 @@ function openEditRoom(room: RoomDto) {
 
 function toApiPayload(form: RoomFormState) {
   return {
-    name:       form.name,
+    name: form.name,
     roomNumber: form.roomNumber ?? undefined,
-    floor:      form.floor ?? undefined,
-    size:       form.size,
-    comments:   form.comments || undefined,
-    windows:    form.windows,
+    floor: form.floor ?? undefined,
+    size: form.size,
+    comments: form.comments || undefined,
+    windows: form.windows,
   }
 }
 
@@ -604,7 +614,7 @@ async function saveRoom() {
   roomError.value = ''
   try {
     const payload = toApiPayload(roomForm.value)
-       console.log('PAYLOAD BEING SENT:', payload)   // ← add this
+    console.log('PAYLOAD BEING SENT:', payload)   // ← add this
 
     if (editingRoom.value) {
       await api.updateRoom(editingRoom.value.id, payload)
@@ -614,7 +624,7 @@ async function saveRoom() {
     roomModal.value = false
     await loadRooms()
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to save room.')
+    roomError.value = extractErrorMessage(e)
   }
 }
 
@@ -624,7 +634,7 @@ async function removeRoom(id: string) {
     await api.deleteRoom(id)
     await loadRooms()
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to delete room.')
+    roomError.value = extractErrorMessage(e)
   }
 }
 
@@ -634,18 +644,18 @@ async function removeBooking(id: string) {
     await api.deleteBooking(id)
     await loadBookings()
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Failed to cancel booking.')
+    roomError.value = extractErrorMessage(e)
   }
 }
 
 
-const nbStep        = ref(1)
-const nbDay         = ref<DayOption  | null>(null)
-const nbSlot        = ref<SlotOption | null>(null)
-const nbRoom        = ref<AvailableRoomDto | null>(null)
-const nbUserName    = ref('')
-const nbUsage       = ref<UsageEnum>(UsageEnum.STUDY)
-const nbConfirming  = ref(false)
+const nbStep = ref(1)
+const nbDay = ref<DayOption | null>(null)
+const nbSlot = ref<SlotOption | null>(null)
+const nbRoom = ref<AvailableRoomDto | null>(null)
+const nbUserName = ref('')
+const nbUsage = ref<UsageEnum>(UsageEnum.STUDY)
+const nbConfirming = ref(false)
 const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
 
 function startNewBooking() {
@@ -668,10 +678,10 @@ const availableDays = computed<DayOption[]>(() => {
       if (!dayMap.has(key)) {
         const d = new Date(slot.date + 'T00:00:00')
         dayMap.set(key, {
-          iso:        slot.date,
-          weekday:    d.toLocaleDateString('en', { weekday: 'short' }),
-          dayNum:     slot.day,
-          month:      d.toLocaleDateString('en', { month: 'short' }),
+          iso: slot.date,
+          weekday: d.toLocaleDateString('en', { weekday: 'short' }),
+          dayNum: slot.day,
+          month: d.toLocaleDateString('en', { month: 'short' }),
           slotsCount: 0,
         })
       }
@@ -733,23 +743,23 @@ async function nbConfirm() {
 
     // Create booking
     await api.createBooking({
-      roomId:  nbRoom.value.id,
-      date:    new Date(nbSlot.value.date + 'T00:00:00').toISOString(),
-      hour:    nbSlot.value.hour,
+      roomId: nbRoom.value.id,
+      date: new Date(nbSlot.value.date + 'T00:00:00').toISOString(),
+      hour: nbSlot.value.hour,
       minutes: nbSlot.value.minutes,
-      usage:   nbUsage.value,
+      usage: nbUsage.value,
     })
 
     nbLastBooking.value = {
       dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
       timeLabel: `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
-      roomName:  `${nbRoom.value.name} (#${nbRoom.value.roomNumber})`,
+      roomName: `${nbRoom.value.name} (#${nbRoom.value.roomNumber})`,
     }
     nbStep.value = 5
     loadBookings()
     loadAvailability()
   } catch (e) {
-    roomError.value = extractErrorMessage(e, 'Booking failed.')
+    roomError.value = extractErrorMessage(e)
   } finally {
     nbConfirming.value = false
   }
@@ -771,10 +781,10 @@ function initials(name = ''): string {
 
 function sizeEmoji(size: RoomSizeEnum | undefined): string {
   const emojis: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]:  '🟢',
+    [RoomSizeEnum.SMALL]: '🟢',
     [RoomSizeEnum.MEDIUM]: '🔵',
-    [RoomSizeEnum.BIG]:    '🟣',
-    [RoomSizeEnum.BNAIG]:  '🏠',
+    [RoomSizeEnum.BIG]: '🟣',
+    [RoomSizeEnum.BNAIG]: '🏠',
   }
   return size ? (emojis[size] ?? '🏠') : '🏠'
 }
