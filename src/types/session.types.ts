@@ -11,7 +11,7 @@ export interface AuthState {
   accessToken: string | null
   refreshToken: string | null
   userId: string | null
-  roles: string[]
+  roles: RoleType[]
 }
 
 

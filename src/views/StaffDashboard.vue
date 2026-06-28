@@ -22,10 +22,12 @@
         <span v-if="bookings.length" class="badge badge-lav" style="margin-left:auto; padding:.15rem .55rem;">{{
           bookings.length }}</span>
       </div>
+      <div class="nav-item" :class="{ active: view === 'users' }" @click="view = 'users'; loadUsers()">
+        <span class="nav-icon">👥</span> {{ t('staff.users.title') }}
+      </div>
       <div class="nav-item" :class="{ active: view === 'newbooking' }" @click="startNewBooking">
         <span class="nav-icon">➕</span> New Booking
       </div>
-
       <div class="sidebar-footer">
         <div class="user-chip">
           <div class="avatar avatar-coral">JS</div>
@@ -85,7 +87,7 @@
               <div>
                 <div class="room-name">{{ room.name }}</div>
                 <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : ''
-                }}</div>
+                  }}</div>
               </div>
               <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
             </div>
@@ -164,7 +166,117 @@
           </div>
         </div>
       </div>
+      <!-- ── Users management ── -->
+      <div v-if="view === 'users'">
+        <div class="page-header">
+          <h1>{{ t('staff.users.title') }}</h1>
+          <p class="subtitle">{{ t('staff.users.subtitle') }}</p>
+        </div>
 
+        <!-- Filters -->
+        <div class="section-row">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input :placeholder="t('staff.users.searchPlaceholder')" v-model="userTextFilter"
+              @input="debouncedUserReload" />
+          </div>
+
+          <select class="form-input filter-select" v-model="userActiveFilter" @change="loadUsers">
+            <option :value="undefined">{{ t('staff.users.filters.allStatus') }}</option>
+            <option :value="UserActiveFilter.ACTIVE">{{ t('staff.users.filters.active') }}</option>
+            <option :value="UserActiveFilter.INACTIVE">{{ t('staff.users.filters.inactive') }}</option>
+          </select>
+
+          <select class="form-input filter-select" v-model="userRoleFilter" @change="loadUsers">
+            <option :value="undefined">{{ t('staff.users.filters.allRoles') }}</option>
+            <option v-for="role in roleOptions" :key="role" :value="role">{{ role }}</option>
+          </select>
+
+          <select class="form-input filter-select" v-model="userBookingTypeFilter" @change="loadUsers">
+            <option :value="undefined">{{ t('staff.users.filters.allBookingTypes') }}</option>
+            <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
+          </select>
+        </div>
+
+        <div v-if="loadingUsers" class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>{{ t('common.loading') }}</p>
+        </div>
+
+        <div v-else class="card" style="overflow:hidden;">
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>{{ t('staff.users.columns.name') }}</th>
+                  <th>{{ t('staff.users.columns.email') }}</th>
+                  <th>{{ t('staff.users.columns.country') }}</th>
+                  <th>{{ t('staff.users.columns.language') }}</th>
+                  <th>{{ t('staff.users.columns.phone') }}</th>
+                  <th>{{ t('staff.users.columns.tshirt') }}</th>
+                  <th>{{ t('staff.users.columns.bookingType') }}</th>
+                  <th>{{ t('staff.users.columns.status') }}</th>
+                  <th>{{ t('staff.users.columns.actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="u in users" :key="u.id">
+                  <td>
+                    <div style="display:flex; align-items:center; gap:.6rem;">
+                      <div class="avatar avatar-sage" style="width:28px; height:28px; font-size:.7rem;">
+                        {{ (u.firstnames[0] ?? '') + (u.surnames[0] ?? '') }}
+                      </div>
+                      <strong>{{ u.firstnames }} {{ u.surnames }}</strong>
+                    </div>
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.countryCode }}</td>
+                  <td>{{ u.language }}</td>
+                  <td>{{ formatPhone(u) }}</td>
+                  <td>{{ u.tshirtEnum ?? '—' }}</td>
+                  <td>
+                    <div class="bt-tags">
+                      <span v-for="bt in u.bookingTypeEnum" :key="bt" class="badge badge-lav bt-tag">
+                        {{ bookingTypeLabel(bt) }}
+                      </span>
+                      <span v-if="!u.bookingTypeEnum?.length" class="muted-text">—</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge" :class="u.active ? 'badge-green' : 'badge-coral'">
+                      {{ u.active ? t('staff.users.active') : t('staff.users.inactive') }}
+                    </span>
+                  </td>
+                  <td>
+                    <div style="display:flex; flex-direction:column; gap:.4rem;">
+                      <button class="btn btn-secondary btn-sm" @click="openBookingTypeModal(u)">
+                        {{ t('staff.users.editBookingType') }}
+                      </button>
+                      <button class="btn btn-sm" :class="u.active ? 'btn-danger' : 'btn-primary'"
+                        @click="toggleUserActive(u)">
+                        {{ u.active ? t('staff.users.deactivate') : t('staff.users.activate') }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-if="users.length === 0" class="empty-state">
+            <div class="empty-icon">👤</div>
+            <p>{{ t('staff.users.empty') }}</p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="userTotalPages > 1" class="pagination-row">
+          <button class="btn btn-secondary btn-sm" :disabled="userPage <= 1"
+            @click="goToUserPage(userPage - 1)">←</button>
+          <span class="pagination-label">{{ userPage }} / {{ userTotalPages }}</span>
+          <button class="btn btn-secondary btn-sm" :disabled="userPage >= userTotalPages"
+            @click="goToUserPage(userPage + 1)">→</button>
+        </div>
+      </div>
       <!-- ── All Bookings ── -->
       <div v-if="view === 'bookings'">
         <div class="page-header">
@@ -348,10 +460,8 @@
           </div>
 
           <div class="form-row" style="margin-top:1.5rem; max-width:480px;">
-            <div class="form-group">
-              <label class="form-label">User name (optional)</label>
-              <input class="form-input" v-model="nbUserName" placeholder="Student name…" />
-            </div>
+            <!-- with this -->
+            <UserSelector v-model="nbSelectedUser" :label="t('staff.newBooking.assignUser')" />
             <div class="form-group">
               <label class="form-label">Usage</label>
               <select class="form-input" v-model="nbUsage">
@@ -457,6 +567,31 @@
         </div>
       </div>
     </Teleport>
+    <!-- Edit User Booking Type Modal -->
+    <Teleport to="body">
+      <div v-if="bookingTypeModal" class="modal-overlay" @click.self="bookingTypeModal = false">
+        <div class="modal">
+          <h2 class="modal-title">
+            {{ t('staff.users.editBookingTypeFor') }} {{ editingUser?.firstnames }} {{ editingUser?.surnames }}
+          </h2>
+
+          <div class="form-group">
+            <label class="form-label">{{ t('staff.users.columns.bookingType') }}</label>
+            <div class="checkbox-grid">
+              <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
+                <input type="checkbox" :value="bt" v-model="bookingTypeForm" />
+                {{ bookingTypeLabel(bt) }}
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="bookingTypeModal = false">{{ t('common.cancel') }}</button>
+            <button class="btn btn-primary" @click="saveBookingType">{{ t('common.save') }} →</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -471,12 +606,108 @@ import type {
   SlotOption,
   DayOption,
 } from '../types/booking.types'
-import { RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
+import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
 import { RoomFormState } from '../types/room.types'
 import { extractErrorMessage } from '../utiles/error.utiles'
+import { UserDto } from '../types/user.types'
+import { useI18n } from 'vue-i18n'
+import { RoleType } from '../enums/roles.enum'
+import { UserActiveFilter } from '../enums/user.enum'
+
+
+// ── Users management state ───────────────────────────────────────────────
+const users = ref<UserDto[]>([])
+const loadingUsers = ref(false)
+
+const userPage = ref(1)
+const userLimit = 20
+const userTotalPages = ref(1)
+
+const userTextFilter = ref('')
+const userActiveFilter = ref<UserActiveFilter | undefined>(undefined)
+const userRoleFilter = ref<RoleType | undefined>(undefined)
+const userBookingTypeFilter = ref<BookingTypeEnum | undefined>(undefined)
+
+const roleOptions = Object.values(RoleType)
+const bookingTypeOptions = Object.values(BookingTypeEnum)
+
+let userDebounceTimer: ReturnType<typeof setTimeout> | undefined
+function debouncedUserReload() {
+  if (userDebounceTimer) clearTimeout(userDebounceTimer)
+  userDebounceTimer = setTimeout(() => { userPage.value = 1; loadUsers() }, 350)
+}
+
+function bookingTypeLabel(bt: BookingTypeEnum): string {
+  return t(`staff.users.bookingTypes.${bt}`)
+}
+
+function formatPhone(u: UserDto): string {
+  if (!u.phoneNumber) return '—'
+  return u.phoneCode ? `+${u.phoneCode} ${u.phoneNumber}` : u.phoneNumber
+}
+
+async function loadUsers() {
+  loadingUsers.value = true
+  try {
+    const data = await api.getUsers({
+      page: userPage.value,
+      limit: userLimit,
+      textFilter: userTextFilter.value || undefined,
+      active: userActiveFilter.value,   // ✅ already the right string type now
+      roleType: userRoleFilter.value,
+      bookingTypeEnum: userBookingTypeFilter.value,
+    })
+    users.value = data?.data ?? []
+    userTotalPages.value = data?.metadata?.totalPages ?? 1
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+function goToUserPage(p: number) {
+  userPage.value = p
+  loadUsers()
+}
+
+async function toggleUserActive(u: UserDto) {
+  const nextActive = !u.active
+  try {
+    await api.updateUserActiveByEmail(u.email, nextActive)
+    u.active = nextActive
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  }
+}
+
+// ── User booking type modal ──────────────────────────────────────────────
+const bookingTypeModal = ref(false)
+const editingUser = ref<UserDto | null>(null)
+const bookingTypeForm = ref<BookingTypeEnum[]>([])
+
+function openBookingTypeModal(u: UserDto) {
+  editingUser.value = u
+  bookingTypeForm.value = [...(u.bookingTypeEnum ?? [])]
+  bookingTypeModal.value = true
+}
+
+async function saveBookingType() {
+  if (!editingUser.value) return
+  try {
+    const updated = await api.updateUser(editingUser.value.id, {
+      bookingTypeEnum: bookingTypeForm.value,
+    })
+    const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
+    if (idx !== -1) users.value[idx] = updated
+    bookingTypeModal.value = false
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  }
+}
 
 const roomSizeOptions = Object.values(RoomSizeEnum)
-
+const { t } = useI18n();
 function sizeLabel(size: RoomSizeEnum): string {
   const labels: Record<RoomSizeEnum, string> = {
     [RoomSizeEnum.SMALL]: 'Small',
@@ -491,7 +722,7 @@ const roomError = ref('')
 const api = useBookingApi()
 
 // ── View state ────────────────────────────────────────
-type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking'
+type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking' | 'users'
 const view = ref<ViewName>('overview')
 
 // ── Data ──────────────────────────────────────────────
@@ -657,6 +888,7 @@ const nbUserName = ref('')
 const nbUsage = ref<UsageEnum>(UsageEnum.STUDY)
 const nbConfirming = ref(false)
 const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
+const nbSelectedUser = ref<UserDto | null>(null)
 
 function startNewBooking() {
   nbStep.value = 1
@@ -1071,5 +1303,70 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
 .success-icon {
   font-size: 3rem;
   margin-bottom: .75rem;
+}
+
+/* Add these rules to the <style scoped> block of StaffDashboard.vue */
+
+.filter-select {
+  max-width: 200px;
+}
+
+.bt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  max-width: 220px;
+}
+
+.bt-tag {
+  font-size: .68rem;
+  padding: .15rem .5rem;
+}
+
+.muted-text {
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.pagination-label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+  margin-top: .4rem;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.users-table-card {
+  overflow: visible;
+}
+
+.table-scroll {
+  overflow-x: auto;
 }
 </style>

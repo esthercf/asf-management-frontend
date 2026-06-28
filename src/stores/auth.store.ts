@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { useBookingApi } from '../composables/useBookingApi'
 import { AuthState } from '../types/session.types';
+import { RoleType, STAFF_ROLES } from '../enums/roles.enum';
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
@@ -13,13 +14,11 @@ export const useAuthStore = defineStore('auth', {
 
     getters: {
         isAuthenticated: (s) => !!s.accessToken,
-        isStaff: (s) => s.roles.some(r =>
-            ['root', 'manager', 'staff', 'admin'].includes(r.toLowerCase())
-        ),
+        isStaff: (s) => s.roles.some(r => STAFF_ROLES.includes(r)),
     },
 
     actions: {
-        setSession(session: { accessToken: string; refreshToken: string; userId: string; roles: string[] }) {
+        setSession(session: { accessToken: string; refreshToken: string; userId: string; roles: RoleType[] }) {
             this.accessToken = session.accessToken
             this.refreshToken = session.refreshToken
             this.userId = session.userId

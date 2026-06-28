@@ -1,14 +1,15 @@
 export enum RoleType {
-  ROOT    = 'root',
-  MANAGER = 'manager',
-  STAFF   = 'staff',
-  ADMIN   = 'admin',
-  USER    = 'user',
+  Root = 'Root',
+  Staff = 'Staff',
+  //Jury = 'Jury',
+  Contestant = 'Contestant',
+  //Artist = 'Artist',
+ // Manager = 'Manager',
 }
 
 export const STAFF_ROLES: RoleType[] = [
-  RoleType.ROOT,
-  RoleType.MANAGER,
-  RoleType.STAFF,
-  RoleType.ADMIN,
+  RoleType.Root,
+  RoleType.Staff,
+  RoleType.Contestant,
+  //RoleType.Manager,
 ]
