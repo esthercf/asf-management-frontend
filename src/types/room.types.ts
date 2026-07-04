@@ -1,6 +1,6 @@
 // src/types/room.types.ts
 
-import { RoomSizeEnum } from "../enums/booking.enum"
+import { BookingTypeEnum, RoomSizeEnum } from "../enums/booking.enum"
 import { AvailableBookingDto, BookingDto } from "./booking.types"
 
 export interface RoomDto {
@@ -60,4 +60,5 @@ export interface RoomFormState {
   size:       RoomSizeEnum
   comments:   string
   windows:    boolean
+  bookingTypeEnum: BookingTypeEnum |null;
 }

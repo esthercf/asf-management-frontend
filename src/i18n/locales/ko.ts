@@ -52,8 +52,33 @@ const ko: AppLocale = {
   },
   staff: {
     dashboard: '직원 대시보드',
-    bookings: '모든 예약',
-    rooms: '방 관리',
+    rooms: {
+      bookingType: '예약 유형',
+      bookingTypeNone: '제한 없음',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: '모든 예약 유형',
+      },
+      columns: {
+        user: '사용자',
+        room: '방',
+        date: '날짜',
+        time: '시간',
+        usage: '사용',
+        bookingType: '예약 유형',
+        actions: '작업',
+      },
+      unassigned: '미할당',
+      assignUser: '사용자 할당',
+      reassignUser: '사용자 재할당',
+      assignUserHint: '이 예약에 연결할 사용자를 이름, 이메일 또는 폴더 코드로 검색하세요.',
+      searchByNameEmail: '이름 또는 이메일',
+      searchByFolderCode: '폴더 코드',
+      folderCode: '폴더 코드',
+      folderCodePlaceholder: '정확한 폴더 코드를 입력…',
+      assign: '할당',
+    },
     users: {
       title: '사용자 관리',
       subtitle: '사용자 접근 권한을 확인, 필터링 및 업데이트합니다.',

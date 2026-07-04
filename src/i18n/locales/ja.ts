@@ -52,8 +52,33 @@ const ja: AppLocale = {
   },
   staff: {
     dashboard: 'スタッフダッシュボード',
-    bookings: 'すべての予約',
-    rooms: '部屋を管理',
+    rooms: {
+      bookingType: '予約タイプ',
+      bookingTypeNone: '制限なし',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'すべての予約タイプ',
+      },
+      columns: {
+        user: 'ユーザー',
+        room: '部屋',
+        date: '日付',
+        time: '時間',
+        usage: '利用',
+        bookingType: '予約タイプ',
+        actions: '操作',
+      },
+      unassigned: '未割り当て',
+      assignUser: 'ユーザーを割り当て',
+      reassignUser: 'ユーザーを再割り当て',
+      assignUserHint: '名前、メール、またはフォルダーコードでユーザーを検索し、この予約に関連付けます。',
+      searchByNameEmail: '名前またはメール',
+      searchByFolderCode: 'フォルダーコード',
+      folderCode: 'フォルダーコード',
+      folderCodePlaceholder: '正確なフォルダーコードを入力…',
+      assign: '割り当て',
+    },
     users: {
       title: 'ユーザー管理',
       subtitle: 'ユーザーアクセスの表示、フィルタリング、更新。',

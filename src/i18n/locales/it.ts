@@ -52,8 +52,33 @@ const it: AppLocale = {
   },
   staff: {
     dashboard: 'Dashboard del personale',
-    bookings: 'Tutte le prenotazioni',
-    rooms: 'Gestisci le sale',
+    rooms: {
+      bookingType: 'Tipo di prenotazione',
+      bookingTypeNone: 'Nessuna restrizione',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'Tutti i tipi di prenotazione',
+      },
+      columns: {
+        user: 'Utente',
+        room: 'Sala',
+        date: 'Data',
+        time: 'Ora',
+        usage: 'Utilizzo',
+        bookingType: 'Tipo di prenotazione',
+        actions: 'Azioni',
+      },
+      unassigned: 'Non assegnato',
+      assignUser: 'Assegna utente',
+      reassignUser: 'Riassegna utente',
+      assignUserHint: 'Cerca un utente per nome, e-mail o codice cartella per collegarlo a questa prenotazione.',
+      searchByNameEmail: 'Nome o e-mail',
+      searchByFolderCode: 'Codice cartella',
+      folderCode: 'Codice cartella',
+      folderCodePlaceholder: 'Inserisci il codice cartella esatto…',
+      assign: 'Assegna',
+    },
     users: {
       title: 'Gestisci utenti',
       subtitle: 'Visualizza, filtra e aggiorna l’accesso degli utenti.',

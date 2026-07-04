@@ -51,8 +51,33 @@ export const en = {
     },
     staff: {
         dashboard: 'Staff Dashboard',
-        bookings: 'All Bookings',
-        rooms: 'Manage Rooms',
+        rooms: {
+            bookingType: 'Booking type',
+            bookingTypeNone: 'No restriction',
+        },
+        bookings: {
+            filters: {
+                allBookingTypes: 'All booking types',
+            },
+            columns: {
+                user: 'User',
+                room: 'Room',
+                date: 'Date',
+                time: 'Time',
+                usage: 'Usage',
+                bookingType: 'Booking type',
+                actions: 'Actions',
+            },
+            unassigned: 'Unassigned',
+            assignUser: 'Assign user',
+            reassignUser: 'Reassign user',
+            assignUserHint: 'Search for a user by name, email, or folder code to link them to this booking.',
+            searchByNameEmail: 'Name or email',
+            searchByFolderCode: 'Folder code',
+            folderCode: 'Folder code',
+            folderCodePlaceholder: 'Enter exact folder code…',
+            assign: 'Assign',
+        },
         users: {
             title: 'Manage Users',
             subtitle: 'View, filter, and update user access.',

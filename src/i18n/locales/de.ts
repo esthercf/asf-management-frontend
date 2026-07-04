@@ -52,8 +52,33 @@ const de: AppLocale = {
   },
   staff: {
     dashboard: 'Mitarbeiter-Dashboard',
-    bookings: 'Alle Buchungen',
-    rooms: 'Räume verwalten',
+    rooms: {
+      bookingType: 'Buchungstyp',
+      bookingTypeNone: 'Keine Einschränkung',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'Alle Buchungstypen',
+      },
+      columns: {
+        user: 'Benutzer',
+        room: 'Raum',
+        date: 'Datum',
+        time: 'Zeit',
+        usage: 'Nutzung',
+        bookingType: 'Buchungstyp',
+        actions: 'Aktionen',
+      },
+      unassigned: 'Nicht zugewiesen',
+      assignUser: 'Benutzer zuweisen',
+      reassignUser: 'Benutzer neu zuweisen',
+      assignUserHint: 'Suche nach einem Benutzer über Name, E-Mail oder Aktennummer, um ihn mit dieser Buchung zu verknüpfen.',
+      searchByNameEmail: 'Name oder E-Mail',
+      searchByFolderCode: 'Aktennummer',
+      folderCode: 'Aktennummer',
+      folderCodePlaceholder: 'Exakte Aktennummer eingeben…',
+      assign: 'Zuweisen',
+    },
     users: {
       title: 'Benutzer verwalten',
       subtitle: 'Benutzerzugriff anzeigen, filtern und aktualisieren.',

@@ -52,8 +52,33 @@ const zh: AppLocale = {
   },
   staff: {
     dashboard: '员工仪表板',
-    bookings: '所有预订',
-    rooms: '管理房间',
+rooms: {
+  bookingType: '预订类型',
+  bookingTypeNone: '无限制',
+},
+bookings: {
+  filters: {
+    allBookingTypes: '所有预订类型',
+  },
+  columns: {
+    user: '用户',
+    room: '房间',
+    date: '日期',
+    time: '时间',
+    usage: '用途',
+    bookingType: '预订类型',
+    actions: '操作',
+  },
+  unassigned: '未分配',
+  assignUser: '分配用户',
+  reassignUser: '重新分配用户',
+  assignUserHint: '通过姓名、电子邮件或文件夹代码搜索用户，将其关联到此预订。',
+  searchByNameEmail: '姓名或电子邮件',
+  searchByFolderCode: '文件夹代码',
+  folderCode: '文件夹代码',
+  folderCodePlaceholder: '输入准确的文件夹代码…',
+  assign: '分配',
+},
     users: {
       title: '管理用户',
       subtitle: '查看、筛选并更新用户访问权限。',

@@ -18,44 +18,45 @@ export enum LanguageEnum {
 }
 
 export interface UserDto {
-  id: string
-  firstnames: string
-  surnames: string
-  email: string
-  teacherName?: string
-  phoneNumber?: string
-  phoneCode?: string
-  language: LanguageEnum
-  active: boolean
-  countryCode: CountryCode
-  tshirtEnum?: TshirtEnum
-  roles: RoleType[]
-  bookingTypeEnum: BookingTypeEnum[]
+  id: string,
+  firstnames: string,
+  surnames: string,
+  email: string,
+  teacherName?: string,
+  phoneNumber?: string,
+  phoneCode?: string,
+  language: LanguageEnum,
+  active: boolean,
+  countryCode: CountryCode,
+  tshirtEnum?: TshirtEnum,
+  roles: RoleType[],
+  bookingTypeEnum: BookingTypeEnum[],
 }
 
 export interface UpdateUserDto {
-  firstnames?: string
-  surnames?: string
-  phoneNumber?: string
-  phoneCode?: string
-  language?: LanguageEnum
-  countryCode?: CountryCode
-  tshirtEnum?: TshirtEnum
-  bookingTypeEnum?: BookingTypeEnum[]
+  firstnames?: string,
+  surnames?: string,
+  phoneNumber?: string,
+  phoneCode?: string,
+  language?: LanguageEnum,
+  countryCode?: CountryCode,
+  tshirtEnum?: TshirtEnum,
+  bookingTypeEnum?: BookingTypeEnum[],
 }
 
 export interface UpdateUserActiveDto {
-  active: boolean
-  showPassword: boolean
+  active: boolean,
+  showPassword: boolean,
 }
 
 export interface GetUsersParams {
-  page?:       number
-  limit?:      number
-  textFilter?: string
-  roleType?:   RoleType
-  active?:     UserActiveFilter 
-  bookingTypeEnum?: BookingTypeEnum
-  sortByCreationDate?: 'asc' | 'desc'
-  sortByName?: 'asc' | 'desc'
+  page?: number,
+  limit?: number,
+  textFilter?: string,
+  folderCode?: string;
+  roleType?: RoleType,
+  active?: UserActiveFilter,
+  bookingTypeEnum?: BookingTypeEnum,
+  sortByCreationDate?: 'asc' | 'desc',
+  sortByName?: 'asc' | 'desc',
 }

@@ -52,8 +52,33 @@ const ru: AppLocale = {
   },
   staff: {
     dashboard: 'Панель персонала',
-    bookings: 'Все бронирования',
-    rooms: 'Управление комнатами',
+    rooms: {
+      bookingType: 'Тип бронирования',
+      bookingTypeNone: 'Без ограничений',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'Все типы бронирования',
+      },
+      columns: {
+        user: 'Пользователь',
+        room: 'Комната',
+        date: 'Дата',
+        time: 'Время',
+        usage: 'Использование',
+        bookingType: 'Тип бронирования',
+        actions: 'Действия',
+      },
+      unassigned: 'Не назначено',
+      assignUser: 'Назначить пользователя',
+      reassignUser: 'Переназначить пользователя',
+      assignUserHint: 'Найдите пользователя по имени, электронной почте или коду папки, чтобы связать его с этим бронированием.',
+      searchByNameEmail: 'Имя или электронная почта',
+      searchByFolderCode: 'Код папки',
+      folderCode: 'Код папки',
+      folderCodePlaceholder: 'Введите точный код папки…',
+      assign: 'Назначить',
+    },
     users: {
       title: 'Управление пользователями',
       subtitle: 'Просмотр, фильтрация и обновление доступа пользователей.',

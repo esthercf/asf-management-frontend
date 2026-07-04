@@ -289,6 +289,10 @@
             <span class="search-icon">🔍</span>
             <input placeholder="Search by user or room…" v-model="bookingSearch" @input="loadBookings" />
           </div>
+          <select class="form-input filter-select" v-model="bookingTypeFilterForList" @change="loadBookings">
+            <option :value="undefined">{{ t('staff.bookings.filters.allBookingTypes') }}</option>
+            <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
+          </select>
           <button class="btn btn-primary" @click="startNewBooking">+ New Booking</button>
         </div>
 
@@ -298,37 +302,50 @@
         </div>
         <div v-else class="card" style="overflow:hidden;">
           <table class="data-table">
+
             <thead>
               <tr>
-                <th>User</th>
-                <th>Room</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Usage</th>
-                <th>Actions</th>
+                <th>{{ t('staff.bookings.columns.user') }}</th>
+                <th>{{ t('staff.bookings.columns.room') }}</th>
+                <th>{{ t('staff.bookings.columns.date') }}</th>
+                <th>{{ t('staff.bookings.columns.time') }}</th>
+                <th>{{ t('staff.bookings.columns.usage') }}</th>
+                <th>{{ t('staff.bookings.columns.bookingType') }}</th>
+                <th>{{ t('staff.bookings.columns.actions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="booking in filteredBookings" :key="booking.id">
                 <td>
-                  <div style="display:flex; align-items:center; gap:.6rem;">
+                  <div v-if="booking.user" style="display:flex; align-items:center; gap:.6rem;">
                     <div class="avatar avatar-sage" style="width:28px; height:28px; font-size:.7rem;">
-                      {{ initials(booking.user?.firstnames ?? booking.userId?.toString() ?? '?') }}
+                      {{ (booking.user.firstnames[0] ?? '') + (booking.user.surnames[0] ?? '') }}
                     </div>
-                    {{ booking.user?.firstnames ?? booking.userId ?? '—' }}
+                    {{ booking.user.firstnames }} {{ booking.user.surnames }}
                   </div>
+                  <span v-else class="badge badge-coral">{{ t('staff.bookings.unassigned') }}</span>
                 </td>
                 <td><strong>{{ booking.name || 'Room #' + booking.roomNumber }}</strong></td>
                 <td>{{ formatDate(booking.date) }}</td>
                 <td>{{ formatMinutes(booking.startTime) }} – {{ formatMinutes(booking.endTime) }}</td>
                 <td><span class="badge badge-sky">{{ booking.usage }}</span></td>
                 <td>
-                  <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
-                    :title="isPastBooking(booking) ? 'Cannot cancel past bookings' : ''"
-                    @click="removeBooking(booking.id)">Cancel</button>
+                  <span v-if="booking.bookingTypeEnum" class="badge badge-lav">{{
+                    bookingTypeLabel(booking.bookingTypeEnum) }}</span>
+                  <span v-else class="muted-text">—</span>
+                </td>
+                <td>
+                  <div style="display:flex; flex-direction:column; gap:.4rem;">
+                    <button class="btn btn-secondary btn-sm" @click="openAssignUserModal(booking)">
+                      {{ booking.user ? t('staff.bookings.reassignUser') : t('staff.bookings.assignUser') }}
+                    </button>
+                    <button class="btn btn-danger btn-sm" @click="removeBooking(booking.id)">{{ t('common.cancel')
+                      }}</button>
+                  </div>
                 </td>
               </tr>
             </tbody>
+
           </table>
           <div v-if="filteredBookings.length === 0" class="empty-state">
             <div class="empty-icon">📭</div>
@@ -546,6 +563,13 @@
                 </option>
               </select>
             </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('staff.rooms.bookingType') }}</label>
+              <select class="form-input" v-model="roomForm.bookingTypeEnum">
+                <option :value="undefined">{{ t('staff.rooms.bookingTypeNone') }}</option>
+                <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Comments</label>
@@ -592,6 +616,7 @@
         </div>
       </div>
     </Teleport>
+    <AssignUserModal v-model="assignUserModalOpen" :booking-id="assigningBookingId" @assigned="onUserAssigned" />
   </div>
 </template>
 
@@ -613,7 +638,7 @@ import { UserDto } from '../types/user.types'
 import { useI18n } from 'vue-i18n'
 import { RoleType } from '../enums/roles.enum'
 import { UserActiveFilter } from '../enums/user.enum'
-
+import AssignUserModal from '@/components/AssignUserModal.vue'
 
 // ── Users management state ───────────────────────────────────────────────
 const users = ref<UserDto[]>([])
@@ -685,7 +710,8 @@ async function toggleUserActive(u: UserDto) {
 const bookingTypeModal = ref(false)
 const editingUser = ref<UserDto | null>(null)
 const bookingTypeForm = ref<BookingTypeEnum[]>([])
-
+const bookingTypeFilterForList = ref<BookingTypeEnum | undefined>(undefined)
+ 
 function openBookingTypeModal(u: UserDto) {
   editingUser.value = u
   bookingTypeForm.value = [...(u.bookingTypeEnum ?? [])]
@@ -775,8 +801,9 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await api.getBookings({ limit: 200, textFilter: bookingSearch.value || undefined })
-    bookings.value = data?.data ?? []
+    const data = await api.getBookings({ limit: 200, textFilter: bookingSearch.value || undefined });
+     bookingTypeEnum: bookingTypeFilterForList.value;
+    bookings.value = data?.data ?? [];
   } catch (e) {
     roomError.value = extractErrorMessage(e)
   } finally {
@@ -806,12 +833,12 @@ const filteredBookings = computed(() => {
 const roomModal = ref(false)
 const editingRoom = ref<RoomDto | null>(null)
 const roomForm = ref<RoomFormState>({
-  name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false,
+  name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: null
 })
 
 function openAddRoom() {
   editingRoom.value = null
-  roomForm.value = { name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false }
+  roomForm.value = { name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: null }
   roomError.value = ''
   roomModal.value = true
 }
@@ -825,6 +852,7 @@ function openEditRoom(room: RoomDto) {
     size: room.size ?? RoomSizeEnum.MEDIUM,
     comments: room.comments ?? '',
     windows: !!room.windows,
+    bookingTypeEnum: room.bookingTypeEnum ?? null,
   }
   roomError.value = ''
   roomModal.value = true
@@ -994,6 +1022,28 @@ async function nbConfirm() {
     roomError.value = extractErrorMessage(e)
   } finally {
     nbConfirming.value = false
+  }
+}
+
+//Assign User modal state + handlers
+const assignUserModalOpen = ref(false)
+const assigningBookingId  = ref<string | null>(null)
+ 
+function openAssignUserModal(booking: BookingDto) {
+  assigningBookingId.value = booking.id
+  assignUserModalOpen.value = true
+}
+ 
+function onUserAssigned(user: UserDto) {
+  const booking = bookings.value.find(b => b.id === assigningBookingId.value)
+  if (booking) {
+    booking.user = {
+      id: user.id,
+      email: user.email,
+      firstnames: user.firstnames,
+      surnames: user.surnames,
+    }
+    booking.userId = user.id
   }
 }
 

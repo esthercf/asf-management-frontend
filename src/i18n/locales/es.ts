@@ -52,8 +52,33 @@ const es: AppLocale = {
   },
   staff: {
     dashboard: 'Panel del personal',
-    bookings: 'Todas las reservas',
-    rooms: 'Gestionar salas',
+    rooms: {
+      bookingType: 'Tipo de reserva',
+      bookingTypeNone: 'Sin restricción',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'Todos los tipos de reserva',
+      },
+      columns: {
+        user: 'Usuario',
+        room: 'Sala',
+        date: 'Fecha',
+        time: 'Hora',
+        usage: 'Uso',
+        bookingType: 'Tipo de reserva',
+        actions: 'Acciones',
+      },
+      unassigned: 'No asignado',
+      assignUser: 'Asignar usuario',
+      reassignUser: 'Reasignar usuario',
+      assignUserHint: 'Busca un usuario por nombre, correo electrónico o código de carpeta para vincularlo a esta reserva.',
+      searchByNameEmail: 'Nombre o correo electrónico',
+      searchByFolderCode: 'Código de carpeta',
+      folderCode: 'Código de carpeta',
+      folderCodePlaceholder: 'Introduce el código de carpeta exacto…',
+      assign: 'Asignar',
+    },
     users: {
       title: 'Gestionar usuarios',
       subtitle: 'Ver, filtrar y actualizar el acceso de los usuarios.',

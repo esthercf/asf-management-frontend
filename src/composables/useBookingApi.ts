@@ -111,16 +111,18 @@ export function useBookingApi() {
 
   // ── Bookings ──────────────────────────────────────────────────────────────
 
-  function getBookings(params: GetBookingsParams = {}): Promise<DatatableResult<BookingDto>> {
-    const { page = 1, limit = 50, userId, roomId, day, month, textFilter } = params
-    const q = new URLSearchParams({ page: String(page), limit: String(limit) })
-    if (userId) q.set('userId', userId)
-    if (roomId) q.set('roomId', roomId)
-    if (day) q.set('day', String(day))
-    if (month) q.set('month', String(month))
-    if (textFilter) q.set('textFilter', textFilter)
-    return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
-  }
+function getBookings(params: GetBookingsParams = {}): Promise<DatatableResult<BookingDto>> {
+  const { page = 1, limit = 50, userId, roomId, day, month, textFilter, bookingTypeEnum, noUserId } = params
+  const q = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (userId)          q.set('userId', userId)
+  if (roomId)          q.set('roomId', roomId)
+  if (day)             q.set('day', String(day))
+  if (month)           q.set('month', String(month))
+  if (textFilter)      q.set('textFilter', textFilter)
+  if (bookingTypeEnum) q.set('bookingTypeEnum', bookingTypeEnum)
+  if (noUserId !== undefined) q.set('noUserId', String(noUserId))
+  return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
+}
 
   function getMyBookings(): Promise<DatatableResult<BookingDto>> {
     return client.get<DatatableResult<BookingDto>>('/bookings?limit=100').then(r => r.data)
@@ -163,17 +165,19 @@ export function useBookingApi() {
 
   // ── Users ─────────────────────────────────────────────────────────────────
 
-  function getUsers(params: GetUsersParams = {}): Promise<DatatableResult<UserDto>> {
-    const { page = 1, limit = 50, textFilter, roleType, active, bookingTypeEnum, sortByCreationDate, sortByName } = params
-    const q = new URLSearchParams({ page: String(page), limit: String(limit) })
-    if (textFilter) q.set('textFilter', textFilter)
-    if (roleType) q.set('roleType', roleType)
-    if (active) q.set('active', active)
-    if (bookingTypeEnum) q.set('bookingTypeEnum', bookingTypeEnum)
-    if (sortByCreationDate) q.set('sortByCreationDate', sortByCreationDate)
-    if (sortByName) q.set('sortByName', sortByName)
-    return client.get<DatatableResult<UserDto>>(`/users?${q}`).then(r => r.data)
-  }
+function getUsers(params: GetUsersParams = {}): Promise<DatatableResult<UserDto>> {
+  const { page = 1, limit = 50, textFilter, roleType, active, bookingTypeEnum, folderCode, sortByCreationDate, sortByName } = params
+  const q = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (textFilter)        q.set('textFilter', textFilter)
+  if (roleType)           q.set('roleType', roleType)
+  if (active)             q.set('active', active)
+  if (bookingTypeEnum)    q.set('bookingTypeEnum', bookingTypeEnum)
+  if (folderCode)         q.set('folderCode', folderCode)
+  if (sortByCreationDate) q.set('sortByCreationDate', sortByCreationDate)
+  if (sortByName)         q.set('sortByName', sortByName)
+  return client.get<DatatableResult<UserDto>>(`/users?${q}`).then(r => r.data)
+}
+ 
   function getUser(id: string): Promise<UserDto> {
     return client.get<UserDto>(`/users/${id}`).then(r => r.data)
   }
@@ -187,7 +191,10 @@ export function useBookingApi() {
     return client.put<string>(`/users/active/byEmail/${encodeURIComponent(email)}`, dto).then(r => r.data)
   }
 
-  // ── Add these to the returned object ────────────────────────────────────────
+
+  function assignBookingUser(bookingId: string, userId: string): Promise<BookingDto> {
+    return client.patch<BookingDto>(`/bookings/assign/${bookingId}/user/${userId}`).then(r => r.data)
+  }
 
   return {
     // auth
@@ -197,7 +204,7 @@ export function useBookingApi() {
     // slots
     lockSlot, unlockSlot,
     // bookings
-    getBookings, getMyBookings, getBooking, createBooking, deleteBooking,
+    getBookings, getMyBookings, getBooking, createBooking, deleteBooking, assignBookingUser,
     // rooms
     getRooms, createRoom, updateRoom, deleteRoom,
     // users

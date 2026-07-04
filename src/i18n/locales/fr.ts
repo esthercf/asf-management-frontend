@@ -52,8 +52,33 @@ const fr: AppLocale = {
   },
   staff: {
     dashboard: 'Tableau de bord du personnel',
-    bookings: 'Toutes les réservations',
-    rooms: 'Gérer les salles',
+    rooms: {
+      bookingType: 'Type de réservation',
+      bookingTypeNone: 'Aucune restriction',
+    },
+    bookings: {
+      filters: {
+        allBookingTypes: 'Tous les types de réservation',
+      },
+      columns: {
+        user: 'Utilisateur',
+        room: 'Salle',
+        date: 'Date',
+        time: 'Heure',
+        usage: 'Utilisation',
+        bookingType: 'Type de réservation',
+        actions: 'Actions',
+      },
+      unassigned: 'Non assigné',
+      assignUser: 'Assigner un utilisateur',
+      reassignUser: 'Réassigner un utilisateur',
+      assignUserHint: 'Recherchez un utilisateur par nom, e-mail ou code dossier pour le lier à cette réservation.',
+      searchByNameEmail: 'Nom ou e-mail',
+      searchByFolderCode: 'Code dossier',
+      folderCode: 'Code dossier',
+      folderCodePlaceholder: 'Saisir le code dossier exact…',
+      assign: 'Assigner',
+    },
     users: {
       title: 'Gérer les utilisateurs',
       subtitle: 'Afficher, filtrer et mettre à jour l’accès des utilisateurs.',
