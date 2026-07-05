@@ -6,39 +6,41 @@
         <div class="logo-icon">📚</div>
         <div>
           <div class="logo-text">StudySpace</div>
-          <div class="logo-sub">Staff Panel</div>
+          <div class="logo-sub">{{ t('staff.panel') }}</div>
         </div>
       </div>
 
-      <span class="nav-section-label">Manage</span>
+      <span class="nav-section-label">{{ t('staff.manage') }}</span>
       <div class="nav-item" :class="{ active: view === 'overview' }" @click="view = 'overview'">
-        <span class="nav-icon">📊</span> Overview
+        <span class="nav-icon">📊</span> {{ t('staff.nav.overview') }}
       </div>
       <div class="nav-item" :class="{ active: view === 'rooms' }" @click="view = 'rooms'; loadRooms()">
-        <span class="nav-icon">🏠</span> Rooms
+        <span class="nav-icon">🏠</span> {{ t('staff.nav.rooms') }}
       </div>
       <div class="nav-item" :class="{ active: view === 'bookings' }" @click="view = 'bookings'; loadBookings()">
-        <span class="nav-icon">📅</span> All Bookings
-        <span v-if="bookings.length" class="badge badge-lav" style="margin-left:auto; padding:.15rem .55rem;">{{
-          bookings.length }}</span>
+        <span class="nav-icon">📅</span> {{ t('staff.nav.bookings') }}
+        <span v-if="bookings.length" class="badge badge-lav" style="margin-left:auto; padding:.15rem .55rem;">
+          {{ bookings.length }}
+        </span>
       </div>
       <div class="nav-item" :class="{ active: view === 'users' }" @click="view = 'users'; loadUsers()">
         <span class="nav-icon">👥</span> {{ t('staff.users.title') }}
       </div>
       <div class="nav-item" :class="{ active: view === 'newbooking' }" @click="startNewBooking">
-        <span class="nav-icon">➕</span> New Booking
+        <span class="nav-icon">➕</span> {{ t('staff.nav.newBooking') }}
       </div>
+
       <div class="sidebar-footer">
         <div class="user-chip">
           <div class="avatar avatar-coral">JS</div>
           <div class="user-chip-info">
-            <div class="name">Staff</div>
-            <div class="role">Admin</div>
+            <div class="name">{{ t('staff.nav.staffLabel') }}</div>
+            <div class="role">{{ t('staff.nav.adminLabel') }}</div>
           </div>
         </div>
         <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:.75rem; justify-content:center;"
           @click="$router.push('/login')">
-          ← Switch role
+          ← {{ t('staff.nav.switchRole') }}
         </button>
       </div>
     </aside>
@@ -49,50 +51,52 @@
       <!-- ── Overview ── -->
       <div v-if="view === 'overview'">
         <div class="page-header">
-          <h1>Good morning ☀️</h1>
-          <p class="subtitle">Here's what's happening today.</p>
+          <h1>{{ t('staff.overview.greeting') }}</h1>
+          <p class="subtitle">{{ t('staff.overview.subtitle') }}</p>
         </div>
 
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-icon">🏠</div>
             <div class="stat-value">{{ rooms.length }}</div>
-            <div class="stat-label">Total rooms</div>
+            <div class="stat-label">{{ t('staff.overview.totalRooms') }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">✅</div>
             <div class="stat-value">{{ totalFreeSlots }}</div>
-            <div class="stat-label">Free slots</div>
+            <div class="stat-label">{{ t('staff.overview.freeSlots') }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">📅</div>
             <div class="stat-value">{{ bookings.length }}</div>
-            <div class="stat-label">Total bookings</div>
+            <div class="stat-label">{{ t('staff.overview.totalBookings') }}</div>
           </div>
         </div>
 
-        <!-- Quick availability overview -->
         <div class="section-row">
-          <h2 class="section-title">Room Availability</h2>
-          <button class="btn btn-primary btn-sm" @click="startNewBooking">+ New Booking</button>
+          <h2 class="section-title">{{ t('staff.overview.availabilityTitle') }}</h2>
+          <button class="btn btn-primary btn-sm" @click="startNewBooking">
+            + {{ t('staff.nav.newBooking') }}
+          </button>
         </div>
 
         <div v-if="loadingAvailability" class="empty-state">
           <div class="empty-icon">⏳</div>
-          <p>Loading…</p>
+          <p>{{ t('common.loading') }}</p>
         </div>
         <div v-else class="room-grid">
           <div v-for="room in availability" :key="room.id" class="card room-card">
             <div class="room-card-header">
               <div>
                 <div class="room-name">{{ room.name }}</div>
-                <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : ''
-                  }}</div>
+                <div class="room-floor">
+                  Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}
+                </div>
               </div>
               <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
             </div>
             <div class="room-details">
-              <span class="room-detail">{{ (room.available ?? []).length }} free slots</span>
+              <span class="room-detail">{{ (room.available ?? []).length }} {{ t('staff.overview.freeSlots') }}</span>
               <span v-if="room.windows" class="room-detail">· 🪟 Windows</span>
             </div>
             <div class="room-card-footer">
@@ -108,34 +112,34 @@
       <!-- ── Rooms management ── -->
       <div v-if="view === 'rooms'">
         <div class="page-header">
-          <h1>Manage Rooms</h1>
-          <p class="subtitle">Add, edit, or remove study spaces.</p>
+          <h1>{{ t('room.title') }}</h1>
+          <p class="subtitle">{{ t('staff.rooms.subtitle') }}</p>
         </div>
 
         <div class="section-row">
           <div class="search-bar">
             <span class="search-icon">🔍</span>
-            <input placeholder="Search rooms…" v-model="roomSearch" />
+            <input :placeholder="t('common.search') + ' ' + t('room.title').toLowerCase() + '…'" v-model="roomSearch" />
           </div>
-          <button class="btn btn-primary" @click="openAddRoom">+ Add Room</button>
+          <button class="btn btn-primary" @click="openAddRoom">+ {{ t('room.create') }}</button>
         </div>
 
         <div v-if="loadingRooms" class="empty-state">
           <div class="empty-icon">⏳</div>
-          <p>Loading…</p>
+          <p>{{ t('common.loading') }}</p>
         </div>
         <div v-else class="card" style="overflow:hidden;">
           <table class="data-table">
             <thead>
               <tr>
-                <th>Room</th>
-                <th>Number</th>
-                <th>Floor</th>
-                <th>Size</th>
-                <th>Windows</th>
-                <th>Comments</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{{ t('room.fields.name') }}</th>
+                <th>{{ t('room.fields.roomNumber') }}</th>
+                <th>{{ t('room.fields.floor') }}</th>
+                <th>{{ t('booking.fields.size') }}</th>
+                <th>{{ t('staff.rooms.windows') }}</th>
+                <th>{{ t('staff.rooms.comments') }}</th>
+                <th>{{ t('staff.users.columns.status') }}</th>
+                <th>{{ t('staff.users.columns.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -148,13 +152,17 @@
                 <td>{{ room.comments || '—' }}</td>
                 <td>
                   <span class="badge" :class="room.active ? 'badge-green' : 'badge-coral'">
-                    {{ room.active ? 'Active' : 'Inactive' }}
+                    {{ room.active ? t('staff.users.active') : t('staff.users.inactive') }}
                   </span>
                 </td>
                 <td>
                   <div style="display:flex; gap:.5rem;">
-                    <button class="btn btn-secondary btn-sm" @click="openEditRoom(room)">Edit</button>
-                    <button class="btn btn-danger btn-sm" @click="removeRoom(room.id)">Delete</button>
+                    <button class="btn btn-secondary btn-sm" @click="openEditRoom(room)">
+                      {{ t('common.edit') }}
+                    </button>
+                    <button class="btn btn-danger btn-sm" @click="removeRoom(room.id)">
+                      {{ t('common.delete') }}
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -162,10 +170,11 @@
           </table>
           <div v-if="filteredRooms.length === 0" class="empty-state">
             <div class="empty-icon">🔍</div>
-            <p>No rooms found.</p>
+            <p>{{ t('room.empty') }}</p>
           </div>
         </div>
       </div>
+
       <!-- ── Users management ── -->
       <div v-if="view === 'users'">
         <div class="page-header">
@@ -173,7 +182,6 @@
           <p class="subtitle">{{ t('staff.users.subtitle') }}</p>
         </div>
 
-        <!-- Filters -->
         <div class="section-row">
           <div class="search-bar">
             <span class="search-icon">🔍</span>
@@ -183,8 +191,8 @@
 
           <select class="form-input filter-select" v-model="userActiveFilter" @change="loadUsers">
             <option :value="undefined">{{ t('staff.users.filters.allStatus') }}</option>
-            <option :value="UserActiveFilter.ACTIVE">{{ t('staff.users.filters.active') }}</option>
-            <option :value="UserActiveFilter.INACTIVE">{{ t('staff.users.filters.inactive') }}</option>
+            <option :value="FilterActiveEnum.Active">{{ t('staff.users.filters.active') }}</option>
+            <option :value="FilterActiveEnum.Inactive">{{ t('staff.users.filters.inactive') }}</option>
           </select>
 
           <select class="form-input filter-select" v-model="userRoleFilter" @change="loadUsers">
@@ -203,7 +211,7 @@
           <p>{{ t('common.loading') }}</p>
         </div>
 
-        <div v-else class="card" style="overflow:hidden;">
+        <div v-else class="card users-table-card">
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -268,7 +276,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div v-if="userTotalPages > 1" class="pagination-row">
           <button class="btn btn-secondary btn-sm" :disabled="userPage <= 1"
             @click="goToUserPage(userPage - 1)">←</button>
@@ -277,32 +284,32 @@
             @click="goToUserPage(userPage + 1)">→</button>
         </div>
       </div>
+
       <!-- ── All Bookings ── -->
       <div v-if="view === 'bookings'">
         <div class="page-header">
-          <h1>All Bookings</h1>
-          <p class="subtitle">View and manage every reservation.</p>
+          <h1>{{ t('staff.bookings.title') }}</h1>
+          <p class="subtitle">{{ t('staff.bookings.subtitle') }}</p>
         </div>
 
         <div class="section-row">
           <div class="search-bar">
             <span class="search-icon">🔍</span>
-            <input placeholder="Search by user or room…" v-model="bookingSearch" @input="loadBookings" />
+            <input :placeholder="t('staff.bookings.searchPlaceholder')" v-model="bookingSearch" @input="loadBookings" />
           </div>
           <select class="form-input filter-select" v-model="bookingTypeFilterForList" @change="loadBookings">
             <option :value="undefined">{{ t('staff.bookings.filters.allBookingTypes') }}</option>
             <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
           </select>
-          <button class="btn btn-primary" @click="startNewBooking">+ New Booking</button>
+          <button class="btn btn-primary" @click="startNewBooking">+ {{ t('staff.nav.newBooking') }}</button>
         </div>
 
         <div v-if="loadingBookings" class="empty-state">
           <div class="empty-icon">⏳</div>
-          <p>Loading…</p>
+          <p>{{ t('common.loading') }}</p>
         </div>
         <div v-else class="card" style="overflow:hidden;">
           <table class="data-table">
-
             <thead>
               <tr>
                 <th>{{ t('staff.bookings.columns.user') }}</th>
@@ -330,8 +337,9 @@
                 <td>{{ formatMinutes(booking.startTime) }} – {{ formatMinutes(booking.endTime) }}</td>
                 <td><span class="badge badge-sky">{{ booking.usage }}</span></td>
                 <td>
-                  <span v-if="booking.bookingTypeEnum" class="badge badge-lav">{{
-                    bookingTypeLabel(booking.bookingTypeEnum) }}</span>
+                  <span v-if="booking.bookingTypeEnum" class="badge badge-lav">
+                    {{ bookingTypeLabel(booking.bookingTypeEnum) }}
+                  </span>
                   <span v-else class="muted-text">—</span>
                 </td>
                 <td>
@@ -339,17 +347,19 @@
                     <button class="btn btn-secondary btn-sm" @click="openAssignUserModal(booking)">
                       {{ booking.user ? t('staff.bookings.reassignUser') : t('staff.bookings.assignUser') }}
                     </button>
-                    <button class="btn btn-danger btn-sm" @click="removeBooking(booking.id)">{{ t('common.cancel')
-                      }}</button>
+                    <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
+                      :title="isPastBooking(booking) ? t('staff.bookings.cannotCancelPast') : ''"
+                      @click="removeBooking(booking.id)">
+                      {{ t('common.cancel') }}
+                    </button>
                   </div>
                 </td>
               </tr>
             </tbody>
-
           </table>
           <div v-if="filteredBookings.length === 0" class="empty-state">
             <div class="empty-icon">📭</div>
-            <p>No bookings found.</p>
+            <p>{{ t('booking.empty') }}</p>
           </div>
         </div>
       </div>
@@ -357,38 +367,36 @@
       <!-- ── New Booking (Staff flow) ── -->
       <div v-if="view === 'newbooking'">
         <div class="page-header">
-          <h1>Create a Booking</h1>
-          <p class="subtitle">Pick a day, a slot, then a room — or leave room to auto-assign.</p>
+          <h1>{{ t('staff.newBooking.title') }}</h1>
+          <p class="subtitle">{{ t('staff.newBooking.subtitle') }}</p>
         </div>
 
-        <!-- Step indicator -->
         <div class="steps-row">
           <div class="step" :class="{ active: nbStep >= 1, done: nbStep > 1 }">
             <div class="step-num">{{ nbStep > 1 ? '✓' : '1' }}</div>
-            <div class="step-label">Day</div>
+            <div class="step-label">{{ t('staff.newBooking.steps.day') }}</div>
           </div>
           <div class="step-line" :class="{ active: nbStep > 1 }"></div>
           <div class="step" :class="{ active: nbStep >= 2, done: nbStep > 2 }">
             <div class="step-num">{{ nbStep > 2 ? '✓' : '2' }}</div>
-            <div class="step-label">Slot</div>
+            <div class="step-label">{{ t('staff.newBooking.steps.slot') }}</div>
           </div>
           <div class="step-line" :class="{ active: nbStep > 2 }"></div>
           <div class="step" :class="{ active: nbStep >= 3, done: nbStep > 3 }">
             <div class="step-num">{{ nbStep > 3 ? '✓' : '3' }}</div>
-            <div class="step-label">Room</div>
+            <div class="step-label">{{ t('staff.newBooking.steps.room') }}</div>
           </div>
           <div class="step-line" :class="{ active: nbStep > 3 }"></div>
           <div class="step" :class="{ active: nbStep >= 4 }">
             <div class="step-num">4</div>
-            <div class="step-label">Confirm</div>
+            <div class="step-label">{{ t('staff.newBooking.steps.confirm') }}</div>
           </div>
         </div>
 
         <!-- Step 1: Day -->
         <div v-if="nbStep === 1" class="step-panel">
-          <button class="back-btn" @click="view = 'overview'">← Cancel</button>
-
-          <h2 class="section-title">Select a day</h2>
+          <button class="back-btn" @click="view = 'overview'">← {{ t('common.cancel') }}</button>
+          <h2 class="section-title">{{ t('staff.newBooking.selectDay') }}</h2>
           <div class="day-grid">
             <button v-for="d in availableDays" :key="d.iso" class="day-card"
               :class="{ selected: nbDay?.iso === d.iso, disabled: d.slotsCount === 0 }" :disabled="d.slotsCount === 0"
@@ -398,7 +406,7 @@
               <div class="day-card-month">{{ d.month }}</div>
               <div class="day-card-slots">
                 <span v-if="d.slotsCount > 0" class="badge badge-green">{{ d.slotsCount }}</span>
-                <span v-else class="badge badge-coral">Full</span>
+                <span v-else class="badge badge-coral">{{ t('staff.newBooking.full') }}</span>
               </div>
             </button>
           </div>
@@ -406,35 +414,41 @@
 
         <!-- Step 2: Slot -->
         <div v-if="nbStep === 2" class="step-panel">
-          <button class="back-btn" @click="nbStep = 1">← Back</button>
-          <h2 class="section-title">Available slots — {{ nbDay?.weekday }}, {{ nbDay?.dayNum }} {{ nbDay?.month }}</h2>
+          <button class="back-btn" @click="nbStep = 1">← {{ t('common.back') }}</button>
+          <h2 class="section-title">
+            {{ t('staff.newBooking.availableSlots') }} — {{ nbDay?.weekday }}, {{ nbDay?.dayNum }} {{ nbDay?.month }}
+          </h2>
           <div class="slot-grid">
             <button v-for="slot in nbSlotsForDay" :key="slot.key" class="slot-card"
               :class="{ selected: nbSlot?.startTime === slot.startTime }" @click="nbSelectSlot(slot)">
               <div class="slot-time">{{ formatMinutes(slot.startTime) }}</div>
               <div class="slot-dash">–</div>
               <div class="slot-time">{{ formatMinutes(slot.endTime) }}</div>
-              <div class="slot-rooms-count">{{ slot.roomCount }} room{{ slot.roomCount !== 1 ? 's' : '' }}</div>
+              <div class="slot-rooms-count">
+                {{ slot.roomCount }} {{ slot.roomCount !== 1 ? t('room.title').toLowerCase() :
+                  t('staff.newBooking.room') }}
+              </div>
             </button>
           </div>
           <div v-if="nbSlotsForDay.length === 0" class="empty-state">
             <div class="empty-icon">🕐</div>
-            <p>No slots for this day.</p>
+            <p>{{ t('staff.newBooking.noSlots') }}</p>
           </div>
         </div>
 
         <!-- Step 3: Room -->
         <div v-if="nbStep === 3" class="step-panel">
-          <button class="back-btn" @click="nbStep = 2">← Back</button>
-          <h2 class="section-title">Choose a room</h2>
+          <button class="back-btn" @click="nbStep = 2">← {{ t('common.back') }}</button>
+          <h2 class="section-title">{{ t('staff.newBooking.chooseRoom') }}</h2>
           <div class="room-grid">
             <button v-for="room in nbRoomsForSlot" :key="room.id" class="card room-card room-select-card"
               :class="{ selected: nbRoom?.id?.toString() === room.id?.toString() }" @click="nbSelectRoom(room)">
               <div class="room-card-header">
                 <div>
                   <div class="room-name">{{ room.name }}</div>
-                  <div class="room-floor">Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor :
-                    '' }}</div>
+                  <div class="room-floor">
+                    Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}
+                  </div>
                 </div>
                 <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
               </div>
@@ -448,54 +462,51 @@
 
         <!-- Step 4: Confirm -->
         <div v-if="nbStep === 4" class="step-panel">
-          <button class="back-btn" @click="nbStep = 3">← Back</button>
-          <h2 class="section-title">Confirm booking</h2>
+          <button class="back-btn" @click="nbStep = 3">← {{ t('common.back') }}</button>
+          <h2 class="section-title">{{ t('staff.newBooking.confirmTitle') }}</h2>
 
           <div class="confirm-card card">
             <div class="confirm-row">
               <span class="confirm-icon">📅</span>
               <div>
-                <div class="confirm-label">Date</div>
+                <div class="confirm-label">{{ t('booking.fields.date') }}</div>
                 <div class="confirm-value">{{ nbDay?.weekday }}, {{ nbDay?.dayNum }} {{ nbDay?.month }}</div>
               </div>
             </div>
             <div class="confirm-row">
               <span class="confirm-icon">🕐</span>
               <div>
-                <div class="confirm-label">Slot</div>
-                <div class="confirm-value">{{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}
+                <div class="confirm-label">{{ t('booking.fields.time') }}</div>
+                <div class="confirm-value">
+                  {{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}
                 </div>
               </div>
             </div>
             <div class="confirm-row">
               <span class="confirm-icon">🏠</span>
               <div>
-                <div class="confirm-label">Room</div>
+                <div class="confirm-label">{{ t('booking.fields.room') }}</div>
                 <div class="confirm-value">{{ nbRoom?.name }} (#{{ nbRoom?.roomNumber }})</div>
               </div>
             </div>
           </div>
 
           <div class="form-row" style="margin-top:1.5rem; max-width:480px;">
-            <!-- with this -->
             <UserSelector v-model="nbSelectedUser" :label="t('staff.newBooking.assignUser')" />
             <div class="form-group">
-              <label class="form-label">Usage</label>
+              <label class="form-label">{{ t('booking.fields.usage') }}</label>
               <select class="form-input" v-model="nbUsage">
-                <option value="STUDY">📖 Study</option>
-                <option value="MASTERCLASS">🎓 Masterclass</option>
-                <option value="WORKSHOP">🔧 Workshop</option>
-                <option value="LUTIER">🎸 Lutier</option>
-                <option value="ARTIST">🎨 Artist</option>
-                <option value="MANAGER">🏛️ Manager</option>
+                <option v-for="usage in usageOptions" :key="usage" :value="usage">
+                  {{ usageLabel(usage) }}
+                </option>
               </select>
             </div>
           </div>
 
           <div class="modal-footer" style="justify-content:flex-start; margin-top:1.5rem; padding:0;">
-            <button class="btn btn-secondary" @click="view = 'overview'">Cancel</button>
+            <button class="btn btn-secondary" @click="view = 'overview'">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="nbConfirming" @click="nbConfirm">
-              {{ nbConfirming ? 'Creating…' : 'Create booking →' }}
+              {{ nbConfirming ? t('common.loading') : t('staff.newBooking.createBooking') }}
             </button>
           </div>
         </div>
@@ -503,33 +514,37 @@
         <!-- Step 5: Success -->
         <div v-if="nbStep === 5" class="step-panel success-panel">
           <div class="success-icon">✅</div>
-          <h2 class="section-title">Booking created!</h2>
+          <h2 class="section-title">{{ t('staff.newBooking.successTitle') }}</h2>
           <div class="confirm-card card" style="margin-top:1.5rem; max-width:420px;">
             <div class="confirm-row">
               <span class="confirm-icon">📅</span>
               <div>
-                <div class="confirm-label">Date</div>
+                <div class="confirm-label">{{ t('booking.fields.date') }}</div>
                 <div class="confirm-value">{{ nbLastBooking?.dateLabel }}</div>
               </div>
             </div>
             <div class="confirm-row">
               <span class="confirm-icon">🕐</span>
               <div>
-                <div class="confirm-label">Time</div>
+                <div class="confirm-label">{{ t('booking.fields.time') }}</div>
                 <div class="confirm-value">{{ nbLastBooking?.timeLabel }}</div>
               </div>
             </div>
             <div class="confirm-row">
               <span class="confirm-icon">🏠</span>
               <div>
-                <div class="confirm-label">Room</div>
+                <div class="confirm-label">{{ t('booking.fields.room') }}</div>
                 <div class="confirm-value">{{ nbLastBooking?.roomName }}</div>
               </div>
             </div>
           </div>
           <div style="display:flex; gap:.75rem; margin-top:1.75rem;">
-            <button class="btn btn-primary" @click="startNewBooking">+ Another booking</button>
-            <button class="btn btn-secondary" @click="view = 'bookings'; loadBookings()">View all bookings</button>
+            <button class="btn btn-primary" @click="startNewBooking">
+              + {{ t('staff.newBooking.anotherBooking') }}
+            </button>
+            <button class="btn btn-secondary" @click="view = 'bookings'; loadBookings()">
+              {{ t('staff.newBooking.viewAllBookings') }}
+            </button>
           </div>
         </div>
       </div>
@@ -539,24 +554,24 @@
     <Teleport to="body">
       <div v-if="roomModal" class="modal-overlay" @click.self="roomModal = false">
         <div class="modal">
-          <h2 class="modal-title">{{ editingRoom ? 'Edit Room' : 'Add New Room' }}</h2>
+          <h2 class="modal-title">{{ editingRoom ? t('room.edit') : t('room.create') }}</h2>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Name</label>
+              <label class="form-label">{{ t('room.fields.name') }}</label>
               <input class="form-input" v-model="roomForm.name" placeholder="The Birch Room" />
             </div>
             <div class="form-group">
-              <label class="form-label">Room Number</label>
+              <label class="form-label">{{ t('room.fields.roomNumber') }}</label>
               <input class="form-input" type="number" v-model.number="roomForm.roomNumber" placeholder="101" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Floor</label>
+              <label class="form-label">{{ t('room.fields.floor') }}</label>
               <input class="form-input" type="number" v-model.number="roomForm.floor" placeholder="1" />
             </div>
             <div class="form-group">
-              <label class="form-label">Size</label>
+              <label class="form-label">{{ t('booking.fields.size') }}</label>
               <select class="form-input" v-model="roomForm.size">
                 <option v-for="size in roomSizeOptions" :key="size" :value="size">
                   {{ sizeLabel(size) }}
@@ -567,38 +582,41 @@
               <label class="form-label">{{ t('staff.rooms.bookingType') }}</label>
               <select class="form-input" v-model="roomForm.bookingTypeEnum">
                 <option :value="undefined">{{ t('staff.rooms.bookingTypeNone') }}</option>
-                <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
+                <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">
+                  {{ bookingTypeLabel(bt) }}
+                </option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Comments</label>
-            <input class="form-input" v-model="roomForm.comments" placeholder="Any notes…" />
+            <label class="form-label">{{ t('staff.rooms.comments') }}</label>
+            <input class="form-input" v-model="roomForm.comments" :placeholder="t('staff.rooms.commentsPlaceholder')" />
           </div>
           <div class="form-group">
             <label class="form-label" style="display:flex; align-items:center; gap:.5rem;">
               <input type="checkbox" v-model="roomForm.windows" style="width:auto;" />
-              Has windows
+              {{ t('staff.rooms.hasWindows') }}
             </label>
           </div>
           <div v-if="roomError" class="error-banner">⚠️ {{ roomError }}</div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="roomModal = false">Cancel</button>
+            <button class="btn btn-secondary" @click="roomModal = false">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" @click="saveRoom">
-              {{ editingRoom ? 'Save changes' : 'Add Room' }} →
+              {{ editingRoom ? t('common.save') : t('room.create') }} →
             </button>
           </div>
         </div>
       </div>
     </Teleport>
+
     <!-- Edit User Booking Type Modal -->
     <Teleport to="body">
       <div v-if="bookingTypeModal" class="modal-overlay" @click.self="bookingTypeModal = false">
         <div class="modal">
           <h2 class="modal-title">
-            {{ t('staff.users.editBookingTypeFor') }} {{ editingUser?.firstnames }} {{ editingUser?.surnames }}
+            {{ t('staff.users.editBookingTypeFor') }}
+            {{ editingUser?.firstnames }} {{ editingUser?.surnames }}
           </h2>
-
           <div class="form-group">
             <label class="form-label">{{ t('staff.users.columns.bookingType') }}</label>
             <div class="checkbox-grid">
@@ -608,7 +626,6 @@
               </label>
             </div>
           </div>
-
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="bookingTypeModal = false">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" @click="saveBookingType">{{ t('common.save') }} →</button>
@@ -616,165 +633,106 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Assign User to Booking Modal -->
     <AssignUserModal v-model="assignUserModalOpen" :booking-id="assigningBookingId" @assigned="onUserAssigned" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useBookingApi } from '../composables/useBookingApi'
+import { extractErrorMessage } from '../utiles/error.utiles'
+import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
+import { RoleType } from '../enums/roles.enum'
+import { FilterActiveEnum } from '../enums/user.enum'
+import type { UserDto } from '../types/user.types'
 import type {
   RoomDto,
   BookingDto,
   AvailableRoomDto,
   AvailableBookingDto,
-  SlotOption,
-  DayOption,
 } from '../types/booking.types'
-import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
-import { RoomFormState } from '../types/room.types'
-import { extractErrorMessage } from '../utiles/error.utiles'
-import { UserDto } from '../types/user.types'
-import { useI18n } from 'vue-i18n'
-import { RoleType } from '../enums/roles.enum'
-import { UserActiveFilter } from '../enums/user.enum'
 import AssignUserModal from '@/components/AssignUserModal.vue'
+import UserSelector from '@/components/UserSelector.vue'
 
-// ── Users management state ───────────────────────────────────────────────
-const users = ref<UserDto[]>([])
-const loadingUsers = ref(false)
+// ── Local UI-only interfaces (not backend DTOs) ───────────────────────────
 
-const userPage = ref(1)
-const userLimit = 20
-const userTotalPages = ref(1)
-
-const userTextFilter = ref('')
-const userActiveFilter = ref<UserActiveFilter | undefined>(undefined)
-const userRoleFilter = ref<RoleType | undefined>(undefined)
-const userBookingTypeFilter = ref<BookingTypeEnum | undefined>(undefined)
-
-const roleOptions = Object.values(RoleType)
-const bookingTypeOptions = Object.values(BookingTypeEnum)
-
-let userDebounceTimer: ReturnType<typeof setTimeout> | undefined
-function debouncedUserReload() {
-  if (userDebounceTimer) clearTimeout(userDebounceTimer)
-  userDebounceTimer = setTimeout(() => { userPage.value = 1; loadUsers() }, 350)
+interface RoomFormState {
+  name: string
+  roomNumber: number | null
+  floor: number | null
+  size: RoomSizeEnum
+  comments: string
+  windows: boolean
+  bookingTypeEnum: BookingTypeEnum | undefined
 }
 
-function bookingTypeLabel(bt: BookingTypeEnum): string {
-  return t(`staff.users.bookingTypes.${bt}`)
+interface BookingDayOption {
+  iso: string
+  weekday: string
+  dayNum: number
+  month: string
+  slotsCount: number
 }
 
-function formatPhone(u: UserDto): string {
-  if (!u.phoneNumber) return '—'
-  return u.phoneCode ? `+${u.phoneCode} ${u.phoneNumber}` : u.phoneNumber
+interface BookingSlotOption extends AvailableBookingDto {
+  roomCount: number
+  key: number
 }
 
-async function loadUsers() {
-  loadingUsers.value = true
-  try {
-    const data = await api.getUsers({
-      page: userPage.value,
-      limit: userLimit,
-      textFilter: userTextFilter.value || undefined,
-      active: userActiveFilter.value,   // ✅ already the right string type now
-      roleType: userRoleFilter.value,
-      bookingTypeEnum: userBookingTypeFilter.value,
-    })
-    users.value = data?.data ?? []
-    userTotalPages.value = data?.metadata?.totalPages ?? 1
-  } catch (e) {
-    roomError.value = extractErrorMessage(e)
-  } finally {
-    loadingUsers.value = false
-  }
-}
+// ── i18n ──────────────────────────────────────────────────────────────────
+const { t } = useI18n()
 
-function goToUserPage(p: number) {
-  userPage.value = p
-  loadUsers()
-}
-
-async function toggleUserActive(u: UserDto) {
-  const nextActive = !u.active
-  try {
-    await api.updateUserActiveByEmail(u.email, nextActive)
-    u.active = nextActive
-  } catch (e) {
-    roomError.value = extractErrorMessage(e)
-  }
-}
-
-// ── User booking type modal ──────────────────────────────────────────────
-const bookingTypeModal = ref(false)
-const editingUser = ref<UserDto | null>(null)
-const bookingTypeForm = ref<BookingTypeEnum[]>([])
-const bookingTypeFilterForList = ref<BookingTypeEnum | undefined>(undefined)
- 
-function openBookingTypeModal(u: UserDto) {
-  editingUser.value = u
-  bookingTypeForm.value = [...(u.bookingTypeEnum ?? [])]
-  bookingTypeModal.value = true
-}
-
-async function saveBookingType() {
-  if (!editingUser.value) return
-  try {
-    const updated = await api.updateUser(editingUser.value.id, {
-      bookingTypeEnum: bookingTypeForm.value,
-    })
-    const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
-    if (idx !== -1) users.value[idx] = updated
-    bookingTypeModal.value = false
-  } catch (e) {
-    roomError.value = extractErrorMessage(e)
-  }
-}
-
-const roomSizeOptions = Object.values(RoomSizeEnum)
-const { t } = useI18n();
-function sizeLabel(size: RoomSizeEnum): string {
-  const labels: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]: 'Small',
-    [RoomSizeEnum.MEDIUM]: 'Medium',
-    [RoomSizeEnum.BIG]: 'Big',
-    [RoomSizeEnum.BNAIG]: 'N/A',
-  }
-  return labels[size]
-}
-
-const roomError = ref('')
+// ── API ───────────────────────────────────────────────────────────────────
 const api = useBookingApi()
 
-// ── View state ────────────────────────────────────────
+// ── Enum option arrays ────────────────────────────────────────────────────
+const roomSizeOptions = Object.values(RoomSizeEnum)
+const bookingTypeOptions = Object.values(BookingTypeEnum)
+const usageOptions = Object.values(UsageEnum)
+const roleOptions = Object.values(RoleType)
+
+// ── View state ────────────────────────────────────────────────────────────
 type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking' | 'users'
 const view = ref<ViewName>('overview')
 
-// ── Data ──────────────────────────────────────────────
+// ── Data refs ─────────────────────────────────────────────────────────────
 const rooms = ref<RoomDto[]>([])
 const bookings = ref<BookingDto[]>([])
 const availability = ref<AvailableRoomDto[]>([])
+const users = ref<UserDto[]>([])
 
 const loadingRooms = ref(false)
 const loadingBookings = ref(false)
 const loadingAvailability = ref(false)
+const loadingUsers = ref(false)
 
+// ── Filter state ──────────────────────────────────────────────────────────
 const roomSearch = ref('')
 const bookingSearch = ref('')
+const bookingTypeFilterForList = ref<BookingTypeEnum | undefined>(undefined)
 
+const userPage = ref(1)
+const userLimit = 20
+const userTotalPages = ref(1)
+const userTextFilter = ref('')
+const userActiveFilter = ref<FilterActiveEnum | undefined>(undefined)
+const userRoleFilter = ref<RoleType | undefined>(undefined)
+const userBookingTypeFilter = ref<BookingTypeEnum | undefined>(undefined)
+
+// ── Error state ───────────────────────────────────────────────────────────
+const roomError = ref('')
+
+// ── Lifecycle ─────────────────────────────────────────────────────────────
 onMounted(() => {
   loadAvailability()
   loadRooms()
   loadBookings()
 })
 
-function isPastBooking(booking: BookingDto): boolean {
-  const bookingDate = new Date(booking.date + 'T00:00:00')
-  bookingDate.setMinutes(booking.endTime)
-  return bookingDate < new Date()
-}
-
+// ── Load functions ────────────────────────────────────────────────────────
 async function loadAvailability() {
   loadingAvailability.value = true
   try {
@@ -801,9 +759,12 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await api.getBookings({ limit: 200, textFilter: bookingSearch.value || undefined });
-     bookingTypeEnum: bookingTypeFilterForList.value;
-    bookings.value = data?.data ?? [];
+    const data = await api.getBookings({
+      limit: 200,
+      textFilter: bookingSearch.value || undefined,
+      bookingTypeEnum: bookingTypeFilterForList.value,
+    })
+    bookings.value = data?.data ?? []
   } catch (e) {
     roomError.value = extractErrorMessage(e)
   } finally {
@@ -811,11 +772,46 @@ async function loadBookings() {
   }
 }
 
+async function loadUsers() {
+  loadingUsers.value = true
+  try {
+    const data = await api.getUsers({
+      page: userPage.value,
+      limit: userLimit,
+      textFilter: userTextFilter.value || undefined,
+      active: userActiveFilter.value,
+      roleType: userRoleFilter.value,
+      bookingTypeEnum: userBookingTypeFilter.value,
+    })
+    users.value = data?.data ?? []
+    userTotalPages.value = data?.metadata?.totalPages ?? 1
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+// ── Debounced user search ─────────────────────────────────────────────────
+let userDebounceTimer: ReturnType<typeof setTimeout> | undefined
+function debouncedUserReload() {
+  if (userDebounceTimer) clearTimeout(userDebounceTimer)
+  userDebounceTimer = setTimeout(() => {
+    userPage.value = 1
+    loadUsers()
+  }, 350)
+}
+
+function goToUserPage(p: number) {
+  userPage.value = p
+  loadUsers()
+}
+
+// ── Computed lists ────────────────────────────────────────────────────────
 const totalFreeSlots = computed(() =>
   availability.value.reduce((sum, r) => sum + (r.available?.length ?? 0), 0)
 )
 
-// ── Filtered lists ────────────────────────────────────
 const filteredRooms = computed(() =>
   rooms.value.filter(r => r.name?.toLowerCase().includes(roomSearch.value.toLowerCase()))
 )
@@ -824,21 +820,25 @@ const filteredBookings = computed(() => {
   const q = bookingSearch.value.toLowerCase()
   return bookings.value.filter(b =>
     (b.user?.firstnames ?? '').toLowerCase().includes(q) ||
+    (b.user?.surnames ?? '').toLowerCase().includes(q) ||
     (b.name ?? '').toLowerCase().includes(q)
   )
 })
 
-// ── Room CRUD ─────────────────────────────────────────
-
+// ── Room CRUD ─────────────────────────────────────────────────────────────
 const roomModal = ref(false)
 const editingRoom = ref<RoomDto | null>(null)
 const roomForm = ref<RoomFormState>({
-  name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: null
+  name: '', roomNumber: null, floor: null,
+  size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: undefined,
 })
 
 function openAddRoom() {
   editingRoom.value = null
-  roomForm.value = { name: '', roomNumber: null, floor: null, size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: null }
+  roomForm.value = {
+    name: '', roomNumber: null, floor: null,
+    size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: undefined,
+  }
   roomError.value = ''
   roomModal.value = true
 }
@@ -852,7 +852,7 @@ function openEditRoom(room: RoomDto) {
     size: room.size ?? RoomSizeEnum.MEDIUM,
     comments: room.comments ?? '',
     windows: !!room.windows,
-    bookingTypeEnum: room.bookingTypeEnum ?? null,
+    bookingTypeEnum: room.bookingTypeEnum ?? undefined,
   }
   roomError.value = ''
   roomModal.value = true
@@ -866,6 +866,7 @@ function toApiPayload(form: RoomFormState) {
     size: form.size,
     comments: form.comments || undefined,
     windows: form.windows,
+    bookingTypeEnum: form.bookingTypeEnum ?? undefined,
   }
 }
 
@@ -873,8 +874,6 @@ async function saveRoom() {
   roomError.value = ''
   try {
     const payload = toApiPayload(roomForm.value)
-    console.log('PAYLOAD BEING SENT:', payload)   // ← add this
-
     if (editingRoom.value) {
       await api.updateRoom(editingRoom.value.id, payload)
     } else {
@@ -888,7 +887,7 @@ async function saveRoom() {
 }
 
 async function removeRoom(id: string) {
-  if (!confirm('Delete this room?')) return
+  if (!confirm(t('staff.rooms.deleteConfirm'))) return
   try {
     await api.deleteRoom(id)
     await loadRooms()
@@ -898,7 +897,7 @@ async function removeRoom(id: string) {
 }
 
 async function removeBooking(id: string) {
-  if (!confirm('Cancel this booking?')) return
+  if (!confirm(t('staff.bookings.cancelConfirm'))) return
   try {
     await api.deleteBooking(id)
     await loadBookings()
@@ -907,31 +906,87 @@ async function removeBooking(id: string) {
   }
 }
 
+// ── User management ───────────────────────────────────────────────────────
+async function toggleUserActive(u: UserDto) {
+  const nextActive = !u.active
+  try {
+    await api.updateUserActiveByEmail(u.email, nextActive)
+    u.active = nextActive
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  }
+}
 
+// ── User booking type modal ───────────────────────────────────────────────
+const bookingTypeModal = ref(false)
+const editingUser = ref<UserDto | null>(null)
+const bookingTypeForm = ref<BookingTypeEnum[]>([])
+
+function openBookingTypeModal(u: UserDto) {
+  editingUser.value = u
+  bookingTypeForm.value = [...(u.bookingTypeEnum ?? [])]
+  bookingTypeModal.value = true
+}
+
+async function saveBookingType() {
+  if (!editingUser.value) return
+  try {
+    const updated = await api.updateUser(editingUser.value.id, {
+      bookingTypeEnum: bookingTypeForm.value,
+    })
+    const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
+    if (idx !== -1) users.value[idx] = updated
+    bookingTypeModal.value = false
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  }
+}
+
+// ── Assign user to booking modal ──────────────────────────────────────────
+const assignUserModalOpen = ref(false)
+const assigningBookingId = ref<string | null>(null)
+
+function openAssignUserModal(booking: BookingDto) {
+  assigningBookingId.value = booking.id
+  assignUserModalOpen.value = true
+}
+
+function onUserAssigned(user: UserDto) {
+  const booking = bookings.value.find(b => b.id === assigningBookingId.value)
+  if (booking) {
+    booking.user = {
+      id: user.id,
+      email: user.email,
+      firstnames: user.firstnames,
+      surnames: user.surnames,
+    }
+    booking.userId = user.id
+  }
+}
+
+// ── New Booking flow ──────────────────────────────────────────────────────
 const nbStep = ref(1)
-const nbDay = ref<DayOption | null>(null)
-const nbSlot = ref<SlotOption | null>(null)
+const nbDay = ref<BookingDayOption | null>(null)
+const nbSlot = ref<BookingSlotOption | null>(null)
 const nbRoom = ref<AvailableRoomDto | null>(null)
-const nbUserName = ref('')
 const nbUsage = ref<UsageEnum>(UsageEnum.STUDY)
 const nbConfirming = ref(false)
-const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
 const nbSelectedUser = ref<UserDto | null>(null)
+const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
 
 function startNewBooking() {
   nbStep.value = 1
   nbDay.value = null
   nbSlot.value = null
   nbRoom.value = null
-  nbUserName.value = ''
   nbUsage.value = UsageEnum.STUDY
+  nbSelectedUser.value = null
   view.value = 'newbooking'
   loadAvailability()
 }
 
-// Build unique days from availability
-const availableDays = computed<DayOption[]>(() => {
-  const dayMap = new Map<string, DayOption>()
+const availableDays = computed<BookingDayOption[]>(() => {
+  const dayMap = new Map<string, BookingDayOption>()
   for (const room of availability.value) {
     for (const slot of (room.available ?? [])) {
       const key = slot.date
@@ -951,10 +1006,9 @@ const availableDays = computed<DayOption[]>(() => {
   return Array.from(dayMap.values()).sort((a, b) => a.iso.localeCompare(b.iso))
 })
 
-// Build unique time slots for the selected day, with count of rooms available per slot
-const nbSlotsForDay = computed<SlotOption[]>(() => {
+const nbSlotsForDay = computed<BookingSlotOption[]>(() => {
   if (!nbDay.value) return []
-  const slotMap = new Map<number, SlotOption>()
+  const slotMap = new Map<number, BookingSlotOption>()
   for (const room of availability.value) {
     for (const slot of (room.available ?? [])) {
       if (slot.date !== nbDay.value.iso) continue
@@ -968,7 +1022,6 @@ const nbSlotsForDay = computed<SlotOption[]>(() => {
   return Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
 })
 
-// Rooms that have the selected slot free
 const nbRoomsForSlot = computed<AvailableRoomDto[]>(() => {
   if (!nbDay.value || !nbSlot.value) return []
   return availability.value.filter(room =>
@@ -976,14 +1029,14 @@ const nbRoomsForSlot = computed<AvailableRoomDto[]>(() => {
   )
 })
 
-function nbSelectDay(day: DayOption) {
+function nbSelectDay(day: BookingDayOption) {
   nbDay.value = day
   nbSlot.value = null
   nbRoom.value = null
   nbStep.value = 2
 }
 
-function nbSelectSlot(slot: SlotOption) {
+function nbSelectSlot(slot: BookingSlotOption) {
   nbSlot.value = slot
   nbRoom.value = null
   nbStep.value = 3
@@ -998,18 +1051,15 @@ async function nbConfirm() {
   if (!nbDay.value || !nbSlot.value || !nbRoom.value) return
   nbConfirming.value = true
   try {
-    // Lock first
     await api.lockSlot(nbRoom.value.id.toString(), nbSlot.value.date, nbSlot.value.startTime)
-
-    // Create booking
     await api.createBooking({
       roomId: nbRoom.value.id,
       date: new Date(nbSlot.value.date + 'T00:00:00').toISOString(),
       hour: nbSlot.value.hour,
       minutes: nbSlot.value.minutes,
       usage: nbUsage.value,
+      userId: nbSelectedUser.value?.id,
     })
-
     nbLastBooking.value = {
       dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
       timeLabel: `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
@@ -1025,29 +1075,7 @@ async function nbConfirm() {
   }
 }
 
-//Assign User modal state + handlers
-const assignUserModalOpen = ref(false)
-const assigningBookingId  = ref<string | null>(null)
- 
-function openAssignUserModal(booking: BookingDto) {
-  assigningBookingId.value = booking.id
-  assignUserModalOpen.value = true
-}
- 
-function onUserAssigned(user: UserDto) {
-  const booking = bookings.value.find(b => b.id === assigningBookingId.value)
-  if (booking) {
-    booking.user = {
-      id: user.id,
-      email: user.email,
-      firstnames: user.firstnames,
-      surnames: user.surnames,
-    }
-    booking.userId = user.id
-  }
-}
-
-// ── Helpers ───────────────────────────────────────────
+// ── Helper functions ──────────────────────────────────────────────────────
 function formatMinutes(mins: number | undefined | null): string {
   if (mins == null) return ''
   return `${Math.floor(mins / 60).toString().padStart(2, '0')}:${(mins % 60).toString().padStart(2, '0')}`
@@ -1057,8 +1085,19 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-function initials(name = ''): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+function formatPhone(u: UserDto): string {
+  if (!u.phoneNumber) return '—'
+  return u.phoneCode ? `+${u.phoneCode} ${u.phoneNumber}` : u.phoneNumber
+}
+
+function sizeLabel(size: RoomSizeEnum): string {
+  const labels: Record<RoomSizeEnum, string> = {
+    [RoomSizeEnum.SMALL]: 'Small',
+    [RoomSizeEnum.MEDIUM]: 'Medium',
+    [RoomSizeEnum.BIG]: 'Big',
+    [RoomSizeEnum.BNAIG]: 'N/A',
+  }
+  return labels[size]
 }
 
 function sizeEmoji(size: RoomSizeEnum | undefined): string {
@@ -1069,6 +1108,20 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
     [RoomSizeEnum.BNAIG]: '🏠',
   }
   return size ? (emojis[size] ?? '🏠') : '🏠'
+}
+
+function bookingTypeLabel(bt: BookingTypeEnum): string {
+  return t(`staff.users.bookingTypes.${bt}`)
+}
+
+function usageLabel(usage: UsageEnum): string {
+  return t(`booking.usage.${usage}`)
+}
+
+function isPastBooking(booking: BookingDto): boolean {
+  const bookingDate = new Date(booking.date + 'T00:00:00')
+  bookingDate.setMinutes(booking.endTime)
+  return bookingDate < new Date()
 }
 </script>
 
@@ -1169,7 +1222,6 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
   color: var(--navy);
 }
 
-/* Day cards */
 .day-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1242,7 +1294,6 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
   margin-top: .4rem;
 }
 
-/* Slot cards */
 .slot-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1294,7 +1345,6 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
   color: var(--muted);
 }
 
-/* Room select cards */
 .room-select-card {
   cursor: pointer;
   text-align: left;
@@ -1311,7 +1361,6 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
   box-shadow: 0 0 0 3px rgba(232, 184, 75, .2);
 }
 
-/* Confirm */
 .confirm-card {
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -1354,8 +1403,6 @@ function sizeEmoji(size: RoomSizeEnum | undefined): string {
   font-size: 3rem;
   margin-bottom: .75rem;
 }
-
-/* Add these rules to the <style scoped> block of StaffDashboard.vue */
 
 .filter-select {
   max-width: 200px;

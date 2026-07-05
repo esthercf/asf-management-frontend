@@ -1,14 +1,14 @@
-
-export const en = {
+const en = {
     common: {
         loading: 'Loading…',
         error: 'Something went wrong.',
-        save: 'Save',
+        save: 'Save changes',
         cancel: 'Cancel',
         delete: 'Delete',
         confirm: 'Confirm',
         back: 'Back',
         search: 'Search',
+        edit: 'Edit',
     },
     auth: {
         login: {
@@ -21,7 +21,7 @@ export const en = {
             error: {
                 empty: 'Please enter your email and password.',
                 failed: 'Login failed. Please try again.',
-            }
+            },
         },
         logout: 'Sign out',
     },
@@ -35,7 +35,16 @@ export const en = {
             date: 'Date',
             time: 'Time',
             usage: 'Usage',
-        }
+            size: 'Size',
+        },
+        usage: {
+            STUDY: '📖 Study',
+            MASTERCLASS: '🎓 Masterclass',
+            WORKSHOP: '🔧 Workshop',
+            LUTIER: '🎸 Lutier',
+            ARTIST: '🎨 Artist',
+            MANAGER: '🏛️ Manager',
+        },
     },
     room: {
         title: 'Rooms',
@@ -47,15 +56,53 @@ export const en = {
             name: 'Name',
             floor: 'Floor',
             roomNumber: 'Room Number',
-        }
+        },
     },
     staff: {
-        dashboard: 'Staff Dashboard',
+        panel: 'Staff Panel',
+        manage: 'Manage',
+        nav: {
+            overview: 'Overview',
+            rooms: 'Rooms',
+            bookings: 'All Bookings',
+            newBooking: 'New Booking',
+            switchRole: 'Switch role',
+            staffLabel: 'Staff',
+            adminLabel: 'Admin',
+        },
+        overview: {
+            greeting: 'Good morning ☀️',
+            subtitle: "Here's what's happening today.",
+            totalRooms: 'Total rooms',
+            freeSlots: 'Free slots',
+            totalBookings: 'Total bookings',
+            availabilityTitle: 'Room Availability',
+        },
         rooms: {
+            subtitle: 'Add, edit, or remove study spaces.',
+            windows: 'Windows',
+            comments: 'Comments',
+            commentsPlaceholder: 'Any notes…',
+            hasWindows: 'Has windows',
             bookingType: 'Booking type',
             bookingTypeNone: 'No restriction',
+            deleteConfirm: 'Delete this room?',
         },
         bookings: {
+            title: 'All Bookings',
+            subtitle: 'View and manage every reservation.',
+            searchPlaceholder: 'Search by user or room…',
+            unassigned: 'Unassigned',
+            assignUser: 'Assign user',
+            reassignUser: 'Reassign user',
+            assignUserHint: 'Search for a user by name, email, or folder code.',
+            searchByNameEmail: 'Name or email',
+            searchByFolderCode: 'Folder code',
+            folderCode: 'Folder code',
+            folderCodePlaceholder: 'Enter exact folder code…',
+            assign: 'Assign',
+            cancelConfirm: 'Cancel this booking?',
+            cannotCancelPast: 'Past bookings cannot be cancelled.',
             filters: {
                 allBookingTypes: 'All booking types',
             },
@@ -68,15 +115,28 @@ export const en = {
                 bookingType: 'Booking type',
                 actions: 'Actions',
             },
-            unassigned: 'Unassigned',
-            assignUser: 'Assign user',
-            reassignUser: 'Reassign user',
-            assignUserHint: 'Search for a user by name, email, or folder code to link them to this booking.',
-            searchByNameEmail: 'Name or email',
-            searchByFolderCode: 'Folder code',
-            folderCode: 'Folder code',
-            folderCodePlaceholder: 'Enter exact folder code…',
-            assign: 'Assign',
+        },
+        newBooking: {
+            title: 'Create a Booking',
+            subtitle: 'Pick a day, a slot, then a room.',
+            assignUser: 'Assign to user (optional)',
+            createBooking: 'Create booking →',
+            successTitle: 'Booking created!',
+            anotherBooking: 'Another booking',
+            viewAllBookings: 'View all bookings',
+            selectDay: 'Select a day',
+            availableSlots: 'Available slots',
+            chooseRoom: 'Choose a room',
+            confirmTitle: 'Confirm booking',
+            full: 'Full',
+            noSlots: 'No slots for this day.',
+            room: 'room',
+            steps: {
+                day: 'Day',
+                slot: 'Slot',
+                room: 'Room',
+                confirm: 'Confirm',
+            },
         },
         users: {
             title: 'Manage Users',
@@ -152,6 +212,7 @@ export const en = {
         BookingExistsForThatTimeError: 'You already have a booking for that day and time.',
         BookingOverlapsError: 'This time overlaps with an existing booking.',
         BookingInvalidError: 'This booking does not exist or is unreachable.',
+        BookingInvalidDeletionError: 'This booking has already passed and cannot be deleted.',
         DBError: 'A database error occurred. Please try again.',
         RoomInvalidError: 'This room does not exist or is unreachable.',
         RoomAlreadyExistsError: 'A room with this name or number already exists.',
@@ -163,11 +224,9 @@ export const en = {
         Forbidden: "You don't have permission to perform this action.",
         NotFound: 'The requested resource was not found.',
         NetworkError: 'Could not reach the server. Please check your connection.',
-        BookingInvalidDeletionError: 'This booking has already passed and cannot be deleted.',
-
         Unknown: 'Something went wrong. Please try again.',
     },
 }
 
-export type AppLocale = typeof en  // ← infer the shape from English
+export type AppLocale = typeof en
 export default en

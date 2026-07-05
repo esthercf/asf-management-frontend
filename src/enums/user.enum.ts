@@ -281,8 +281,3 @@ export enum FilterActiveEnum {
   Inactive = 'Inactive',
   All = 'All',
 }
-export enum UserActiveFilter {
-  ACTIVE   = 'Active',
-  INACTIVE = 'Inactive',
-  ALL      = 'All',
-}
