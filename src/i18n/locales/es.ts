@@ -1,15 +1,41 @@
 import type { AppLocale } from './en'
 
+
 const es: AppLocale = {
   common: {
     loading: 'Cargando…',
     error: 'Algo salió mal.',
-    save: 'Guardar',
+    save: 'Guardar cambios',
     cancel: 'Cancelar',
     delete: 'Eliminar',
     confirm: 'Confirmar',
     back: 'Volver',
     search: 'Buscar',
+    edit: 'Editar',
+    validation: {
+      required: 'Campo obligatorio',
+      invalidEmail: 'Correo electrónico no válido',
+      passwordTooShort: 'Mínimo 8 caracteres',
+      passwordNeedsUppercase: 'Debe contener al menos una mayúscula',
+      passwordNeedsLowercase: 'Debe contener al menos una minúscula',
+      passwordNeedsNumber: 'Debe contener al menos un número',
+      passwordNeedsSpecial: 'Debe contener al menos un carácter especial',
+      passwordMismatch: 'Las contraseñas no coinciden'
+    },
+    errors: {
+      title: 'Error',
+      duplicate: 'Duplicado',
+    },
+    success: {
+      title: 'Éxito',
+      deleted: 'Eliminado correctamente'
+    },
+    password: {
+      prompt: 'Introduce una contraseña',
+      weak: 'Débil',
+      medium: 'Media',
+      strong: 'Fuerte'
+    }
   },
   auth: {
     login: {
@@ -36,6 +62,15 @@ const es: AppLocale = {
       date: 'Fecha',
       time: 'Hora',
       usage: 'Uso',
+      size: 'Tamaño',
+    },
+    usage: {
+      STUDY: '📖 Estudio',
+      MASTERCLASS: '🎓 Clase magistral',
+      WORKSHOP: '🔧 Taller',
+      LUTIER: '🎸 Lutier',
+      ARTIST: '🎨 Artista',
+      MANAGER: '🏛️ Gestor',
     },
   },
   room: {
@@ -51,12 +86,50 @@ const es: AppLocale = {
     },
   },
   staff: {
-    dashboard: 'Panel del personal',
+    panel: 'Panel del personal',
+    manage: 'Gestionar',
+    nav: {
+      overview: 'Resumen',
+      rooms: 'Salas',
+      bookings: 'Todas las reservas',
+      newBooking: 'Nueva reserva',
+      switchRole: 'Cambiar rol',
+      staffLabel: 'Personal',
+      adminLabel: 'Administrador',
+    },
+    overview: {
+      greeting: 'Buenos días ☀️',
+      subtitle: 'Esto es lo que ocurre hoy.',
+      totalRooms: 'Total de salas',
+      freeSlots: 'Franjas libres',
+      totalBookings: 'Total de reservas',
+      availabilityTitle: 'Disponibilidad de salas',
+    },
     rooms: {
+      subtitle: 'Añadir, editar o eliminar espacios de estudio.',
+      windows: 'Ventanas',
+      comments: 'Comentarios',
+      commentsPlaceholder: 'Cualquier nota…',
+      hasWindows: 'Tiene ventanas',
       bookingType: 'Tipo de reserva',
       bookingTypeNone: 'Sin restricción',
+      deleteConfirm: '¿Eliminar esta sala?',
     },
     bookings: {
+      title: 'Todas las reservas',
+      subtitle: 'Ver y gestionar todas las reservas.',
+      searchPlaceholder: 'Buscar por usuario o sala…',
+      unassigned: 'No asignado',
+      assignUser: 'Asignar usuario',
+      reassignUser: 'Reasignar usuario',
+      assignUserHint: 'Busca un usuario por nombre, correo electrónico o código de carpeta.',
+      searchByNameEmail: 'Nombre o correo electrónico',
+      searchByFolderCode: 'Código de carpeta',
+      folderCode: 'Código de carpeta',
+      folderCodePlaceholder: 'Introduce el código de carpeta exacto…',
+      assign: 'Asignar',
+      cancelConfirm: '¿Cancelar esta reserva?',
+      cannotCancelPast: 'Las reservas pasadas no se pueden cancelar.',
       filters: {
         allBookingTypes: 'Todos los tipos de reserva',
       },
@@ -69,15 +142,28 @@ const es: AppLocale = {
         bookingType: 'Tipo de reserva',
         actions: 'Acciones',
       },
-      unassigned: 'No asignado',
-      assignUser: 'Asignar usuario',
-      reassignUser: 'Reasignar usuario',
-      assignUserHint: 'Busca un usuario por nombre, correo electrónico o código de carpeta para vincularlo a esta reserva.',
-      searchByNameEmail: 'Nombre o correo electrónico',
-      searchByFolderCode: 'Código de carpeta',
-      folderCode: 'Código de carpeta',
-      folderCodePlaceholder: 'Introduce el código de carpeta exacto…',
-      assign: 'Asignar',
+    },
+    newBooking: {
+      title: 'Crear una reserva',
+      subtitle: 'Elige un día, una franja y luego una sala.',
+      assignUser: 'Asignar a usuario (opcional)',
+      createBooking: 'Crear reserva →',
+      successTitle: '¡Reserva creada!',
+      anotherBooking: 'Otra reserva',
+      viewAllBookings: 'Ver todas las reservas',
+      selectDay: 'Selecciona un día',
+      availableSlots: 'Franjas disponibles',
+      chooseRoom: 'Elige una sala',
+      confirmTitle: 'Confirmar reserva',
+      full: 'Completo',
+      noSlots: 'No hay franjas para este día.',
+      room: 'Sala',
+      steps: {
+        day: 'Día',
+        slot: 'Franja',
+        room: 'Sala',
+        confirm: 'Confirmar',
+      },
     },
     users: {
       title: 'Gestionar usuarios',

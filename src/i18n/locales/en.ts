@@ -9,6 +9,30 @@ const en = {
         back: 'Back',
         search: 'Search',
         edit: 'Edit',
+        validation: {
+            required: 'Field is required',
+            invalidEmail: 'Invalid email address',
+            passwordTooShort: 'Minimum 8 characters',
+            passwordNeedsUppercase: 'Must contain at least one uppercase letter',
+            passwordNeedsLowercase: 'Must contain at least one lowercase letter',
+            passwordNeedsNumber: 'Must contain at least one number',
+            passwordNeedsSpecial: 'Must contain at least one special character',
+            passwordMismatch: 'Passwords do not match'
+        },
+        errors: {
+            title: 'Error',
+            duplicate: 'Duplicate',
+        },
+        success: {
+            title: 'Success',
+            deleted: 'Deleted successfully'
+        },
+        password: {
+            prompt: 'Enter a password',
+            weak: 'Weak',
+            medium: 'Medium',
+            strong: 'Strong'
+        }
     },
     auth: {
         login: {
@@ -41,7 +65,7 @@ const en = {
             STUDY: '📖 Study',
             MASTERCLASS: '🎓 Masterclass',
             WORKSHOP: '🔧 Workshop',
-            LUTIER: '🎸 Lutier',
+            LUTIER: '🎸 Luthier',
             ARTIST: '🎨 Artist',
             MANAGER: '🏛️ Manager',
         },
@@ -130,7 +154,7 @@ const en = {
             confirmTitle: 'Confirm booking',
             full: 'Full',
             noSlots: 'No slots for this day.',
-            room: 'room',
+            room: 'Room',
             steps: {
                 day: 'Day',
                 slot: 'Slot',
@@ -223,8 +247,8 @@ const en = {
         Unauthorized: 'Your session has expired. Please sign in again.',
         Forbidden: "You don't have permission to perform this action.",
         NotFound: 'The requested resource was not found.',
-        NetworkError: 'Could not reach the server. Please check your connection.',
-        Unknown: 'Something went wrong. Please try again.',
+        NetworkError: 'Could not reach the server. Please check your',
+        Unknown: 'Something went wrong. Please try'
     },
 }
 

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@primevue/forms": "^4.5.5",
     "axios": "^1.17.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.0",

@@ -1,15 +1,41 @@
 import type { AppLocale } from './en'
 
+
 const de: AppLocale = {
   common: {
     loading: 'Laden…',
     error: 'Etwas ist schiefgelaufen.',
-    save: 'Speichern',
+    save: 'Änderungen speichern',
     cancel: 'Abbrechen',
     delete: 'Löschen',
     confirm: 'Bestätigen',
     back: 'Zurück',
     search: 'Suchen',
+    edit: 'Bearbeiten',
+    validation: {
+      required: 'Pflichtfeld',
+      invalidEmail: 'Ungültige E-Mail-Adresse',
+      passwordTooShort: 'Mindestens 8 Zeichen',
+      passwordNeedsUppercase: 'Muss mindestens einen Großbuchstaben enthalten',
+      passwordNeedsLowercase: 'Muss mindestens einen Kleinbuchstaben enthalten',
+      passwordNeedsNumber: 'Muss mindestens eine Zahl enthalten',
+      passwordNeedsSpecial: 'Muss mindestens ein Sonderzeichen enthalten',
+      passwordMismatch: 'Passwörter stimmen nicht überein'
+    },
+    errors: {
+      title: 'Fehler',
+      duplicate: 'Duplikat',
+    },
+    success: {
+      title: 'Erfolg',
+      deleted: 'Erfolgreich gelöscht'
+    },
+    password: {
+      prompt: 'Geben Sie ein Passwort ein',
+      weak: 'Schwach',
+      medium: 'Mittel',
+      strong: 'Stark'
+    }
   },
   auth: {
     login: {
@@ -36,6 +62,15 @@ const de: AppLocale = {
       date: 'Datum',
       time: 'Uhrzeit',
       usage: 'Verwendung',
+      size: 'Größe',
+    },
+    usage: {
+      STUDY: '📖 Studium',
+      MASTERCLASS: '🎓 Meisterklasse',
+      WORKSHOP: '🔧 Workshop',
+      LUTIER: '🎸 Geigenbauer',
+      ARTIST: '🎨 Künstler',
+      MANAGER: '🏛️ Manager',
     },
   },
   room: {
@@ -51,12 +86,50 @@ const de: AppLocale = {
     },
   },
   staff: {
-    dashboard: 'Mitarbeiter-Dashboard',
+    panel: 'Mitarbeiter-Panel',
+    manage: 'Verwalten',
+    nav: {
+      overview: 'Übersicht',
+      rooms: 'Räume',
+      bookings: 'Alle Buchungen',
+      newBooking: 'Neue Buchung',
+      switchRole: 'Rolle wechseln',
+      staffLabel: 'Mitarbeiter',
+      adminLabel: 'Administrator',
+    },
+    overview: {
+      greeting: 'Guten Morgen ☀️',
+      subtitle: 'Das passiert heute.',
+      totalRooms: 'Gesamte Räume',
+      freeSlots: 'Freie Zeitfenster',
+      totalBookings: 'Gesamte Buchungen',
+      availabilityTitle: 'Raumverfügbarkeit',
+    },
     rooms: {
+      subtitle: 'Studienräume hinzufügen, bearbeiten oder entfernen.',
+      windows: 'Fenster',
+      comments: 'Kommentare',
+      commentsPlaceholder: 'Notizen…',
+      hasWindows: 'Hat Fenster',
       bookingType: 'Buchungstyp',
       bookingTypeNone: 'Keine Einschränkung',
+      deleteConfirm: 'Diesen Raum löschen?',
     },
     bookings: {
+      title: 'Alle Buchungen',
+      subtitle: 'Alle Reservierungen anzeigen und verwalten.',
+      searchPlaceholder: 'Suche nach Benutzer oder Raum…',
+      unassigned: 'Nicht zugewiesen',
+      assignUser: 'Benutzer zuweisen',
+      reassignUser: 'Benutzer neu zuweisen',
+      assignUserHint: 'Suche nach einem Benutzer über Name, E-Mail oder Aktennummer.',
+      searchByNameEmail: 'Name oder E-Mail',
+      searchByFolderCode: 'Aktennummer',
+      folderCode: 'Aktennummer',
+      folderCodePlaceholder: 'Exakte Aktennummer eingeben…',
+      assign: 'Zuweisen',
+      cancelConfirm: 'Diese Buchung stornieren?',
+      cannotCancelPast: 'Vergangene Buchungen können nicht storniert werden.',
       filters: {
         allBookingTypes: 'Alle Buchungstypen',
       },
@@ -69,15 +142,28 @@ const de: AppLocale = {
         bookingType: 'Buchungstyp',
         actions: 'Aktionen',
       },
-      unassigned: 'Nicht zugewiesen',
-      assignUser: 'Benutzer zuweisen',
-      reassignUser: 'Benutzer neu zuweisen',
-      assignUserHint: 'Suche nach einem Benutzer über Name, E-Mail oder Aktennummer, um ihn mit dieser Buchung zu verknüpfen.',
-      searchByNameEmail: 'Name oder E-Mail',
-      searchByFolderCode: 'Aktennummer',
-      folderCode: 'Aktennummer',
-      folderCodePlaceholder: 'Exakte Aktennummer eingeben…',
-      assign: 'Zuweisen',
+    },
+    newBooking: {
+      title: 'Buchung erstellen',
+      subtitle: 'Wählen Sie einen Tag, ein Zeitfenster und dann einen Raum.',
+      assignUser: 'Benutzer zuweisen (optional)',
+      createBooking: 'Buchung erstellen →',
+      successTitle: 'Buchung erstellt!',
+      anotherBooking: 'Weitere Buchung',
+      viewAllBookings: 'Alle Buchungen anzeigen',
+      selectDay: 'Tag auswählen',
+      availableSlots: 'Verfügbare Zeitfenster',
+      chooseRoom: 'Raum auswählen',
+      confirmTitle: 'Buchung bestätigen',
+      full: 'Voll',
+      noSlots: 'Keine Zeitfenster für diesen Tag.',
+      room: 'Raum',
+      steps: {
+        day: 'Tag',
+        slot: 'Zeitfenster',
+        room: 'Raum',
+        confirm: 'Bestätigen',
+      },
     },
     users: {
       title: 'Benutzer verwalten',
@@ -122,8 +208,7 @@ const de: AppLocale = {
         ALL: 'Alle',
       },
     },
-  }
-  ,
+  },
   user: {
     dashboard: 'Mein Dashboard',
     bookings: 'Meine Buchungen',

@@ -44,12 +44,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useBookingApi } from '../composables/useBookingApi'
 import { useAuthStore } from '../stores/auth.store'
+import { useSessionApi } from '../composables/useSessionApi'
 const auth = useAuthStore()
 
 const router  = useRouter()
-const api     = useBookingApi()
+const sessionApi    = useSessionApi();
 
 const email    = ref('')
 const password = ref('')
@@ -64,9 +64,9 @@ async function login() {
   }
   loading.value = true
   try {
-    const session = await api.login(email.value, password.value)
-    auth.setSession(session)              // ✅ this line was missing — saves to store + localStorage
-    router.push(auth.isStaff ? '/staff' : '/user')   // ✅ use store getter instead of manual check
+    const session = await sessionApi.login(email.value, password.value)
+    auth.setSession(session)             
+    router.push(auth.isStaff ? '/staff' : '/user')  
   } catch (e: any) {
     error.value = e.message ?? 'Login failed. Please try again.'
   } finally {

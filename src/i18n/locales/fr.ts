@@ -1,15 +1,39 @@
 import type { AppLocale } from './en'
-
 const fr: AppLocale = {
   common: {
     loading: 'Chargement…',
     error: 'Une erreur est survenue.',
-    save: 'Enregistrer',
+    save: 'Enregistrer les modifications',
     cancel: 'Annuler',
     delete: 'Supprimer',
     confirm: 'Confirmer',
     back: 'Retour',
     search: 'Rechercher',
+    edit: 'Modifier',
+    validation: {
+      required: 'Champ obligatoire',
+      invalidEmail: 'Adresse e-mail invalide',
+      passwordTooShort: 'Minimum 8 caractères',
+      passwordNeedsUppercase: 'Doit contenir au moins une majuscule',
+      passwordNeedsLowercase: 'Doit contenir au moins une minuscule',
+      passwordNeedsNumber: 'Doit contenir au moins un chiffre',
+      passwordNeedsSpecial: 'Doit contenir au moins un caractère spécial',
+      passwordMismatch: 'Les mots de passe ne correspondent pas'
+    },
+    errors: {
+      title: 'Erreur',
+      duplicate: 'Doublon',
+    },
+    success: {
+      title: 'Succès',
+      deleted: 'Supprimé avec succès'
+    },
+    password: {
+      prompt: 'Entrez un mot de passe',
+      weak: 'Faible',
+      medium: 'Moyen',
+      strong: 'Fort'
+    }
   },
   auth: {
     login: {
@@ -36,6 +60,15 @@ const fr: AppLocale = {
       date: 'Date',
       time: 'Heure',
       usage: 'Usage',
+      size: 'Taille',
+    },
+    usage: {
+      STUDY: '📖 Étude',
+      MASTERCLASS: '🎓 Classe magistrale',
+      WORKSHOP: '🔧 Atelier',
+      LUTIER: '🎸 Luthier',
+      ARTIST: '🎨 Artiste',
+      MANAGER: '🏛️ Gestionnaire',
     },
   },
   room: {
@@ -51,12 +84,50 @@ const fr: AppLocale = {
     },
   },
   staff: {
-    dashboard: 'Tableau de bord du personnel',
+    panel: 'Tableau de bord du personnel',
+    manage: 'Gérer',
+    nav: {
+      overview: 'Vue d’ensemble',
+      rooms: 'Salles',
+      bookings: 'Toutes les réservations',
+      newBooking: 'Nouvelle réservation',
+      switchRole: 'Changer de rôle',
+      staffLabel: 'Personnel',
+      adminLabel: 'Administrateur',
+    },
+    overview: {
+      greeting: 'Bonjour ☀️',
+      subtitle: 'Voici ce qui se passe aujourd’hui.',
+      totalRooms: 'Nombre total de salles',
+      freeSlots: 'Créneaux libres',
+      totalBookings: 'Nombre total de réservations',
+      availabilityTitle: 'Disponibilité des salles',
+    },
     rooms: {
+      subtitle: 'Ajouter, modifier ou supprimer des espaces d’étude.',
+      windows: 'Fenêtres',
+      comments: 'Commentaires',
+      commentsPlaceholder: 'Notes éventuelles…',
+      hasWindows: 'Avec fenêtres',
       bookingType: 'Type de réservation',
       bookingTypeNone: 'Aucune restriction',
+      deleteConfirm: 'Supprimer cette salle ?',
     },
     bookings: {
+      title: 'Toutes les réservations',
+      subtitle: 'Voir et gérer toutes les réservations.',
+      searchPlaceholder: 'Rechercher par utilisateur ou salle…',
+      unassigned: 'Non assigné',
+      assignUser: 'Assigner un utilisateur',
+      reassignUser: 'Réassigner un utilisateur',
+      assignUserHint: 'Recherchez un utilisateur par nom, e-mail ou code dossier.',
+      searchByNameEmail: 'Nom ou e-mail',
+      searchByFolderCode: 'Code dossier',
+      folderCode: 'Code dossier',
+      folderCodePlaceholder: 'Saisir le code dossier exact…',
+      assign: 'Assigner',
+      cancelConfirm: 'Annuler cette réservation ?',
+      cannotCancelPast: 'Les réservations passées ne peuvent pas être annulées.',
       filters: {
         allBookingTypes: 'Tous les types de réservation',
       },
@@ -69,15 +140,28 @@ const fr: AppLocale = {
         bookingType: 'Type de réservation',
         actions: 'Actions',
       },
-      unassigned: 'Non assigné',
-      assignUser: 'Assigner un utilisateur',
-      reassignUser: 'Réassigner un utilisateur',
-      assignUserHint: 'Recherchez un utilisateur par nom, e-mail ou code dossier pour le lier à cette réservation.',
-      searchByNameEmail: 'Nom ou e-mail',
-      searchByFolderCode: 'Code dossier',
-      folderCode: 'Code dossier',
-      folderCodePlaceholder: 'Saisir le code dossier exact…',
-      assign: 'Assigner',
+    },
+    newBooking: {
+      title: 'Créer une réservation',
+      subtitle: 'Choisissez un jour, un créneau, puis une salle.',
+      assignUser: 'Assigner à un utilisateur (optionnel)',
+      createBooking: 'Créer réservation →',
+      successTitle: 'Réservation créée !',
+      anotherBooking: 'Autre réservation',
+      viewAllBookings: 'Voir toutes les réservations',
+      selectDay: 'Sélectionner un jour',
+      availableSlots: 'Créneaux disponibles',
+      chooseRoom: 'Choisir une salle',
+      confirmTitle: 'Confirmer la réservation',
+      full: 'Complet',
+      noSlots: 'Aucun créneau pour ce jour.',
+      room: 'Salle',
+      steps: {
+        day: 'Jour',
+        slot: 'Créneau',
+        room: 'Salle',
+        confirm: 'Confirmer',
+      },
     },
     users: {
       title: 'Gérer les utilisateurs',

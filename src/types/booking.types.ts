@@ -155,3 +155,18 @@ export interface SlotOption extends AvailableBookingDto {
   roomCount: number,
   key: number,
 }
+
+
+
+export interface BookingDayOption {
+  iso: string
+  weekday: string
+  dayNum: number
+  month: string
+  slotsCount: number
+}
+
+export interface BookingSlotOption extends AvailableBookingDto {
+  roomCount: number
+  key: number
+}

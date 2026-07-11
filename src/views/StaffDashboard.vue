@@ -652,41 +652,25 @@ import type {
   RoomDto,
   BookingDto,
   AvailableRoomDto,
-  AvailableBookingDto,
+  BookingDayOption,
+  BookingSlotOption,
 } from '../types/booking.types'
 import AssignUserModal from '@/components/AssignUserModal.vue'
 import UserSelector from '@/components/UserSelector.vue'
+import { useRoomApi } from '../composables/useRoomApi'
+import { useUserApi } from '../composables/useUserApi'
+import { RoomFormState } from '../types/room.types'
 
-// ── Local UI-only interfaces (not backend DTOs) ───────────────────────────
-
-interface RoomFormState {
-  name: string
-  roomNumber: number | null
-  floor: number | null
-  size: RoomSizeEnum
-  comments: string
-  windows: boolean
-  bookingTypeEnum: BookingTypeEnum | undefined
-}
-
-interface BookingDayOption {
-  iso: string
-  weekday: string
-  dayNum: number
-  month: string
-  slotsCount: number
-}
-
-interface BookingSlotOption extends AvailableBookingDto {
-  roomCount: number
-  key: number
-}
 
 // ── i18n ──────────────────────────────────────────────────────────────────
 const { t } = useI18n()
 
 // ── API ───────────────────────────────────────────────────────────────────
-const api = useBookingApi()
+
+
+const userApi    = useUserApi();
+const roomApi    = useRoomApi();
+const bookingApi    = useBookingApi();
 
 // ── Enum option arrays ────────────────────────────────────────────────────
 const roomSizeOptions = Object.values(RoomSizeEnum)
@@ -736,7 +720,7 @@ onMounted(() => {
 async function loadAvailability() {
   loadingAvailability.value = true
   try {
-    availability.value = await api.getAvailability({ page: 1, limit: 1000 }) ?? []
+    availability.value = await bookingApi.getAvailability({ page: 1, limit: 1000 }) ?? []
   } catch (e) {
     roomError.value = extractErrorMessage(e)
   } finally {
@@ -747,7 +731,7 @@ async function loadAvailability() {
 async function loadRooms() {
   loadingRooms.value = true
   try {
-    const data = await api.getRooms({ limit: 200 })
+    const data = await roomApi.getRooms({ limit: 200 })
     rooms.value = data?.data ?? []
   } catch (e) {
     roomError.value = extractErrorMessage(e)
@@ -759,7 +743,7 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await api.getBookings({
+    const data = await bookingApi.getBookings({
       limit: 200,
       textFilter: bookingSearch.value || undefined,
       bookingTypeEnum: bookingTypeFilterForList.value,
@@ -775,7 +759,7 @@ async function loadBookings() {
 async function loadUsers() {
   loadingUsers.value = true
   try {
-    const data = await api.getUsers({
+    const data = await userApi.getUsers({
       page: userPage.value,
       limit: userLimit,
       textFilter: userTextFilter.value || undefined,
@@ -875,9 +859,9 @@ async function saveRoom() {
   try {
     const payload = toApiPayload(roomForm.value)
     if (editingRoom.value) {
-      await api.updateRoom(editingRoom.value.id, payload)
+      await roomApi.updateRoom(editingRoom.value.id, payload)
     } else {
-      await api.createRoom(payload)
+      await roomApi.createRoom(payload)
     }
     roomModal.value = false
     await loadRooms()
@@ -889,7 +873,7 @@ async function saveRoom() {
 async function removeRoom(id: string) {
   if (!confirm(t('staff.rooms.deleteConfirm'))) return
   try {
-    await api.deleteRoom(id)
+    await roomApi.deleteRoom(id)
     await loadRooms()
   } catch (e) {
     roomError.value = extractErrorMessage(e)
@@ -899,7 +883,7 @@ async function removeRoom(id: string) {
 async function removeBooking(id: string) {
   if (!confirm(t('staff.bookings.cancelConfirm'))) return
   try {
-    await api.deleteBooking(id)
+    await bookingApi.deleteBooking(id)
     await loadBookings()
   } catch (e) {
     roomError.value = extractErrorMessage(e)
@@ -910,7 +894,7 @@ async function removeBooking(id: string) {
 async function toggleUserActive(u: UserDto) {
   const nextActive = !u.active
   try {
-    await api.updateUserActiveByEmail(u.email, nextActive)
+    await userApi.updateUserActiveByEmail(u.email, nextActive)
     u.active = nextActive
   } catch (e) {
     roomError.value = extractErrorMessage(e)
@@ -931,7 +915,7 @@ function openBookingTypeModal(u: UserDto) {
 async function saveBookingType() {
   if (!editingUser.value) return
   try {
-    const updated = await api.updateUser(editingUser.value.id, {
+    const updated = await userApi.updateUser(editingUser.value.id, {
       bookingTypeEnum: bookingTypeForm.value,
     })
     const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
@@ -1051,8 +1035,8 @@ async function nbConfirm() {
   if (!nbDay.value || !nbSlot.value || !nbRoom.value) return
   nbConfirming.value = true
   try {
-    await api.lockSlot(nbRoom.value.id.toString(), nbSlot.value.date, nbSlot.value.startTime)
-    await api.createBooking({
+    await bookingApi.lockSlot(nbRoom.value.id.toString(), nbSlot.value.date, nbSlot.value.startTime)
+    await bookingApi.createBooking({
       roomId: nbRoom.value.id,
       date: new Date(nbSlot.value.date + 'T00:00:00').toISOString(),
       hour: nbSlot.value.hour,
