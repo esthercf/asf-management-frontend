@@ -31,6 +31,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
+  
   const auth = useAuthStore()
 
   // Public routes — always accessible

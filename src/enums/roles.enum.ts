@@ -10,6 +10,4 @@ export enum RoleType {
 export const STAFF_ROLES: RoleType[] = [
   RoleType.Root,
   RoleType.Staff,
-  RoleType.Contestant,
-  //RoleType.Manager,
 ]

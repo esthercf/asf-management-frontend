@@ -1,6 +1,6 @@
 
 
-import { AvailableRoomDto,} from '../types/room.types'
+import { AvailableRoomDto, } from '../types/room.types'
 import { BookingDto, CreateBookingDto, GetAvailabilityParams, GetBookingsParams } from '../types/booking.types'
 import { DatatableResult } from '../types/common.types'
 import { client } from '../services/http.client'
@@ -16,7 +16,7 @@ export function useBookingApi() {
     return client.get<AvailableRoomDto[]>(`/bookings/availability?${q}`).then(r => r.data)
   }
 
- 
+
   function lockSlot(roomId: string, date: string, startTime: number): Promise<{ expiresInSeconds: number }> {
     return client.post('/bookings/lock', { roomId, date, startTime }).then(r => r.data)
   }
@@ -59,8 +59,11 @@ export function useBookingApi() {
     return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
   }
 
-  function getMyBookings(): Promise<DatatableResult<BookingDto>> {
-    return client.get<DatatableResult<BookingDto>>('/bookings?limit=100').then(r => r.data)
+  function getMyBookings(params: GetBookingsParams = {}): Promise<DatatableResult<BookingDto>> {
+    const { page = 1, limit = 50, userId, toCome = true } = params
+    const q = new URLSearchParams({ page: String(page), limit: String(limit) })
+    if (userId) q.set('userId', userId)
+    return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
   }
 
   function getBooking(id: string): Promise<BookingDto> {
@@ -88,6 +91,6 @@ export function useBookingApi() {
     lockSlot, unlockSlot,
     // bookings
     getBookings, getMyBookings, getBooking, createBooking, deleteBooking, assignBookingUser, getSpecialBookings, pickBooking,
-  
+
   }
 }

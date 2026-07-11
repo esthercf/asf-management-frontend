@@ -40,16 +40,20 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth.store'
-import { useSessionApi } from '../composables/useSessionApi'
-const auth = useAuthStore()
 
-const router  = useRouter()
-const sessionApi    = useSessionApi();
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useAuthStore } from '../stores/auth.store';
+import { useUserProfileStore } from '../stores/user-profile.store';
+import { useSessionApi } from '../composables/useSessionApi';
+
+const { t }       = useI18n()
+const router      = useRouter()
+const api         = useSessionApi()
+const auth        = useAuthStore()
+const userProfile = useUserProfileStore()
 
 const email    = ref('')
 const password = ref('')
@@ -59,22 +63,25 @@ const error    = ref('')
 async function login() {
   error.value = ''
   if (!email.value || !password.value) {
-    error.value = 'Please enter your email and password.'
+    error.value = t('auth.login.error.empty')
     return
   }
   loading.value = true
   try {
-    const session = await sessionApi.login(email.value, password.value)
-    auth.setSession(session)             
-    router.push(auth.isStaff ? '/staff' : '/user')  
+    const session = await api.login(email.value, password.value)
+    auth.setSession(session)
+
+    // Fetch full user profile so we know bookingTypeEnum, etc.
+    await userProfile.fetch(session.userId)
+
+    router.push(auth.isStaff ? '/staff' : '/user')
   } catch (e: any) {
-    error.value = e.message ?? 'Login failed. Please try again.'
+    error.value = e.message ?? t('auth.login.error.failed')
   } finally {
     loading.value = false
   }
 }
 </script>
-
 <style scoped>
 .login-page {
   min-height: 100vh;

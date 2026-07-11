@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useBookingApi } from '../composables/useBookingApi'
 import { AuthState } from '../types/session.types';
 import { RoleType, STAFF_ROLES } from '../enums/roles.enum';
+import { useSessionApi } from '../composables/useSessionApi';
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
@@ -40,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async refresh() {
-            const api = useBookingApi()
+            const api = useSessionApi()
             try {
                 // backend expects { userId, refreshToken }
                 const session = await api.refresh(this.userId!, this.refreshToken!)

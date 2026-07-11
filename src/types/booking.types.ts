@@ -85,7 +85,8 @@ export interface GetBookingsParams {
   month?: number,
   textFilter?: string,
   bookingTypeEnum?: BookingTypeEnum,
-  noUserId?: boolean
+  noUserId?: boolean,
+  toCome?:boolean
 
 }
 

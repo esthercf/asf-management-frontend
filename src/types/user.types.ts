@@ -1,21 +1,8 @@
 
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { RoleType } from '../enums/roles.enum'
-import { CountryCode, TshirtEnum, UserActiveFilter } from '../enums/user.enum'
+import { CountryCode, FilterActiveEnum, LanguageEnum, SortEnum, TshirtEnum } from '../enums/user.enum'
 
-export enum LanguageEnum {
-  EN = 'EN',
-  CA = 'CA',
-  ES = 'ES',
-  FR = 'FR',
-  IT = 'IT',
-  DE = 'DE',
-  PT = 'PT',
-  RU = 'RU',
-  ZH = 'ZH',
-  JA = 'JA',
-  KO = 'KO',
-}
 
 export interface UserDto {
   id: string,
@@ -55,8 +42,13 @@ export interface GetUsersParams {
   textFilter?: string,
   folderCode?: string;
   roleType?: RoleType,
-  active?: UserActiveFilter,
+  active?: FilterActiveEnum,
   bookingTypeEnum?: BookingTypeEnum,
-  sortByCreationDate?: 'asc' | 'desc',
-  sortByName?: 'asc' | 'desc',
+  sortByCreationDate?: SortEnum,
+  sortByName?: SortEnum,
+}
+
+export interface UserProfileState {
+  profile: UserDto | null
+  loading: boolean
 }

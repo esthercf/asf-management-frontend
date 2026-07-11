@@ -743,7 +743,7 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await bookingApi.getBookings({
+    const data = await bookingApi.getBookings({page:1,
       limit: 200,
       textFilter: bookingSearch.value || undefined,
       bookingTypeEnum: bookingTypeFilterForList.value,
@@ -1038,7 +1038,7 @@ async function nbConfirm() {
     await bookingApi.lockSlot(nbRoom.value.id.toString(), nbSlot.value.date, nbSlot.value.startTime)
     await bookingApi.createBooking({
       roomId: nbRoom.value.id,
-      date: new Date(nbSlot.value.date + 'T00:00:00').toISOString(),
+      date: nbSlot.value.date + 'T00:00:00.000Z',
       hour: nbSlot.value.hour,
       minutes: nbSlot.value.minutes,
       usage: nbUsage.value,
