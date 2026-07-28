@@ -20,7 +20,8 @@ client.interceptors.response.use(
     const toast = useToastStore();
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }// the original request that failed
 
-    if (error.response?.status === 401 && !original._retry) {// unauthorized, token expired && we haven't already tried once (prevents infinite loops)
+    if (error.response?.status === 403 && error.response?.data?.code === 'InvalidTokenException' && !original._retry) {
+      // unauthorized, token expired && we haven't already tried once (prevents infinite loops)
       original._retry = true
 
       if (isRefreshing) {

@@ -141,6 +141,8 @@ const pt: AppLocale = {
         bookingType: 'Tipo de reserva',
         actions: 'Ações',
       },
+      alreadyAssigned: "Esta reserva já tem um usuário atribuído",
+      assignUserTooltip: "Atribuir um usuário a esta reserva"
     },
     newBooking: {
       title: 'Criar uma reserva',
@@ -209,8 +211,42 @@ const pt: AppLocale = {
     },
   },
   user: {
-    dashboard: 'O meu painel',
-    bookings: 'As minhas reservas',
+    panel: 'Meu espaço',
+    nav: {
+      section: 'Minha conta',
+      myBookings: 'Minhas reservas',
+      book: 'Reservar uma sala',
+      special: 'Slots especiais',
+      profile: 'Meu perfil',
+      contestant: 'Concorrente',
+    },
+    myBookings: {
+      subtitle: 'Suas próximas reservas.',
+      nextBooking: 'Sua próxima reserva',
+      allTitle: 'Todas as reservas',
+      empty: 'Você ainda não tem reservas.',
+      past: 'Passadas',
+    },
+    book: {
+      title: 'Reservar uma sala',
+      subtitle: 'Escolha um dia, um horário e depois uma sala.',
+      confirm: 'Confirmar reserva →',
+      successTitle: 'Reserva confirmada!',
+      noAvailability: 'Nenhum horário disponível no momento.',
+    },
+    special: {
+      title: 'Slots especiais',
+      subtitle: 'Slots prioritários reservados para você.',
+      empty: 'Nenhum slot especial disponível no momento.',
+      hint: 'Esses slots são reservados para usuários elegíveis. Escolha um para reivindicá-lo imediatamente.',
+      label: 'Especial',
+      pick: 'Escolher este slot',
+      confirmPick: 'Reivindicar este slot? Ele será atribuído a você imediatamente.',
+    },
+    profile: {
+      subtitle: 'Suas informações de contato registradas.',
+      contactNote: 'Para atualizar seus dados, entre em contato com a organização.',
+    },
   },
   errors: {
     InternalServerError: 'Ocorreu um erro inesperado. Por favor, tente novamente.',

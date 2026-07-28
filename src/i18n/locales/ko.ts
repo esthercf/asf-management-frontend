@@ -141,6 +141,8 @@ const ko: AppLocale = {
         bookingType: '예약 유형',
         actions: '작업',
       },
+      alreadyAssigned: "이 예약에는 이미 사용자가 지정되어 있습니다",
+      assignUserTooltip: "이 예약에 사용자를 지정하기"
     },
     newBooking: {
       title: '예약 생성',
@@ -209,8 +211,42 @@ const ko: AppLocale = {
     },
   },
   user: {
-    dashboard: '내 대시보드',
-    bookings: '내 예약',
+    panel: '내 공간',
+    nav: {
+      section: '내 계정',
+      myBookings: '내 예약',
+      book: '방 예약',
+      special: '특별 슬롯',
+      profile: '내 프로필',
+      contestant: '참가자',
+    },
+    myBookings: {
+      subtitle: '다가오는 예약.',
+      nextBooking: '다음 예약',
+      allTitle: '모든 예약',
+      empty: '아직 예약이 없습니다.',
+      past: '지난 예약',
+    },
+    book: {
+      title: '방 예약',
+      subtitle: '날짜, 시간, 방을 선택하세요.',
+      confirm: '예약 확인 →',
+      successTitle: '예약이 확인되었습니다!',
+      noAvailability: '현재 이용 가능한 슬롯이 없습니다.',
+    },
+    special: {
+      title: '특별 슬롯',
+      subtitle: '우선 예약된 슬롯.',
+      empty: '현재 특별 슬롯이 없습니다.',
+      hint: '이 슬롯은 자격 있는 사용자에게 예약되어 있습니다. 선택하면 즉시 배정됩니다.',
+      label: '특별',
+      pick: '이 슬롯 선택',
+      confirmPick: '이 슬롯을 신청하시겠습니까? 즉시 배정됩니다.',
+    },
+    profile: {
+      subtitle: '등록된 연락처 정보.',
+      contactNote: '정보를 업데이트하려면 조직에 문의하세요.',
+    },
   },
   errors: {
     InternalServerError: '예기치 않은 오류가 발생했습니다. 다시 시도해주세요.',

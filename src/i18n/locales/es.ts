@@ -142,6 +142,8 @@ const es: AppLocale = {
         bookingType: 'Tipo de reserva',
         actions: 'Acciones',
       },
+      alreadyAssigned: "Esta reserva ya tiene un usuario asignado",
+      assignUserTooltip: "Asignar un usuario a esta reserva"
     },
     newBooking: {
       title: 'Crear una reserva',
@@ -210,8 +212,42 @@ const es: AppLocale = {
     },
   },
   user: {
-    dashboard: 'Mi panel',
-    bookings: 'Mis reservas',
+    panel: 'Mi espacio',
+    nav: {
+      section: 'Mi cuenta',
+      myBookings: 'Mis reservas',
+      book: 'Reservar una sala',
+      special: 'Turnos especiales',
+      profile: 'Mi perfil',
+      contestant: 'Concursante',
+    },
+    myBookings: {
+      subtitle: 'Tus próximas reservas.',
+      nextBooking: 'Tu próxima reserva',
+      allTitle: 'Todas las reservas',
+      empty: 'Aún no tienes reservas.',
+      past: 'Pasadas',
+    },
+    book: {
+      title: 'Reservar una sala',
+      subtitle: 'Elige un día, un turno y luego una sala.',
+      confirm: 'Confirmar reserva →',
+      successTitle: '¡Reserva confirmada!',
+      noAvailability: 'No hay turnos disponibles en este momento.',
+    },
+    special: {
+      title: 'Turnos especiales',
+      subtitle: 'Turnos prioritarios reservados para ti.',
+      empty: 'No hay turnos especiales disponibles en este momento.',
+      hint: 'Estos turnos están reservados para usuarios elegibles. Elige uno para reclamarlo inmediatamente.',
+      label: 'Especial',
+      pick: 'Elegir este turno',
+      confirmPick: '¿Reclamar este turno? Se te asignará inmediatamente.',
+    },
+    profile: {
+      subtitle: 'Tu información de contacto registrada.',
+      contactNote: 'Para actualizar tus datos, contacta con la organización.',
+    },
   },
   errors: {
     InternalServerError: 'Se ha producido un error inesperado. Por favor, inténtalo de nuevo.',

@@ -344,7 +344,9 @@
                 </td>
                 <td>
                   <div style="display:flex; flex-direction:column; gap:.4rem;">
-                    <button class="btn btn-secondary btn-sm" @click="openAssignUserModal(booking)">
+                    <button :disabled="!!booking.userId"
+                      :title="booking.user ? t('staff.bookings.alreadyAssigned') : t('staff.bookings.assignUserTooltip')"
+                      class="btn btn-secondary btn-sm" @click="openAssignUserModal(booking)">
                       {{ booking.user ? t('staff.bookings.reassignUser') : t('staff.bookings.assignUser') }}
                     </button>
                     <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
@@ -492,7 +494,8 @@
           </div>
 
           <div class="form-row" style="margin-top:1.5rem; max-width:480px;">
-            <UserSelector v-model="nbSelectedUser" :label="t('staff.newBooking.assignUser')" />
+            <UserSelector v-model="nbSelectedUserId" :options="usersSelector"
+              :label="t('staff.newBooking.assignUser')" />
             <div class="form-group">
               <label class="form-label">{{ t('booking.fields.usage') }}</label>
               <select class="form-input" v-model="nbUsage">
@@ -654,6 +657,7 @@ import type {
   AvailableRoomDto,
   BookingDayOption,
   BookingSlotOption,
+  UserBaseDto,
 } from '../types/booking.types'
 import AssignUserModal from '@/components/AssignUserModal.vue'
 import UserSelector from '@/components/UserSelector.vue'
@@ -668,16 +672,16 @@ const { t } = useI18n()
 // ── API ───────────────────────────────────────────────────────────────────
 
 
-const userApi    = useUserApi();
-const roomApi    = useRoomApi();
-const bookingApi    = useBookingApi();
+const userApi = useUserApi();
+const roomApi = useRoomApi();
+const bookingApi = useBookingApi();
 
 // ── Enum option arrays ────────────────────────────────────────────────────
 const roomSizeOptions = Object.values(RoomSizeEnum)
 const bookingTypeOptions = Object.values(BookingTypeEnum)
 const usageOptions = Object.values(UsageEnum)
 const roleOptions = Object.values(RoleType)
-
+const usersSelector = ref<UserBaseDto[]>([])
 // ── View state ────────────────────────────────────────────────────────────
 type ViewName = 'overview' | 'rooms' | 'bookings' | 'newbooking' | 'users'
 const view = ref<ViewName>('overview')
@@ -711,9 +715,10 @@ const roomError = ref('')
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────
 onMounted(() => {
-  loadAvailability()
-  loadRooms()
-  loadBookings()
+  loadUsersSelector();
+  loadAvailability();
+  loadRooms();
+  loadBookings();
 })
 
 // ── Load functions ────────────────────────────────────────────────────────
@@ -743,7 +748,8 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await bookingApi.getBookings({page:1,
+    const data = await bookingApi.getBookings({
+      page: 1,
       limit: 200,
       textFilter: bookingSearch.value || undefined,
       bookingTypeEnum: bookingTypeFilterForList.value,
@@ -775,7 +781,16 @@ async function loadUsers() {
     loadingUsers.value = false
   }
 }
-
+async function loadUsersSelector() {
+  loadingAvailability.value = true
+  try {
+    usersSelector.value = await userApi.getUserSelectorOptions()
+  } catch (e) {
+    roomError.value = extractErrorMessage(e)
+  } finally {
+    loadingAvailability.value = false
+  }
+}
 // ── Debounced user search ─────────────────────────────────────────────────
 let userDebounceTimer: ReturnType<typeof setTimeout> | undefined
 function debouncedUserReload() {
@@ -955,7 +970,7 @@ const nbSlot = ref<BookingSlotOption | null>(null)
 const nbRoom = ref<AvailableRoomDto | null>(null)
 const nbUsage = ref<UsageEnum>(UsageEnum.STUDY)
 const nbConfirming = ref(false)
-const nbSelectedUser = ref<UserDto | null>(null)
+const nbSelectedUserId = ref<string | null>(null)
 const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
 
 function startNewBooking() {
@@ -964,7 +979,7 @@ function startNewBooking() {
   nbSlot.value = null
   nbRoom.value = null
   nbUsage.value = UsageEnum.STUDY
-  nbSelectedUser.value = null
+  nbSelectedUserId.value = null
   view.value = 'newbooking'
   loadAvailability()
 }
@@ -1042,7 +1057,7 @@ async function nbConfirm() {
       hour: nbSlot.value.hour,
       minutes: nbSlot.value.minutes,
       usage: nbUsage.value,
-      userId: nbSelectedUser.value?.id,
+      userId: nbSelectedUserId.value ? nbSelectedUserId.value :  undefined,
     })
     nbLastBooking.value = {
       dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,

@@ -140,6 +140,8 @@ const fr: AppLocale = {
         bookingType: 'Type de réservation',
         actions: 'Actions',
       },
+      alreadyAssigned: "Cette réservation a déjà un utilisateur assigné",
+      assignUserTooltip: "Assigner un utilisateur à cette réservation"
     },
     newBooking: {
       title: 'Créer une réservation',
@@ -208,8 +210,42 @@ const fr: AppLocale = {
     },
   },
   user: {
-    dashboard: 'Mon tableau de bord',
-    bookings: 'Mes réservations',
+    panel: 'Mon espace',
+    nav: {
+      section: 'Mon compte',
+      myBookings: 'Mes réservations',
+      book: 'Réserver une salle',
+      special: 'Créneaux spéciaux',
+      profile: 'Mon profil',
+      contestant: 'Participant',
+    },
+    myBookings: {
+      subtitle: 'Vos réservations à venir.',
+      nextBooking: 'Votre prochaine réservation',
+      allTitle: 'Toutes les réservations',
+      empty: 'Vous n’avez pas encore de réservations.',
+      past: 'Passées',
+    },
+    book: {
+      title: 'Réserver une salle',
+      subtitle: 'Choisissez un jour, un créneau puis une salle.',
+      confirm: 'Confirmer la réservation →',
+      successTitle: 'Réservation confirmée !',
+      noAvailability: 'Aucun créneau disponible pour le moment.',
+    },
+    special: {
+      title: 'Créneaux spéciaux',
+      subtitle: 'Créneaux prioritaires réservés pour vous.',
+      empty: 'Aucun créneau spécial disponible pour le moment.',
+      hint: 'Ces créneaux sont réservés aux utilisateurs éligibles. Choisissez-en un pour le réclamer immédiatement.',
+      label: 'Spécial',
+      pick: 'Choisir ce créneau',
+      confirmPick: 'Réclamer ce créneau ? Il vous sera immédiatement attribué.',
+    },
+    profile: {
+      subtitle: 'Vos coordonnées enregistrées.',
+      contactNote: 'Pour mettre à jour vos informations, veuillez contacter l’organisation.',
+    },
   },
   errors: {
     InternalServerError: "Une erreur inattendue s'est produite. Veuillez réessayer.",

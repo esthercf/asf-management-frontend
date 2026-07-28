@@ -139,6 +139,9 @@ const en = {
                 bookingType: 'Booking type',
                 actions: 'Actions',
             },
+            alreadyAssigned: "This booking already has a user assigned",
+            assignUserTooltip: "Assign a user to this booking"
+
         },
         newBooking: {
             title: 'Create a Booking',

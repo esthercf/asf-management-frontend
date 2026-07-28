@@ -141,6 +141,8 @@ const zh: AppLocale = {
         bookingType: '预订类型',
         actions: '操作',
       },
+      alreadyAssigned: "此预订已分配用户",
+      assignUserTooltip: "为此预订分配用户"
     },
     newBooking: {
       title: '创建预订',
@@ -209,9 +211,43 @@ const zh: AppLocale = {
     },
   },
   user: {
-    dashboard: '我的控制台',
-    bookings: '我的预订',
+  panel: '我的空间',
+  nav: {
+    section: '我的账户',
+    myBookings: '我的预订',
+    book: '预订房间',
+    special: '特殊时段',
+    profile: '我的资料',
+    contestant: '参赛者',
   },
+  myBookings: {
+    subtitle: '您即将到来的预订。',
+    nextBooking: '您的下一次预订',
+    allTitle: '所有预订',
+    empty: '您还没有任何预订。',
+    past: '过去',
+  },
+  book: {
+    title: '预订房间',
+    subtitle: '选择日期、时段，然后选择房间。',
+    confirm: '确认预订 →',
+    successTitle: '预订已确认！',
+    noAvailability: '目前没有可用时段。',
+  },
+  special: {
+    title: '特殊时段',
+    subtitle: '为您保留的优先时段。',
+    empty: '目前没有特殊时段。',
+    hint: '这些时段仅供符合条件的用户使用。选择一个即可立即分配。',
+    label: '特殊',
+    pick: '选择此时段',
+    confirmPick: '确认领取此时段？它将立即分配给您。',
+  },
+  profile: {
+    subtitle: '您登记的联系方式。',
+    contactNote: '如需更新信息，请联系组织方。',
+  },
+},
   errors: {
     InternalServerError: '发生了意外错误，请重试。',
     InvalidFileError: '文件无效。',

@@ -142,6 +142,8 @@ const de: AppLocale = {
         bookingType: 'Buchungstyp',
         actions: 'Aktionen',
       },
+      alreadyAssigned: "Diese Buchung hat bereits einen Benutzer",
+      assignUserTooltip: "Einen Benutzer für diese Buchung zuweisen"
     },
     newBooking: {
       title: 'Buchung erstellen',
@@ -210,9 +212,43 @@ const de: AppLocale = {
     },
   },
   user: {
-    dashboard: 'Mein Dashboard',
-    bookings: 'Meine Buchungen',
+  panel: 'Mein Bereich',
+  nav: {
+    section: 'Mein Konto',
+    myBookings: 'Meine Buchungen',
+    book: 'Raum buchen',
+    special: 'Spezielle Slots',
+    profile: 'Mein Profil',
+    contestant: 'Teilnehmer',
   },
+  myBookings: {
+    subtitle: 'Ihre bevorstehenden Reservierungen.',
+    nextBooking: 'Ihre nächste Buchung',
+    allTitle: 'Alle Buchungen',
+    empty: 'Sie haben noch keine Buchungen.',
+    past: 'Vergangen',
+  },
+  book: {
+    title: 'Raum buchen',
+    subtitle: 'Wählen Sie einen Tag, einen Slot und dann einen Raum.',
+    confirm: 'Buchung bestätigen →',
+    successTitle: 'Buchung bestätigt!',
+    noAvailability: 'Zurzeit keine Slots verfügbar.',
+  },
+  special: {
+    title: 'Spezielle Slots',
+    subtitle: 'Priorisierte Slots für Sie reserviert.',
+    empty: 'Zurzeit keine speziellen Slots verfügbar.',
+    hint: 'Diese Slots sind für berechtigte Benutzer reserviert. Wählen Sie einen, um ihn sofort zu beanspruchen.',
+    label: 'Speziell',
+    pick: 'Diesen Slot wählen',
+    confirmPick: 'Diesen Slot beanspruchen? Er wird Ihnen zugewiesen.',
+  },
+  profile: {
+    subtitle: 'Ihre gespeicherten Kontaktdaten.',
+    contactNote: 'Um Ihre Daten zu aktualisieren, wenden Sie sich bitte an die Organisation.',
+  },
+},
   errors: {
     InternalServerError: 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
     InvalidFileError: 'Die Datei ist ungültig.',

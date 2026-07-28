@@ -3,6 +3,12 @@ import { BookingTypeEnum } from '../enums/booking.enum'
 import { RoleType } from '../enums/roles.enum'
 import { CountryCode, FilterActiveEnum, LanguageEnum, SortEnum, TshirtEnum } from '../enums/user.enum'
 
+interface UserBaseDto {
+  id: string
+  email: string
+  firstnames: string
+  surnames: string
+}
 
 export interface UserDto {
   id: string,

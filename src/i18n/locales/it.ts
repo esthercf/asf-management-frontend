@@ -141,6 +141,8 @@ const it: AppLocale = {
         bookingType: 'Tipo di prenotazione',
         actions: 'Azioni',
       },
+      alreadyAssigned: "Questa prenotazione ha già un utente assegnato",
+      assignUserTooltip: "Assegna un utente a questa prenotazione"
     },
     newBooking: {
       title: 'Crea una prenotazione',
@@ -208,10 +210,44 @@ const it: AppLocale = {
       },
     },
   },
-  user: {
-    dashboard: 'La mia dashboard',
-    bookings: 'Le mie prenotazioni',
+ user: {
+  panel: 'Il mio spazio',
+  nav: {
+    section: 'Il mio account',
+    myBookings: 'Le mie prenotazioni',
+    book: 'Prenota una sala',
+    special: 'Slot speciali',
+    profile: 'Il mio profilo',
+    contestant: 'Concorrente',
   },
+  myBookings: {
+    subtitle: 'Le tue prossime prenotazioni.',
+    nextBooking: 'La tua prossima prenotazione',
+    allTitle: 'Tutte le prenotazioni',
+    empty: 'Non hai ancora prenotazioni.',
+    past: 'Passate',
+  },
+  book: {
+    title: 'Prenota una sala',
+    subtitle: 'Scegli un giorno, uno slot e poi una sala.',
+    confirm: 'Conferma prenotazione →',
+    successTitle: 'Prenotazione confermata!',
+    noAvailability: 'Nessuno slot disponibile al momento.',
+  },
+  special: {
+    title: 'Slot speciali',
+    subtitle: 'Slot prioritari riservati per te.',
+    empty: 'Nessuno slot speciale disponibile al momento.',
+    hint: 'Questi slot sono riservati agli utenti idonei. Scegline uno per reclamarlo subito.',
+    label: 'Speciale',
+    pick: 'Scegli questo slot',
+    confirmPick: 'Reclamare questo slot? Ti verrà assegnato immediatamente.',
+  },
+  profile: {
+    subtitle: 'Le tue informazioni di contatto registrate.',
+    contactNote: 'Per aggiornare i tuoi dati, contatta l’organizzazione.',
+  },
+},
   errors: {
     InternalServerError: 'Si è verificato un errore imprevisto. Riprova.',
     InvalidFileError: 'Il file non è valido.',

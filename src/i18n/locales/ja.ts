@@ -141,6 +141,8 @@ const ja: AppLocale = {
         bookingType: '予約タイプ',
         actions: '操作',
       },
+      alreadyAssigned: "この予約にはすでにユーザーが割り当てられています",
+      assignUserTooltip: "Assegna un utente a questa prenotazione"
     },
     newBooking: {
       title: '予約を作成',
@@ -209,8 +211,42 @@ const ja: AppLocale = {
     },
   },
   user: {
-    dashboard: 'マイダッシュボード',
-    bookings: '私の予約',
+    panel: 'マイスペース',
+    nav: {
+      section: 'マイアカウント',
+      myBookings: '予約一覧',
+      book: '部屋を予約',
+      special: '特別枠',
+      profile: 'プロフィール',
+      contestant: '参加者',
+    },
+    myBookings: {
+      subtitle: '今後の予約。',
+      nextBooking: '次の予約',
+      allTitle: 'すべての予約',
+      empty: 'まだ予約はありません。',
+      past: '過去',
+    },
+    book: {
+      title: '部屋を予約',
+      subtitle: '日付、時間枠、部屋を選択してください。',
+      confirm: '予約を確定 →',
+      successTitle: '予約が確定しました！',
+      noAvailability: '現在利用可能な枠はありません。',
+    },
+    special: {
+      title: '特別枠',
+      subtitle: 'あなたのために予約された優先枠。',
+      empty: '現在特別枠はありません。',
+      hint: 'これらの枠は対象ユーザー専用です。選択するとすぐに割り当てられます。',
+      label: '特別',
+      pick: 'この枠を選択',
+      confirmPick: 'この枠を取得しますか？すぐに割り当てられます。',
+    },
+    profile: {
+      subtitle: '登録されている連絡先情報。',
+      contactNote: '詳細を更新するには、組織に連絡してください。',
+    },
   },
   errors: {
     InternalServerError: '予期しないエラーが発生しました。もう一度お試しください。',

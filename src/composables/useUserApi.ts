@@ -1,5 +1,6 @@
 
 import { client } from '../services/http.client'
+import { UserBaseDto } from '../types/booking.types'
 import { DatatableResult } from '../types/common.types'
 import type { UserDto, GetUsersParams, UpdateUserDto, UpdateUserActiveDto } from '../types/user.types'
 
@@ -20,6 +21,11 @@ export function useUserApi() {
     return client.get<DatatableResult<UserDto>>(`/users?${q}`).then(r => r.data)
   }
 
+  function getUserSelectorOptions(): Promise<UserBaseDto[]> {
+    return client.get<UserBaseDto[]>('/users/selector').then(r => r.data)
+  }
+
+
   function getUser(id: string): Promise<UserDto> {
     return client.get<UserDto>(`/users/${id}`).then(r => r.data)
   }
@@ -36,6 +42,6 @@ export function useUserApi() {
 
 
   return {
-    getUsers, getUser, updateUser, updateUserActiveByEmail
+    getUsers, getUser, updateUser, updateUserActiveByEmail, getUserSelectorOptions
   }
 }

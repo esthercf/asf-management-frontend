@@ -141,6 +141,8 @@ const ca: AppLocale = {
         bookingType: 'Tipus de reserva',
         actions: 'Accions',
       },
+      alreadyAssigned: "Aquesta reserva ja té un usuari assignat",
+      assignUserTooltip: "Assigna un usuari a aquesta reserva"
     },
     newBooking: {
       title: 'Crear una reserva',
@@ -209,8 +211,42 @@ const ca: AppLocale = {
     },
   },
   user: {
-    dashboard: 'El meu tauler',
-    bookings: 'Les meves reserves',
+    panel: 'El meu espai',
+    nav: {
+      section: 'El meu compte',
+      myBookings: 'Les meves reserves',
+      book: 'Reservar una sala',
+      special: 'Franges especials',
+      profile: 'El meu perfil',
+      contestant: 'Concursant',
+    },
+    myBookings: {
+      subtitle: 'Les teves reserves pròximes.',
+      nextBooking: 'La teva pròxima reserva',
+      allTitle: 'Totes les reserves',
+      empty: 'Encara no tens reserves.',
+      past: 'Passades',
+    },
+    book: {
+      title: 'Reservar una sala',
+      subtitle: 'Tria un dia, una franja i després una sala.',
+      confirm: 'Confirmar reserva →',
+      successTitle: 'Reserva confirmada!',
+      noAvailability: 'No hi ha franges disponibles ara mateix.',
+    },
+    special: {
+      title: 'Franges especials',
+      subtitle: 'Franges prioritàries reservades per a tu.',
+      empty: 'No hi ha franges especials disponibles ara mateix.',
+      hint: 'Aquestes franges estan reservades per a usuaris elegibles. Tria’n una per reclamar-la immediatament.',
+      label: 'Especial',
+      pick: 'Tria aquesta franja',
+      confirmPick: 'Reclamar aquesta franja? Se t’assignarà immediatament.',
+    },
+    profile: {
+      subtitle: 'La teva informació de contacte registrada.',
+      contactNote: 'Per actualitzar les teves dades, contacta amb l’organització.',
+    },
   },
   errors: {
     InternalServerError: "S'ha produït un error inesperat. Si us plau, torna-ho a intentar.",
