@@ -138,7 +138,6 @@
           <p class="subtitle">{{ t('user.book.subtitle') }}</p>
         </div>
 
-        <!-- Step indicator -->
         <div class="steps-row">
           <div class="step" :class="{ active: nbStep >= 1, done: nbStep > 1 }">
             <div class="step-num">{{ nbStep > 1 ? '✓' : '1' }}</div>
@@ -150,13 +149,8 @@
             <div class="step-label">{{ t('staff.newBooking.steps.slot') }}</div>
           </div>
           <div class="step-line" :class="{ active: nbStep > 2 }"></div>
-          <div class="step" :class="{ active: nbStep >= 3, done: nbStep > 3 }">
-            <div class="step-num">{{ nbStep > 3 ? '✓' : '3' }}</div>
-            <div class="step-label">{{ t('staff.newBooking.steps.room') }}</div>
-          </div>
-          <div class="step-line" :class="{ active: nbStep > 3 }"></div>
-          <div class="step" :class="{ active: nbStep >= 4 }">
-            <div class="step-num">4</div>
+          <div class="step" :class="{ active: nbStep >= 3 }">
+            <div class="step-num">3</div>
             <div class="step-label">{{ t('staff.newBooking.steps.confirm') }}</div>
           </div>
         </div>
@@ -194,16 +188,15 @@
           <h2 class="section-title">
             {{ t('staff.newBooking.availableSlots') }} — {{ nbDay?.weekday }}, {{ nbDay?.dayNum }} {{ nbDay?.month }}
           </h2>
+          <p class="step-hint">{{ t('user.book.slotHint') }}</p>
           <div class="slot-grid">
             <button v-for="slot in nbSlotsForDay" :key="slot.key" class="slot-card"
-              :class="{ selected: nbSlot?.startTime === slot.startTime }" @click="nbSelectSlot(slot)">
+              :class="{ selected: nbSlot?.startTime === slot.startTime, 'slot-loading': lockingSlot === slot.startTime }"
+              :disabled="lockingSlot !== null" @click="nbSelectSlot(slot)">
               <div class="slot-time">{{ formatMinutes(slot.startTime) }}</div>
               <div class="slot-dash">–</div>
               <div class="slot-time">{{ formatMinutes(slot.endTime) }}</div>
-              <div class="slot-rooms-count">
-                {{ slot.roomCount }} {{ slot.roomCount !== 1 ? t('room.title').toLowerCase() :
-                  t('staff.newBooking.room') }}
-              </div>
+              <div class="slot-rooms-count">{{ lockingSlot === slot.startTime ? '⏳' : '' }}</div>
             </button>
           </div>
           <div v-if="nbSlotsForDay.length === 0" class="empty-state">
@@ -212,34 +205,16 @@
           </div>
         </div>
 
-        <!-- Step 3: Room -->
+        <!-- Step 3: Confirm -->
         <div v-if="nbStep === 3" class="step-panel">
-          <button class="back-btn" @click="nbStep = 2">← {{ t('common.back') }}</button>
-          <h2 class="section-title">{{ t('staff.newBooking.chooseRoom') }}</h2>
-          <div class="room-grid">
-            <button v-for="room in nbRoomsForSlot" :key="room.id" class="card room-card room-select-card"
-              :class="{ selected: nbRoom?.id?.toString() === room.id?.toString() }" @click="nbSelectRoom(room)">
-              <div class="room-card-header">
-                <div>
-                  <div class="room-name">{{ room.name }}</div>
-                  <div class="room-floor">
-                    Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}
-                  </div>
-                </div>
-                <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
-              </div>
-              <div class="room-details">
-                <span v-if="room.windows" class="room-detail">🪟 Windows</span>
-                <span class="room-detail">{{ room.size ?? 'N/A' }}</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 4: Confirm -->
-        <div v-if="nbStep === 4" class="step-panel">
-          <button class="back-btn" @click="nbStep = 3">← {{ t('common.back') }}</button>
           <h2 class="section-title">{{ t('staff.newBooking.confirmTitle') }}</h2>
+          <div class="timer-banner" :class="{ 'timer-warning': timerSeconds <= 20 }">
+            <span class="timer-icon">⏱️</span>
+            <span class="timer-text">{{ t('user.book.timerLabel') }}</span>
+            <span class="timer-count" :class="{ 'timer-urgent': timerSeconds <= 10 }">
+              {{ formatTimer(timerSeconds) }}
+            </span>
+          </div>
           <div class="confirm-card card">
             <div class="confirm-row">
               <span class="confirm-icon">📅</span>
@@ -252,8 +227,7 @@
               <span class="confirm-icon">🕐</span>
               <div>
                 <div class="confirm-label">{{ t('booking.fields.time') }}</div>
-                <div class="confirm-value">
-                  {{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}
+                <div class="confirm-value">{{ formatMinutes(nbSlot?.startTime) }} – {{ formatMinutes(nbSlot?.endTime) }}
                 </div>
               </div>
             </div>
@@ -261,20 +235,20 @@
               <span class="confirm-icon">🏠</span>
               <div>
                 <div class="confirm-label">{{ t('booking.fields.room') }}</div>
-                <div class="confirm-value">{{ nbRoom?.name }} (#{{ nbRoom?.roomNumber }})</div>
+                <div class="confirm-value">{{ nbLockedRoom?.roomName }} (#{{ nbLockedRoom?.roomNumber }})</div>
               </div>
             </div>
           </div>
           <div class="modal-footer" style="justify-content:flex-start; margin-top:1.5rem; padding:0;">
-            <button class="btn btn-secondary" @click="view = 'mybookings'">{{ t('common.cancel') }}</button>
+            <button class="btn btn-secondary" @click="cancelBookingFlow">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="nbConfirming" @click="nbConfirm">
               {{ nbConfirming ? t('common.loading') : t('user.book.confirm') }}
             </button>
           </div>
         </div>
 
-        <!-- Step 5: Success -->
-        <div v-if="nbStep === 5" class="step-panel success-panel">
+        <!-- Step 4: Success -->
+        <div v-if="nbStep === 4" class="step-panel success-panel">
           <div class="success-icon">✅</div>
           <h2 class="section-title">{{ t('user.book.successTitle') }}</h2>
           <div class="confirm-card card" style="margin-top:1.5rem; max-width:420px;">
@@ -301,15 +275,27 @@
             </div>
           </div>
           <div style="display:flex; gap:.75rem; margin-top:1.75rem;">
-            <button class="btn btn-primary" @click="startBookingFlow">
-              + {{ t('staff.newBooking.anotherBooking') }}
-            </button>
-            <button class="btn btn-secondary" @click="view = 'mybookings'; loadMyBookings()">
-              {{ t('user.nav.myBookings') }}
-            </button>
+            <button class="btn btn-primary" @click="startBookingFlow">+ {{ t('staff.newBooking.anotherBooking')
+            }}</button>
+            <button class="btn btn-secondary" @click="view = 'mybookings'; loadMyBookings()">{{ t('user.nav.myBookings')
+            }}</button>
           </div>
         </div>
       </div>
+
+      <!-- Error Modal — add just before closing </div> of page wrapper -->
+      <Teleport to="body">
+        <div v-if="bookingError" class="modal-overlay">
+          <div class="modal">
+            <div style="font-size:2.5rem; text-align:center; margin-bottom:.75rem;">⚠️</div>
+            <h2 class="modal-title" style="text-align:center;">{{ t('user.book.errorTitle') }}</h2>
+            <p style="text-align:center; color:var(--muted); font-weight:600; margin:1rem 0;">{{ bookingError }}</p>
+            <div class="modal-footer" style="justify-content:center;">
+              <button class="btn btn-primary" @click="onBookingErrorClose">{{ t('user.book.errorAction') }}</button>
+            </div>
+          </div>
+        </div>
+      </Teleport>
 
       <!-- ── Special Bookings ── -->
       <div v-if="view === 'special'">
@@ -412,7 +398,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useBookingApi } from '../composables/useBookingApi';
@@ -420,7 +406,7 @@ import { useAuthStore } from '../stores/auth.store';
 import { useSessionApi } from '../composables/useSessionApi';
 import { useUserApi } from '../composables/useUserApi';
 import { UsageEnum, RoomSizeEnum, BookingTypeEnum } from '../enums/booking.enum';
-import { BookingDto, AvailableRoomDto, BookingDayOption, BookingSlotOption } from '../types/booking.types';
+import { BookingDto, AvailableRoomDto, BookingDayOption, BookingSlotOption, LockAutoResult } from '../types/booking.types';
 import { UserDto } from '../types/user.types';
 import { extractErrorMessage } from '../utiles/error.utiles';
 import { useUserProfileStore } from '../stores/user-profile.store';
@@ -556,18 +542,134 @@ async function logout() {
 const nbStep = ref(1)
 const nbDay = ref<BookingDayOption | null>(null)
 const nbSlot = ref<BookingSlotOption | null>(null)
-const nbRoom = ref<AvailableRoomDto | null>(null)
-const nbUsage = UsageEnum.STUDY;
+const nbLockedRoom = ref<LockAutoResult | null>(null)
 const nbConfirming = ref(false)
 const nbLastBooking = ref<{ dateLabel: string; timeLabel: string; roomName: string } | null>(null)
+const lockingSlot = ref<number | null>(null)
+const bookingError = ref<string | null>(null)
+
+const timerSeconds = ref(0)
+let timerInterval: ReturnType<typeof setInterval> | undefined
+
+function startTimer(seconds: number) {
+  clearTimer()
+  timerSeconds.value = seconds
+  timerInterval = setInterval(() => {
+    timerSeconds.value--
+    if (timerSeconds.value <= 0) {
+      clearTimer()
+      onTimerExpired()
+    }
+  }, 1000)
+}
+
+function clearTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = undefined
+  }
+}
+
+async function onTimerExpired() {
+  if (nbLockedRoom.value && nbSlot.value && nbDay.value) {
+    await bookingApi.unlockSlot(
+      nbLockedRoom.value.roomId,
+      nbDay.value.iso,
+      nbSlot.value.startTime,
+    ).catch(() => { })
+  }
+  bookingError.value = t('user.book.timerExpired')
+}
 
 function startBookingFlow() {
-  nbStep.value = 1;
-  nbDay.value = null;
-  nbSlot.value = null;
-  nbRoom.value = null;
-  view.value = 'book';
+  clearTimer()
+  nbStep.value = 1
+  nbDay.value = null
+  nbSlot.value = null
+  nbLockedRoom.value = null
+  bookingError.value = null
+  view.value = 'book'
   loadAvailability()
+}
+
+function nbSelectDay(day: BookingDayOption) {
+  nbDay.value = day
+  nbSlot.value = null
+  nbStep.value = 2
+}
+
+async function nbSelectSlot(slot: BookingSlotOption) {
+  if (lockingSlot.value !== null) return
+  lockingSlot.value = slot.startTime
+  try {
+    const result = await bookingApi.lockAuto(
+      nbDay.value!.iso + 'T00:00:00.000Z',
+      slot.startTime,
+    )
+    if (!result) {
+      bookingError.value = t('user.book.noRoomsAvailable')
+      return
+    }
+    nbSlot.value = slot
+    nbLockedRoom.value = result
+    nbStep.value = 3
+    startTimer(result.expiresInSeconds)
+  } catch (e: any) {
+    const code = e?.response?.data?.code
+    bookingError.value = code === 'BookingOverlapsError'
+      ? t('errors.BookingOverlapsError')
+      : extractErrorMessage(e)
+  } finally {
+    lockingSlot.value = null
+  }
+}
+
+async function cancelBookingFlow() {
+  clearTimer()
+  if (nbLockedRoom.value && nbSlot.value && nbDay.value) {
+    await bookingApi.unlockSlot(
+      nbLockedRoom.value.roomId,
+      nbDay.value.iso,
+      nbSlot.value.startTime,
+    ).catch(() => { })
+  }
+  startBookingFlow()
+}
+
+async function nbConfirm() {
+  if (!nbDay.value || !nbSlot.value || !nbLockedRoom.value) return
+  nbConfirming.value = true
+  try {
+    await bookingApi.createBooking({
+      roomId: nbLockedRoom.value.roomId,
+      date: nbDay.value.iso + 'T00:00:00.000Z',
+      hour: nbSlot.value.hour,
+      minutes: nbSlot.value.minutes,
+      usage: UsageEnum.STUDY,
+    })
+    clearTimer()
+    nbLastBooking.value = {
+      dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
+      timeLabel: `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
+      roomName: `${nbLockedRoom.value.roomName} (#${nbLockedRoom.value.roomNumber})`,
+    }
+    nbStep.value = 4
+    loadMyBookings()
+    loadAvailability()
+  } catch (e: any) {
+    clearTimer()
+    const code = e?.response?.data?.code
+    bookingError.value = code === 'BookingOverlapsError'
+      ? t('errors.BookingOverlapsError')
+      : extractErrorMessage(e)
+  } finally {
+    nbConfirming.value = false
+  }
+}
+
+function onBookingErrorClose() {
+  bookingError.value = null
+  startBookingFlow()
 }
 
 const availableDays = computed<BookingDayOption[]>(() => {
@@ -605,49 +707,22 @@ const nbSlotsForDay = computed<BookingSlotOption[]>(() => {
   return Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
 })
 
-const nbRoomsForSlot = computed<AvailableRoomDto[]>(() => {
-  if (!nbDay.value || !nbSlot.value) return []
-  return availability.value.filter(room =>
-    room.available?.some(s => s.date === nbDay.value!.iso && s.startTime === nbSlot.value!.startTime)
-  )
-})
-
-function nbSelectDay(day: BookingDayOption) {
-  nbDay.value = day; nbSlot.value = null; nbRoom.value = null; nbStep.value = 2
-}
-function nbSelectSlot(slot: BookingSlotOption) {
-  nbSlot.value = slot; nbRoom.value = null; nbStep.value = 3
-}
-function nbSelectRoom(room: AvailableRoomDto) {
-  nbRoom.value = room; nbStep.value = 4
+function formatTimer(seconds: number): string {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0')
+  const s = (seconds % 60).toString().padStart(2, '0')
+  return `${m}:${s}`
 }
 
-async function nbConfirm() {
-  if (!nbDay.value || !nbSlot.value || !nbRoom.value) return
-  nbConfirming.value = true
-  try {
-    await bookingApi.lockSlot(nbRoom.value.id.toString(), nbSlot.value.date, nbSlot.value.startTime)
-    await bookingApi.createBooking({
-      roomId: nbRoom.value.id,
-      date: nbSlot.value.date + 'T00:00:00.000Z',
-      hour: nbSlot.value.hour,
-      minutes: nbSlot.value.minutes,
-      usage: nbUsage,
-    })
-    nbLastBooking.value = {
-      dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
-      timeLabel: `${formatMinutes(nbSlot.value.startTime)} – ${formatMinutes(nbSlot.value.endTime)}`,
-      roomName: `${nbRoom.value.name} (#${nbRoom.value.roomNumber})`,
-    }
-    nbStep.value = 5
-    loadMyBookings()
-    loadAvailability()
-  } catch (e) {
-    console.error(extractErrorMessage(e))
-  } finally {
-    nbConfirming.value = false
+onUnmounted(() => {
+  clearTimer()
+  if (nbLockedRoom.value && nbSlot.value && nbDay.value) {
+    bookingApi.unlockSlot(
+      nbLockedRoom.value.roomId,
+      nbDay.value.iso,
+      nbSlot.value.startTime,
+    ).catch(() => { })
   }
-}
+})
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function formatMinutes(mins: number | undefined | null): string {
@@ -1202,5 +1277,57 @@ function bookingTypeLabel(bt: BookingTypeEnum): string {
   color: var(--muted);
   margin-top: 1.5rem;
   font-style: italic;
+}
+
+.step-hint {
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  margin-top: -.5rem;
+}
+
+.slot-loading {
+  opacity: .6;
+  cursor: wait;
+}
+
+.timer-banner {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--gold-100, #fdf8ee);
+  border: 1.5px solid var(--gold, #e8b84b);
+  border-radius: var(--radius-md, 8px);
+  padding: .85rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.timer-banner.timer-warning {
+  background: #fff3cd;
+  border-color: #f0a500;
+}
+
+.timer-icon {
+  font-size: 1.2rem;
+}
+
+.timer-text {
+  flex: 1;
+  color: var(--ink);
+}
+
+.timer-count {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--navy);
+  min-width: 52px;
+  text-align: right;
+}
+
+.timer-count.timer-urgent {
+  color: var(--red, #c00);
 }
 </style>

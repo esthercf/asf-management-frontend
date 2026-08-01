@@ -125,6 +125,14 @@ export interface LockSlotDto {
   startTime: number,        // minutes since midnight
 }
 
+export interface LockAutoResult {
+  roomId:           string
+  roomName:         string
+  roomNumber:       number
+  expiresInSeconds: number
+}
+
+
 export interface LockSlotResponseDto {
   expiresInSeconds: number,
 }

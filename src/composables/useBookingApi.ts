@@ -1,7 +1,7 @@
 
 
 import { AvailableRoomDto, } from '../types/room.types'
-import { BookingDto, CreateBookingDto, GetAvailabilityParams, GetBookingsParams } from '../types/booking.types'
+import { BookingDto, CreateBookingDto, GetAvailabilityParams, GetBookingsParams, LockAutoResult } from '../types/booking.types'
 import { DatatableResult } from '../types/common.types'
 import { client } from '../services/http.client'
 
@@ -78,7 +78,11 @@ export function useBookingApi() {
     return client.delete(`/bookings/${id}`).then(r => r.data)
   }
 
-
+function lockAuto(date: string, startTime: number): Promise<LockAutoResult | null> {
+  return client
+    .post<LockAutoResult | null>('/bookings/lock/auto', { date, startTime })
+    .then(r => r.data)
+}
   function assignBookingUser(bookingId: string, userId: string): Promise<BookingDto> {
     return client.patch<BookingDto>(`/bookings/assign/${bookingId}/user/${userId}`).then(r => r.data)
   }
@@ -88,7 +92,7 @@ export function useBookingApi() {
     // availability
     getAvailability,
     // slots
-    lockSlot, unlockSlot,
+    lockSlot, unlockSlot, lockAuto,
     // bookings
     getBookings, getMyBookings, getBooking, createBooking, deleteBooking, assignBookingUser, getSpecialBookings, pickBooking,
 
