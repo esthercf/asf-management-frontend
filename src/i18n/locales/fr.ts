@@ -37,18 +37,37 @@ const fr: AppLocale = {
   },
   auth: {
     login: {
-      heading: 'Bon retour.',
-      sub: 'Connectez-vous à votre compte.',
-      email: 'Adresse e-mail',
-      password: 'Mot de passe',
-      submit: 'Se connecter →',
-      submitting: 'Connexion…',
+      heading: "Bon retour.",
+      sub: "Connectez-vous à votre compte.",
+      email: "E-mail",
+      password: "Mot de passe",
+      emailPlaceholder: "vous@universite.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "Se connecter →",
+      submitting: "Connexion…",
+      forgot: "Mot de passe oublié ?",
       error: {
-        empty: 'Veuillez entrer votre e-mail et votre mot de passe.',
-        failed: 'Échec de la connexion. Veuillez réessayer.',
-      },
+        empty: "Veuillez entrer votre e-mail et votre mot de passe.",
+        emptyEmail: "Veuillez entrer votre e-mail.",
+        failed: "Échec de la connexion. Veuillez réessayer.",
+        resetFailed: "Échec de la réinitialisation du mot de passe. Veuillez réessayer."
+      }
     },
-    logout: 'Se déconnecter',
+    reset: {
+      heading: "Réinitialiser votre mot de passe",
+      sub: "Entrez le jeton reçu par e-mail et choisissez un nouveau mot de passe.",
+      userId: "Identifiant utilisateur",
+      userIdPlaceholder: "Identifiant utilisateur",
+      token: "Jeton de réinitialisation",
+      tokenPlaceholder: "Collez votre jeton de réinitialisation",
+      newPassword: "Nouveau mot de passe",
+      newPasswordPlaceholder: "••••••••",
+      submit: "Réinitialiser le mot de passe →",
+      submitting: "Réinitialisation…",
+      missingFileds: "Tous les champs sont obligatoires.",
+      success: "Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter."
+    },
+    logout: "Se déconnecter"
   },
   booking: {
     title: 'Mes réservations',
@@ -228,11 +247,18 @@ const fr: AppLocale = {
     },
     book: {
       title: 'Réserver une salle',
-      subtitle: 'Choisissez un jour, un créneau puis une salle.',
+      subtitle: 'Choisis un jour et un créneau horaire.',
+      slotHint: 'Clique sur un créneau pour le réserver. Tu disposes de 60 secondes pour confirmer.',
       confirm: 'Confirmer la réservation →',
       successTitle: 'Réservation confirmée !',
       noAvailability: 'Aucun créneau disponible pour le moment.',
+      noRoomsAvailable: 'Aucune salle disponible pour ce créneau. Essaie un autre.',
+      timerLabel: 'Temps pour confirmer :',
+      timerExpired: 'Ton temps de réservation a expiré. Recommence.',
+      errorTitle: 'Échec de la réservation',
+      errorAction: 'Recommencer',
     },
+
     special: {
       title: 'Créneaux spéciaux',
       subtitle: 'Créneaux prioritaires réservés pour vous.',

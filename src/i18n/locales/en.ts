@@ -40,14 +40,33 @@ const en = {
             sub: 'Sign in to your account.',
             email: 'Email',
             password: 'Password',
+            emailPlaceholder: 'you@university.edu',
+            passwordPlaceholder: '••••••••',
             submit: 'Sign in →',
             submitting: 'Signing in…',
+            forgot: 'Forgot password?',
             error: {
                 empty: 'Please enter your email and password.',
+                emptyEmail: 'Please enter your email.',
                 failed: 'Login failed. Please try again.',
-            },
+                resetFailed: 'Password reset failed. Please try again.'
+            }
         },
-        logout: 'Sign out',
+        reset: {
+            heading: "Reset your password",
+            sub: "Enter the token from your email and choose a new password.",
+            userId: "User ID",
+            userIdPlaceholder: "User ID",
+            token: "Reset Token",
+            tokenPlaceholder: "Paste your reset token",
+            newPassword: "New Password",
+            newPasswordPlaceholder: "••••••••",
+            submit: "Reset password →",
+            submitting: "Resetting…",
+            missingFileds: "All fields are required.",
+            success: "Password reset successful! You can now log in."
+        },
+        logout: 'Sign out'
     },
     booking: {
         title: 'My Bookings',
@@ -228,10 +247,16 @@ const en = {
         },
         book: {
             title: 'Book a Room',
-            subtitle: 'Pick a day, a slot, then a room.',
+            subtitle: 'Pick a day and a time slot.',
+            slotHint: 'Click a slot to reserve it. You will have 60 seconds to confirm.',
             confirm: 'Confirm booking →',
             successTitle: 'Booking confirmed!',
             noAvailability: 'No slots available right now.',
+            noRoomsAvailable: 'No rooms available for this slot. Please try another.',
+            timerLabel: 'Time to confirm:',
+            timerExpired: 'Your reservation time expired. Please start again.',
+            errorTitle: 'Booking failed',
+            errorAction: 'Start again',
         },
         special: {
             title: 'Special Slots',

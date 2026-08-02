@@ -39,18 +39,37 @@ const es: AppLocale = {
   },
   auth: {
     login: {
-      heading: 'Bienvenido de nuevo.',
-      sub: 'Accede a tu cuenta.',
-      email: 'Correo electrónico',
-      password: 'Contraseña',
-      submit: 'Entrar →',
-      submitting: 'Entrando…',
+      heading: "Bienvenido de nuevo.",
+      sub: "Inicia sesión en tu cuenta.",
+      email: "Correo electrónico",
+      password: "Contraseña",
+      emailPlaceholder: "tú@universidad.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "Iniciar sesión →",
+      submitting: "Iniciando sesión…",
+      forgot: "¿Olvidaste tu contraseña?",
       error: {
-        empty: 'Por favor, introduce tu correo y contraseña.',
-        failed: 'Error al iniciar sesión. Inténtalo de nuevo.',
-      },
+        empty: "Por favor introduce tu correo y contraseña.",
+        emptyEmail: "Por favor introduce tu correo.",
+        failed: "Error al iniciar sesión. Inténtalo de nuevo.",
+        resetFailed: "Error al restablecer la contraseña. Inténtalo de nuevo."
+      }
     },
-    logout: 'Cerrar sesión',
+    reset: {
+      heading: "Restablecer tu contraseña",
+      sub: "Introduce el token de tu correo y elige una nueva contraseña.",
+      userId: "ID de usuario",
+      userIdPlaceholder: "ID de usuario",
+      token: "Token de restablecimiento",
+      tokenPlaceholder: "Pega tu token de restablecimiento",
+      newPassword: "Nueva contraseña",
+      newPasswordPlaceholder: "••••••••",
+      submit: "Restablecer contraseña →",
+      submitting: "Restableciendo…",
+      missingFileds: "Todos los campos son obligatorios.",
+      success: "¡Contraseña restablecida con éxito! Ahora puedes iniciar sesión."
+    },
+    logout: "Cerrar sesión"
   },
   booking: {
     title: 'Mis reservas',
@@ -230,11 +249,18 @@ const es: AppLocale = {
     },
     book: {
       title: 'Reservar una sala',
-      subtitle: 'Elige un día, un turno y luego una sala.',
+      subtitle: 'Elige un día y una franja horaria.',
+      slotHint: 'Haz clic en una franja para reservarla. Tendrás 60 segundos para confirmar.',
       confirm: 'Confirmar reserva →',
       successTitle: '¡Reserva confirmada!',
-      noAvailability: 'No hay turnos disponibles en este momento.',
+      noAvailability: 'No hay franjas disponibles en este momento.',
+      noRoomsAvailable: 'No hay salas disponibles para esta franja. Intenta con otra.',
+      timerLabel: 'Tiempo para confirmar:',
+      timerExpired: 'Tu tiempo de reserva ha expirado. Vuelve a empezar.',
+      errorTitle: 'La reserva ha fallado',
+      errorAction: 'Volver a empezar',
     },
+
     special: {
       title: 'Turnos especiales',
       subtitle: 'Turnos prioritarios reservados para ti.',

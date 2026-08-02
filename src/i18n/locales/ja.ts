@@ -38,18 +38,37 @@ const ja: AppLocale = {
   },
   auth: {
     login: {
-      heading: 'おかえりなさい。',
-      sub: 'アカウントにサインインしてください。',
-      email: 'メールアドレス',
-      password: 'パスワード',
-      submit: 'サインイン →',
-      submitting: 'サインイン中…',
+      heading: "お帰りなさい。",
+      sub: "アカウントにサインインしてください。",
+      email: "メールアドレス",
+      password: "パスワード",
+      emailPlaceholder: "you@university.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "サインイン →",
+      submitting: "サインイン中…",
+      forgot: "パスワードをお忘れですか？",
       error: {
-        empty: 'メールアドレスとパスワードを入力してください。',
-        failed: 'ログインに失敗しました。もう一度お試しください。',
-      },
+        empty: "メールアドレスとパスワードを入力してください。",
+        emptyEmail: "メールアドレスを入力してください。",
+        failed: "サインインに失敗しました。もう一度お試しください。",
+        resetFailed: "パスワードのリセットに失敗しました。もう一度お試しください。"
+      }
     },
-    logout: 'サインアウト',
+    reset: {
+      heading: "パスワードをリセット",
+      sub: "メールのトークンを入力し、新しいパスワードを設定してください。",
+      userId: "ユーザーID",
+      userIdPlaceholder: "ユーザーID",
+      token: "リセットトークン",
+      tokenPlaceholder: "リセットトークンを貼り付けてください",
+      newPassword: "新しいパスワード",
+      newPasswordPlaceholder: "••••••••",
+      submit: "パスワードをリセット →",
+      submitting: "リセット中…",
+      missingFileds: "すべての項目を入力してください。",
+      success: "パスワードが正常にリセットされました！ログインできます。"
+    },
+    logout: "サインアウト"
   },
   booking: {
     title: '予約一覧',
@@ -229,11 +248,18 @@ const ja: AppLocale = {
     },
     book: {
       title: '部屋を予約',
-      subtitle: '日付、時間枠、部屋を選択してください。',
-      confirm: '予約を確定 →',
-      successTitle: '予約が確定しました！',
+      subtitle: '日付と時間枠を選んでください。',
+      slotHint: '枠をクリックして予約します。確認するまで60秒あります。',
+      confirm: '予約を確認 →',
+      successTitle: '予約が確認されました！',
       noAvailability: '現在利用可能な枠はありません。',
+      noRoomsAvailable: 'この枠には利用可能な部屋がありません。別の枠を試してください。',
+      timerLabel: '確認までの時間:',
+      timerExpired: '予約時間が終了しました。もう一度やり直してください。',
+      errorTitle: '予約に失敗しました',
+      errorAction: 'もう一度やり直す',
     },
+
     special: {
       title: '特別枠',
       subtitle: 'あなたのために予約された優先枠。',

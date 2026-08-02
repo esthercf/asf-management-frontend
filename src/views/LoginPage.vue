@@ -14,7 +14,8 @@
 
       <div class="form-group">
         <label class="form-label">Email</label>
-        <input class="form-input" type="email" v-model="email" placeholder="you@university.edu" @keydown.enter="login" />
+        <input class="form-input" type="email" v-model="email" placeholder="you@university.edu"
+          @keydown.enter="login" />
       </div>
       <div class="form-group" style="margin-bottom: 1.75rem">
         <label class="form-label">Password</label>
@@ -23,8 +24,14 @@
 
       <div v-if="error" class="error-banner">⚠️ {{ error }}</div>
 
-      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading" @click="login">
+      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading"
+        @click="login">
         {{ loading ? 'Signing in…' : 'Sign in →' }}
+      </button>
+
+      <!--forgot password button -->
+      <button class="btn btn-link" style="margin-top:1rem; width:100%; justify-content:center;" @click="forgotPassword">
+        {{ t('auth.login.forgot') }}
       </button>
     </div>
 
@@ -34,7 +41,7 @@
       <div class="art-blob blob3"></div>
       <div class="art-text">
         <p class="art-quote">
-        "Prepare with focus, perform with brilliance."</p>
+          "Prepare with focus, perform with brilliance."</p>
         <p class="art-rooms">Book your study room in seconds</p>
       </div>
     </div>
@@ -47,18 +54,21 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth.store';
 import { useUserProfileStore } from '../stores/user-profile.store';
-import { useSessionApi } from '../composables/useSessionApi';
+import { usePasswordApi, useSessionApi } from '../composables/useSessionApi';
+import { extractErrorMessage } from '../utiles/error.utiles';
 
-const { t }       = useI18n()
-const router      = useRouter()
-const api         = useSessionApi()
-const auth        = useAuthStore()
+const { t } = useI18n()
+const router = useRouter()
+const api = useSessionApi()
+const passwordApi = usePasswordApi()
+const auth = useAuthStore()
 const userProfile = useUserProfileStore()
 
-const email    = ref('')
+const email = ref('')
 const password = ref('')
-const loading  = ref(false)
-const error    = ref('')
+const loading = ref(false)
+const error = ref('')
+const success = ref('')
 
 async function login() {
   error.value = ''
@@ -76,9 +86,27 @@ async function login() {
 
     router.push(auth.isStaff ? '/staff' : '/user')
   } catch (e: any) {
-    error.value = e.message ?? t('auth.login.error.failed')
+    const code = e?.response?.data?.code
+    // Use i18n error code if available, otherwise fall back
+    error.value = code && t(`errors.${code}`)
+      ? t(`errors.${code}`)
+      : t('auth.login.error.failed')
   } finally {
     loading.value = false
+  }
+}
+
+async function forgotPassword() {
+  error.value = ''
+  if (!email.value) {
+    error.value = t('auth.login.error.emptyEmail')
+    return
+  }
+  try {
+    await passwordApi.requestReset(email.value)
+    success.value = t('reset.success')
+  } catch (e: any) {
+     error.value = extractErrorMessage(e)
   }
 }
 </script>
@@ -88,6 +116,7 @@ async function login() {
   display: grid;
   grid-template-columns: 480px 1fr;
 }
+
 .login-card {
   background: var(--white);
   padding: 3rem 3.5rem;
@@ -96,22 +125,53 @@ async function login() {
   justify-content: center;
   border-right: 1.5px solid var(--border);
 }
+
 .login-logo {
-  display: flex; align-items: center; gap: .9rem; margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  margin-bottom: 3rem;
 }
+
 .login-logo .logo-icon {
-  width: 46px; height: 46px;
+  width: 46px;
+  height: 46px;
   background: var(--gold-100);
   border-radius: var(--radius-md);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.4rem;
 }
-.logo-name { font-family: var(--font-display); font-size: 1.3rem; }
-.logo-tagline { font-size: .72rem; color: var(--muted); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 
-.login-heading { font-family: var(--font-display); font-size: 2.4rem; margin-bottom: .3rem; }
-.accent { color: var(--amber); }
-.login-sub { color: var(--muted); font-weight: 600; margin-bottom: 2rem; }
+.logo-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+
+.logo-tagline {
+  font-size: .72rem;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.login-heading {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  margin-bottom: .3rem;
+}
+
+.accent {
+  color: var(--amber);
+}
+
+.login-sub {
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
 
 .error-banner {
   background: var(--red-light);
@@ -133,17 +193,71 @@ async function login() {
   align-items: flex-end;
   padding: 3rem;
 }
-.art-blob { position: absolute; border-radius: 50%; opacity: .55; }
-.blob1 { width: 420px; height: 420px; background: var(--amber); top: -100px; right: -100px; }
-.blob2 { width: 320px; height: 320px; background: var(--gold);  bottom: 0px;  left: -60px;  opacity: .45; }
-.blob3 { width: 220px; height: 220px; background: var(--red);   top: 38%; right: 40px;    opacity: .5; }
-.art-text { position: relative; z-index: 1; }
-.art-quote { font-family: var(--font-display); font-size: 1.8rem; color: var(--white); font-style: italic; line-height: 1.3; max-width: 320px; }
-.art-rooms { margin-top: .75rem; font-size: .85rem; color: rgba(255,255,255,.6); font-weight: 700; }
+
+.art-blob {
+  position: absolute;
+  border-radius: 50%;
+  opacity: .55;
+}
+
+.blob1 {
+  width: 420px;
+  height: 420px;
+  background: var(--amber);
+  top: -100px;
+  right: -100px;
+}
+
+.blob2 {
+  width: 320px;
+  height: 320px;
+  background: var(--gold);
+  bottom: 0px;
+  left: -60px;
+  opacity: .45;
+}
+
+.blob3 {
+  width: 220px;
+  height: 220px;
+  background: var(--red);
+  top: 38%;
+  right: 40px;
+  opacity: .5;
+}
+
+.art-text {
+  position: relative;
+  z-index: 1;
+}
+
+.art-quote {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--white);
+  font-style: italic;
+  line-height: 1.3;
+  max-width: 320px;
+}
+
+.art-rooms {
+  margin-top: .75rem;
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .6);
+  font-weight: 700;
+}
 
 @media (max-width: 768px) {
-  .login-page { grid-template-columns: 1fr; }
-  .login-art { display: none; }
-  .login-card { padding: 2rem 1.5rem; }
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-art {
+    display: none;
+  }
+
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
 }
 </style>

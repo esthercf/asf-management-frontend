@@ -38,18 +38,37 @@ const ko: AppLocale = {
   },
   auth: {
     login: {
-      heading: '다시 오셨군요.',
-      sub: '계정에 로그인하세요.',
-      email: '이메일',
-      password: '비밀번호',
-      submit: '로그인 →',
-      submitting: '로그인 중…',
+      heading: "다시 오신 것을 환영합니다.",
+      sub: "계정에 로그인하세요.",
+      email: "이메일",
+      password: "비밀번호",
+      emailPlaceholder: "you@university.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "로그인 →",
+      submitting: "로그인 중…",
+      forgot: "비밀번호를 잊으셨나요?",
       error: {
-        empty: '이메일과 비밀번호를 입력해주세요.',
-        failed: '로그인에 실패했습니다. 다시 시도해주세요.',
-      },
+        empty: "이메일과 비밀번호를 입력하세요.",
+        emptyEmail: "이메일을 입력하세요.",
+        failed: "로그인에 실패했습니다. 다시 시도하세요.",
+        resetFailed: "비밀번호 재설정에 실패했습니다. 다시 시도하세요."
+      }
     },
-    logout: '로그아웃',
+    reset: {
+      heading: "비밀번호 재설정",
+      sub: "이메일에서 받은 토큰을 입력하고 새 비밀번호를 설정하세요.",
+      userId: "사용자 ID",
+      userIdPlaceholder: "사용자 ID",
+      token: "재설정 토큰",
+      tokenPlaceholder: "재설정 토큰을 붙여넣으세요",
+      newPassword: "새 비밀번호",
+      newPasswordPlaceholder: "••••••••",
+      submit: "비밀번호 재설정 →",
+      submitting: "재설정 중…",
+      missingFileds: "모든 필드를 입력해야 합니다.",
+      success: "비밀번호가 성공적으로 재설정되었습니다! 이제 로그인할 수 있습니다."
+    },
+    logout: "로그아웃"
   },
   booking: {
     title: '내 예약',
@@ -229,11 +248,18 @@ const ko: AppLocale = {
     },
     book: {
       title: '방 예약',
-      subtitle: '날짜, 시간, 방을 선택하세요.',
+      subtitle: '날짜와 시간대를 선택하세요.',
+      slotHint: '시간대를 클릭하여 예약하세요. 확인할 수 있는 시간은 60초입니다.',
       confirm: '예약 확인 →',
       successTitle: '예약이 확인되었습니다!',
-      noAvailability: '현재 이용 가능한 슬롯이 없습니다.',
+      noAvailability: '현재 이용 가능한 시간대가 없습니다.',
+      noRoomsAvailable: '이 시간대에는 이용 가능한 방이 없습니다. 다른 시간대를 시도해 보세요.',
+      timerLabel: '확인까지 남은 시간:',
+      timerExpired: '예약 시간이 만료되었습니다. 다시 시작하세요.',
+      errorTitle: '예약 실패',
+      errorAction: '다시 시작',
     },
+
     special: {
       title: '특별 슬롯',
       subtitle: '우선 예약된 슬롯.',

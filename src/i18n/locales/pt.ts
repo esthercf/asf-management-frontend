@@ -36,21 +36,40 @@ const pt: AppLocale = {
       strong: 'Forte'
     }
   },
-  auth: {
-    login: {
-      heading: 'Bem-vindo de volta.',
-      sub: 'Inicie sessão na sua conta.',
-      email: 'E-mail',
-      password: 'Palavra-passe',
-      submit: 'Entrar →',
-      submitting: 'A entrar…',
-      error: {
-        empty: 'Por favor, introduza o seu e-mail e palavra-passe.',
-        failed: 'Falha ao iniciar sessão. Tente novamente.',
-      },
-    },
-    logout: 'Terminar sessão',
+auth: {
+  login: {
+    heading: "Bem-vindo de volta.",
+    sub: "Entre na sua conta.",
+    email: "E-mail",
+    password: "Senha",
+    emailPlaceholder: "voce@universidade.edu",
+    passwordPlaceholder: "••••••••",
+    submit: "Entrar →",
+    submitting: "Entrando…",
+    forgot: "Esqueceu a senha?",
+    error: {
+      empty: "Por favor, insira seu e-mail e senha.",
+      emptyEmail: "Por favor, insira seu e-mail.",
+      failed: "Falha ao entrar. Tente novamente.",
+      resetFailed: "Falha ao redefinir a senha. Tente novamente."
+    }
   },
+  reset: {
+    heading: "Redefinir sua senha",
+    sub: "Digite o token do seu e-mail e escolha uma nova senha.",
+    userId: "ID do usuário",
+    userIdPlaceholder: "ID do usuário",
+    token: "Token de redefinição",
+    tokenPlaceholder: "Cole seu token de redefinição",
+    newPassword: "Nova senha",
+    newPasswordPlaceholder: "••••••••",
+    submit: "Redefinir senha →",
+    submitting: "Redefinindo…",
+    missingFileds: "Todos os campos são obrigatórios.",
+    success: "Senha redefinida com sucesso! Agora você pode entrar."
+  },
+  logout: "Sair"
+},
   booking: {
     title: 'As minhas reservas',
     create: 'Nova reserva',
@@ -229,11 +248,18 @@ const pt: AppLocale = {
     },
     book: {
       title: 'Reservar uma sala',
-      subtitle: 'Escolha um dia, um horário e depois uma sala.',
+      subtitle: 'Escolhe um dia e um horário.',
+      slotHint: 'Clique num horário para reservar. Terás 60 segundos para confirmar.',
       confirm: 'Confirmar reserva →',
       successTitle: 'Reserva confirmada!',
-      noAvailability: 'Nenhum horário disponível no momento.',
+      noAvailability: 'Não há horários disponíveis neste momento.',
+      noRoomsAvailable: 'Não há salas disponíveis para este horário. Tente outro.',
+      timerLabel: 'Tempo para confirmar:',
+      timerExpired: 'O tempo da reserva expirou. Comece novamente.',
+      errorTitle: 'Falha na reserva',
+      errorAction: 'Começar novamente',
     },
+
     special: {
       title: 'Slots especiais',
       subtitle: 'Slots prioritários reservados para você.',

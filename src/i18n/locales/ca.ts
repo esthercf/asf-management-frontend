@@ -37,20 +37,39 @@ const ca: AppLocale = {
     }
   },
   auth: {
-    login: {
-      heading: 'Benvingut de nou.',
-      sub: 'Accedeix al teu compte.',
-      email: 'Correu electrònic',
-      password: 'Contrasenya',
-      submit: 'Entrar →',
-      submitting: 'Entrant…',
-      error: {
-        empty: 'Si us plau, introdueix el teu correu i contrasenya.',
-        failed: 'Error en iniciar sessió. Torna-ho a intentar.',
-      },
-    },
-    logout: 'Tancar sessió',
+  login: {
+    heading: "Benvingut de nou.",
+    sub: "Inicia sessió al teu compte.",
+    email: "Correu electrònic",
+    password: "Contrasenya",
+    emailPlaceholder: "tu@universitat.edu",
+    passwordPlaceholder: "••••••••",
+    submit: "Inicia sessió →",
+    submitting: "Iniciant sessió…",
+    forgot: "Has oblidat la contrasenya?",
+    error: {
+      empty: "Si us plau, introdueix el correu i la contrasenya.",
+      emptyEmail: "Si us plau, introdueix el correu.",
+      failed: "Error d'inici de sessió. Torna-ho a provar.",
+      resetFailed: "Error en restablir la contrasenya. Torna-ho a provar."
+    }
   },
+  reset: {
+    heading: "Restableix la contrasenya",
+    sub: "Introdueix el testimoni del correu i escull una nova contrasenya.",
+    userId: "ID d'usuari",
+    userIdPlaceholder: "ID d'usuari",
+    token: "Testimoni de restabliment",
+    tokenPlaceholder: "Enganxa el testimoni de restabliment",
+    newPassword: "Nova contrasenya",
+    newPasswordPlaceholder: "••••••••",
+    submit: "Restableix la contrasenya →",
+    submitting: "Restablint…",
+    missingFileds: "Tots els camps són obligatoris.",
+    success: "Contrasenya restablerta correctament! Ara ja pots iniciar sessió."
+  },
+  logout: "Tanca sessió"
+},
   booking: {
     title: 'Les meves reserves',
     create: 'Nova reserva',
@@ -228,12 +247,19 @@ const ca: AppLocale = {
       past: 'Passades',
     },
     book: {
-      title: 'Reservar una sala',
-      subtitle: 'Tria un dia, una franja i després una sala.',
+      title: 'Reserva una sala',
+      subtitle: 'Tria un dia i una franja horària.',
+      slotHint: 'Fes clic en una franja per reservar-la. Tens 60 segons per confirmar.',
       confirm: 'Confirmar reserva →',
       successTitle: 'Reserva confirmada!',
       noAvailability: 'No hi ha franges disponibles ara mateix.',
+      noRoomsAvailable: 'No hi ha sales disponibles per aquesta franja. Prova una altra.',
+      timerLabel: 'Temps per confirmar:',
+      timerExpired: 'El temps de reserva ha expirat. Torna a començar.',
+      errorTitle: 'La reserva ha fallat',
+      errorAction: 'Torna a començar',
     },
+
     special: {
       title: 'Franges especials',
       subtitle: 'Franges prioritàries reservades per a tu.',

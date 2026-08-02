@@ -5,10 +5,10 @@ import { client } from '../services/http.client'
 
 export function useSessionApi() {
 
-  async function login(email: string, password: string): Promise<SessionDto> {
-    const { data } = await client.post<SessionDto>('/sessions', { email, password })
-    console.log('roles:', data.roles)
-    return data
+  function login(email: string, password: string): Promise<SessionDto> {
+    return client.post<SessionDto>('/sessions', { email, password }, {
+      headers: { 'x-skip-error-toast': 'true' }
+    }).then(r => r.data)
   }
 
   function logout(): Promise<void> {
@@ -25,7 +25,7 @@ export function useSessionApi() {
 
   return {
     login, logout, refresh,
-    
+
   }
 }
 

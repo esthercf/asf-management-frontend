@@ -101,6 +101,7 @@ import { useI18n } from 'vue-i18n'
 import { useBookingApi } from '../composables/useBookingApi';
 import { extractErrorMessage } from '../utiles/error.utiles';
 import type { UserDto } from '../types/user.types';
+import { useUserApi } from '../composables/useUserApi';
 
 const props = defineProps<{
     modelValue: boolean
@@ -114,6 +115,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const api = useBookingApi()
+const usersApi = useUserApi()
 
 const MIN_CHARS = 2
 const DEBOUNCE_MS = 300
@@ -159,7 +161,7 @@ watch(query, (value) => {
     debounceTimer = setTimeout(async () => {
         loading.value = true
         try {
-            const data = await api.getUsers({ page: 1, limit: 10, textFilter: value.trim() })
+            const data = await usersApi.getUsers({ page: 1, limit: 10, textFilter: value.trim() })
             results.value = data?.data ?? []
         } catch {
             results.value = []
@@ -174,7 +176,7 @@ async function searchByFolderCode() {
     folderLoading.value = true
     folderSearched.value = false
     try {
-        const data = await api.getUsers({ page: 1, limit: 1, folderCode: folderCode.value.trim() })
+        const data = await usersApi.getUsers({ page: 1, limit: 1, folderCode: folderCode.value.trim() })
         folderUser.value = data?.data?.[0] ?? null
     } catch {
         folderUser.value = null
