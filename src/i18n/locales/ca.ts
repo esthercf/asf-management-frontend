@@ -88,20 +88,6 @@ const ca: AppLocale = {
         resetFailed: "Error en restablir la contrasenya. Torna-ho a provar."
       }
     },
-    reset: {
-      heading: "Restableix la contrasenya",
-      sub: "Introdueix el testimoni del correu i escull una nova contrasenya.",
-      userId: "ID d'usuari",
-      userIdPlaceholder: "ID d'usuari",
-      token: "Testimoni de restabliment",
-      tokenPlaceholder: "Enganxa el testimoni de restabliment",
-      newPassword: "Nova contrasenya",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Restableix la contrasenya →",
-      submitting: "Restablint…",
-      missingFileds: "Tots els camps són obligatoris.",
-      success: "Contrasenya restablerta correctament! Ara ja pots iniciar sessió."
-    },
     logout: "Tanca sessió"
   },
   booking: {
@@ -161,11 +147,20 @@ const ca: AppLocale = {
       subtitle: 'Afegeix, edita o elimina espais d\'estudi.',
       windows: 'Finestres',
       comments: 'Comentaris',
-      commentsPlaceholder: 'Qualsevol nota…',
+      commentsPlaceholder: 'Notes...',
       hasWindows: 'Té finestres',
       bookingType: 'Tipus de reserva',
       bookingTypeNone: 'Sense restricció',
       deleteConfirm: 'Eliminar aquesta sala?',
+      validation: {
+        nameRequired: 'El nom de la sala és obligatori.',
+        roomNumberRequired: 'El número de sala és obligatori.',
+        roomNumberInvalid: 'El número de sala ha de ser un número.',
+        roomNumberInteger: 'El número de sala ha de ser un número enter.',
+        roomNumberPositive: 'El número de sala ha de ser més gran que zero.',
+        floorInvalid: 'La planta ha de ser un número.',
+        floorInteger: 'La planta ha de ser un número enter.',
+      },
     },
     bookings: {
       title: 'Totes les reserves',

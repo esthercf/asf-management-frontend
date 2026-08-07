@@ -53,20 +53,6 @@ const fr: AppLocale = {
         resetFailed: "Échec de la réinitialisation du mot de passe. Veuillez réessayer."
       }
     },
-    reset: {
-      heading: "Réinitialiser votre mot de passe",
-      sub: "Entrez le jeton reçu par e-mail et choisissez un nouveau mot de passe.",
-      userId: "Identifiant utilisateur",
-      userIdPlaceholder: "Identifiant utilisateur",
-      token: "Jeton de réinitialisation",
-      tokenPlaceholder: "Collez votre jeton de réinitialisation",
-      newPassword: "Nouveau mot de passe",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Réinitialiser le mot de passe →",
-      submitting: "Réinitialisation…",
-      missingFileds: "Tous les champs sont obligatoires.",
-      success: "Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter."
-    },
 
     forgotPassword: {
       heading: "Mot de passe oublié ?",
@@ -167,6 +153,15 @@ const fr: AppLocale = {
       bookingType: 'Type de réservation',
       bookingTypeNone: 'Aucune restriction',
       deleteConfirm: 'Supprimer cette salle ?',
+      validation: {
+        nameRequired: 'Le nom de la salle est obligatoire.',
+        roomNumberRequired: 'Le numéro de salle est obligatoire.',
+        roomNumberInvalid: 'Le numéro de salle doit être un nombre.',
+        roomNumberInteger: 'Le numéro de salle doit être un nombre entier.',
+        roomNumberPositive: 'Le numéro de salle doit être supérieur à zéro.',
+        floorInvalid: 'L’étage doit être un nombre.',
+        floorInteger: 'L’étage doit être un nombre entier.',
+      },
     },
     bookings: {
       title: 'Toutes les réservations',

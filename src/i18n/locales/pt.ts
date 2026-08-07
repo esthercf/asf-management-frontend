@@ -55,21 +55,6 @@ const pt: AppLocale = {
       }
     },
 
-    reset: {
-      heading: "Redefinir sua senha",
-      sub: "Digite o token recebido por e-mail e escolha uma nova senha.",
-      userId: "ID de usuário",
-      userIdPlaceholder: "ID de usuário",
-      token: "Token de redefinição",
-      tokenPlaceholder: "Cole seu token de redefinição",
-      newPassword: "Nova senha",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Redefinir senha →",
-      submitting: "Redefinindo…",
-      missingFileds: "Todos os campos são obrigatórios.",
-      success: "Senha redefinida com sucesso! Agora você pode entrar."
-    },
-
     forgotPassword: {
       heading: "Esqueceu a senha?",
       sub: "Digite seu e-mail e enviaremos um link para redefini-la.",
@@ -168,7 +153,15 @@ const pt: AppLocale = {
       hasWindows: 'Tem janelas',
       bookingType: 'Tipo de reserva',
       bookingTypeNone: 'Sem restrição',
-      deleteConfirm: 'Eliminar esta sala?',
+      deleteConfirm: 'Eliminar esta sala?', validation: {
+        nameRequired: 'O nome da sala é obrigatório.',
+        roomNumberRequired: 'O número da sala é obrigatório.',
+        roomNumberInvalid: 'O número da sala deve ser um número.',
+        roomNumberInteger: 'O número da sala deve ser um número inteiro.',
+        roomNumberPositive: 'O número da sala deve ser maior que zero.',
+        floorInvalid: 'O andar deve ser um número.',
+        floorInteger: 'O andar deve ser um número inteiro.',
+      },
     },
     bookings: {
       title: 'Todas as reservas',

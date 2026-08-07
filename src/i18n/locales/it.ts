@@ -54,22 +54,6 @@ const it: AppLocale = {
         resetFailed: "Reset della password non riuscito. Riprova."
       }
     },
-
-    reset: {
-      heading: "Reimposta la tua password",
-      sub: "Inserisci il token ricevuto via e-mail e scegli una nuova password.",
-      userId: "ID utente",
-      userIdPlaceholder: "ID utente",
-      token: "Token di reimpostazione",
-      tokenPlaceholder: "Incolla il tuo token di reimpostazione",
-      newPassword: "Nuova password",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Reimposta password →",
-      submitting: "Reimpostazione…",
-      missingFileds: "Tutti i campi sono obbligatori.",
-      success: "Password reimpostata con successo! Ora puoi accedere."
-    },
-
     forgotPassword: {
       heading: "Hai dimenticato la password?",
       sub: "Inserisci la tua e-mail e ti invieremo un link per reimpostarla.",
@@ -171,6 +155,15 @@ const it: AppLocale = {
       bookingType: 'Tipo di prenotazione',
       bookingTypeNone: 'Nessuna restrizione',
       deleteConfirm: 'Eliminare questa sala?',
+      validation: {
+        nameRequired: 'Il nome della sala è obbligatorio.',
+        roomNumberRequired: 'Il numero della sala è obbligatorio.',
+        roomNumberInvalid: 'Il numero della sala deve essere un numero.',
+        roomNumberInteger: 'Il numero della sala deve essere un numero intero.',
+        roomNumberPositive: 'Il numero della sala deve essere maggiore di zero.',
+        floorInvalid: 'Il piano deve essere un numero.',
+        floorInteger: 'Il piano deve essere un numero intero.',
+      },
     },
     bookings: {
       title: 'Tutte le prenotazioni',
@@ -199,8 +192,8 @@ const it: AppLocale = {
         bookingType: 'Tipo di prenotazione',
         actions: 'Azioni',
       },
-      alreadyAssigned: "Questa prenotazione ha già un utente assegnato",
-      assignUserTooltip: "Assegna un utente a questa prenotazione"
+      alreadyAssigned: 'Questa prenotazione ha già un utente assegnato',
+      assignUserTooltip: 'Assegna un utente a questa prenotazione',
     },
     newBooking: {
       title: 'Crea una prenotazione',

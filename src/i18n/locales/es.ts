@@ -90,20 +90,6 @@ const es: AppLocale = {
         resetFailed: "Error al restablecer la contraseña. Inténtalo de nuevo."
       }
     },
-    reset: {
-      heading: "Restablecer tu contraseña",
-      sub: "Introduce el token de tu correo y elige una nueva contraseña.",
-      userId: "ID de usuario",
-      userIdPlaceholder: "ID de usuario",
-      token: "Token de restablecimiento",
-      tokenPlaceholder: "Pega tu token de restablecimiento",
-      newPassword: "Nueva contraseña",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Restablecer contraseña →",
-      submitting: "Restableciendo…",
-      missingFileds: "Todos los campos son obligatorios.",
-      success: "¡Contraseña restablecida con éxito! Ahora puedes iniciar sesión."
-    },
     logout: "Cerrar sesión"
   },
   booking: {
@@ -168,6 +154,15 @@ const es: AppLocale = {
       bookingType: 'Tipo de reserva',
       bookingTypeNone: 'Sin restricción',
       deleteConfirm: '¿Eliminar esta sala?',
+      validation: {
+        nameRequired: 'El nombre de la sala es obligatorio.',
+        roomNumberRequired: 'El número de sala es obligatorio.',
+        roomNumberInvalid: 'El número de sala debe ser un número.',
+        roomNumberInteger: 'El número de sala debe ser un número entero.',
+        roomNumberPositive: 'El número de sala debe ser mayor que cero.',
+        floorInvalid: 'La planta debe ser un número.',
+        floorInteger: 'La planta debe ser un número entero.',
+      },
     },
     bookings: {
       title: 'Todas las reservas',

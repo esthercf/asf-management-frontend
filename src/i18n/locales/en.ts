@@ -52,20 +52,6 @@ const en = {
                 resetFailed: 'Password reset failed. Please try again.'
             }
         },
-        reset: {
-            heading: "Reset your password",
-            sub: "Enter the token from your email and choose a new password.",
-            userId: "User ID",
-            userIdPlaceholder: "User ID",
-            token: "Reset Token",
-            tokenPlaceholder: "Paste your reset token",
-            newPassword: "New Password",
-            newPasswordPlaceholder: "••••••••",
-            submit: "Reset password →",
-            submitting: "Resetting…",
-            missingFileds: "All fields are required.",
-            success: "Password reset successful! You can now log in."
-        },
         logout: 'Sign out',
         forgotPassword: {
             heading: 'Forgot your password?',

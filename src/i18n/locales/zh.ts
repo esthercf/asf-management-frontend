@@ -54,22 +54,6 @@ const zh: AppLocale = {
         resetFailed: "密码重置失败，请重试。"
       }
     },
-
-    reset: {
-      heading: "重置您的密码",
-      sub: "输入您邮件中的令牌并选择一个新密码。",
-      userId: "用户ID",
-      userIdPlaceholder: "用户ID",
-      token: "重置令牌",
-      tokenPlaceholder: "粘贴您的重置令牌",
-      newPassword: "新密码",
-      newPasswordPlaceholder: "••••••••",
-      submit: "重置密码 →",
-      submitting: "正在重置…",
-      missingFileds: "所有字段都是必填的。",
-      success: "密码已成功重置！您现在可以登录。"
-    },
-
     forgotPassword: {
       heading: "忘记密码？",
       sub: "请输入您的电子邮箱，我们会发送一个重置链接。",
@@ -169,7 +153,15 @@ const zh: AppLocale = {
       hasWindows: '有窗户',
       bookingType: '预订类型',
       bookingTypeNone: '无限制',
-      deleteConfirm: '删除此房间？',
+      deleteConfirm: '删除此房间？', validation: {
+        nameRequired: '房间名称是必填项。',
+        roomNumberRequired: '房间号是必填项。',
+        roomNumberInvalid: '房间号必须是数字。',
+        roomNumberInteger: '房间号必须是整数。',
+        roomNumberPositive: '房间号必须大于零。',
+        floorInvalid: '楼层必须是数字。',
+        floorInteger: '楼层必须是整数。',
+      },
     },
     bookings: {
       title: '所有预订',

@@ -54,22 +54,6 @@ const ru: AppLocale = {
         resetFailed: "Ошибка сброса пароля. Попробуйте снова."
       }
     },
-
-    reset: {
-      heading: "Сброс пароля",
-      sub: "Введите токен, полученный по электронной почте, и выберите новый пароль.",
-      userId: "ID пользователя",
-      userIdPlaceholder: "ID пользователя",
-      token: "Токен сброса",
-      tokenPlaceholder: "Вставьте токен сброса",
-      newPassword: "Новый пароль",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Сбросить пароль →",
-      submitting: "Сброс…",
-      missingFileds: "Все поля обязательны.",
-      success: "Пароль успешно сброшен! Теперь вы можете войти."
-    },
-
     forgotPassword: {
       heading: "Забыли пароль?",
       sub: "Введите свой адрес электронной почты, и мы отправим ссылку для сброса.",
@@ -170,6 +154,15 @@ const ru: AppLocale = {
       bookingType: 'Тип бронирования',
       bookingTypeNone: 'Без ограничений',
       deleteConfirm: 'Удалить эту комнату?',
+      validation: {
+        nameRequired: 'Название комнаты обязательно.',
+        roomNumberRequired: 'Номер комнаты обязателен.',
+        roomNumberInvalid: 'Номер комнаты должен быть числом.',
+        roomNumberInteger: 'Номер комнаты должен быть целым числом.',
+        roomNumberPositive: 'Номер комнаты должен быть больше нуля.',
+        floorInvalid: 'Этаж должен быть числом.',
+        floorInteger: 'Этаж должен быть целым числом.',
+      },
     },
     bookings: {
       title: 'Все бронирования',

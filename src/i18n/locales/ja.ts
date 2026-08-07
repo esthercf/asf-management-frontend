@@ -54,22 +54,6 @@ const ja: AppLocale = {
         resetFailed: "パスワードのリセットに失敗しました。もう一度お試しください。"
       }
     },
-
-    reset: {
-      heading: "パスワードをリセット",
-      sub: "メールで受け取ったトークンを入力し、新しいパスワードを選択してください。",
-      userId: "ユーザーID",
-      userIdPlaceholder: "ユーザーID",
-      token: "リセットトークン",
-      tokenPlaceholder: "リセットトークンを貼り付けてください",
-      newPassword: "新しいパスワード",
-      newPasswordPlaceholder: "••••••••",
-      submit: "パスワードをリセット →",
-      submitting: "リセット中…",
-      missingFileds: "すべての項目は必須です。",
-      success: "パスワードが正常にリセットされました！サインインできます。"
-    },
-
     forgotPassword: {
       heading: "パスワードを忘れましたか？",
       sub: "メールアドレスを入力すると、リセット用リンクを送信します。",
@@ -170,6 +154,16 @@ const ja: AppLocale = {
       bookingType: '予約タイプ',
       bookingTypeNone: '制限なし',
       deleteConfirm: 'この部屋を削除しますか？',
+      validation: {
+        nameRequired: '部屋名は必須です。',
+        roomNumberRequired: '部屋番号は必須です。',
+        roomNumberInvalid: '部屋番号は数値でなければなりません。',
+        roomNumberInteger: '部屋番号は整数でなければなりません。',
+        roomNumberPositive: '部屋番号は0より大きい数でなければなりません。',
+        floorInvalid: '階は数値でなければなりません。',
+        floorInteger: '階は整数でなければなりません。',
+      },
+
     },
     bookings: {
       title: 'すべての予約',

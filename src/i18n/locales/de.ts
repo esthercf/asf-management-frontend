@@ -92,20 +92,6 @@ const de: AppLocale = {
         resetFailed: "Passwort zurücksetzen fehlgeschlagen. Bitte versuchen Sie es erneut."
       }
     },
-    reset: {
-      heading: "Passwort zurücksetzen",
-      sub: "Geben Sie das Token aus Ihrer E-Mail ein und wählen Sie ein neues Passwort.",
-      userId: "Benutzer-ID",
-      userIdPlaceholder: "Benutzer-ID",
-      token: "Zurücksetzungs-Token",
-      tokenPlaceholder: "Fügen Sie Ihr Zurücksetzungs-Token ein",
-      newPassword: "Neues Passwort",
-      newPasswordPlaceholder: "••••••••",
-      submit: "Passwort zurücksetzen →",
-      submitting: "Zurücksetzen…",
-      missingFileds: "Alle Felder sind erforderlich.",
-      success: "Passwort erfolgreich zurückgesetzt! Sie können sich jetzt anmelden."
-    },
     logout: "Abmelden"
   }
   ,
@@ -171,6 +157,15 @@ const de: AppLocale = {
       bookingType: 'Buchungstyp',
       bookingTypeNone: 'Keine Einschränkung',
       deleteConfirm: 'Diesen Raum löschen?',
+      validation: {
+        nameRequired: 'Raumname ist erforderlich.',
+        roomNumberRequired: 'Raumnummer ist erforderlich.',
+        roomNumberInvalid: 'Raumnummer muss eine Zahl sein.',
+        roomNumberInteger: 'Raumnummer muss eine ganze Zahl sein.',
+        roomNumberPositive: 'Raumnummer muss größer als null sein.',
+        floorInvalid: 'Etage muss eine Zahl sein.',
+        floorInteger: 'Etage muss eine ganze Zahl sein.',
+      },
     },
     bookings: {
       title: 'Alle Buchungen',
