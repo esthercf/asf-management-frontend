@@ -36,40 +36,77 @@ const pt: AppLocale = {
       strong: 'Forte'
     }
   },
-auth: {
-  login: {
-    heading: "Bem-vindo de volta.",
-    sub: "Entre na sua conta.",
-    email: "E-mail",
-    password: "Senha",
-    emailPlaceholder: "voce@universidade.edu",
-    passwordPlaceholder: "••••••••",
-    submit: "Entrar →",
-    submitting: "Entrando…",
-    forgot: "Esqueceu a senha?",
-    error: {
-      empty: "Por favor, insira seu e-mail e senha.",
-      emptyEmail: "Por favor, insira seu e-mail.",
-      failed: "Falha ao entrar. Tente novamente.",
-      resetFailed: "Falha ao redefinir a senha. Tente novamente."
-    }
+  auth: {
+    login: {
+      heading: "Bem-vindo de volta.",
+      sub: "Entre na sua conta.",
+      email: "E-mail",
+      password: "Senha",
+      emailPlaceholder: "voce@universidade.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "Entrar →",
+      submitting: "Entrando…",
+      forgot: "Esqueceu a senha?",
+      error: {
+        empty: "Por favor, insira seu e-mail e senha.",
+        emptyEmail: "Por favor, insira seu e-mail.",
+        failed: "Falha no login. Tente novamente.",
+        resetFailed: "Falha ao redefinir a senha. Tente novamente."
+      }
+    },
+
+    reset: {
+      heading: "Redefinir sua senha",
+      sub: "Digite o token recebido por e-mail e escolha uma nova senha.",
+      userId: "ID de usuário",
+      userIdPlaceholder: "ID de usuário",
+      token: "Token de redefinição",
+      tokenPlaceholder: "Cole seu token de redefinição",
+      newPassword: "Nova senha",
+      newPasswordPlaceholder: "••••••••",
+      submit: "Redefinir senha →",
+      submitting: "Redefinindo…",
+      missingFileds: "Todos os campos são obrigatórios.",
+      success: "Senha redefinida com sucesso! Agora você pode entrar."
+    },
+
+    forgotPassword: {
+      heading: "Esqueceu a senha?",
+      sub: "Digite seu e-mail e enviaremos um link para redefini-la.",
+      email: "E-mail",
+      submit: "Enviar link de redefinição →",
+      submitting: "Enviando…",
+      error: {
+        empty: "Por favor, insira seu e-mail.",
+      },
+      success: {
+        heading: "Verifique sua caixa de entrada",
+        message: "Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha. O link expira em 15 minutos.",
+      },
+      backToLogin: "← Voltar ao login",
+    },
+    resetPassword: {
+      heading: "Defina uma nova senha",
+      sub: "Digite sua nova senha duas vezes para confirmar.",
+      newPassword: "Nova senha",
+      confirmPassword: "Confirmar nova senha",
+      generate: "Gerar senha forte",
+      submit: "Redefinir senha →",
+      submitting: "Redefinindo…",
+      success: {
+        heading: "Senha atualizada",
+        message: "Sua senha foi redefinida. Agora você pode entrar.",
+      },
+      goToLogin: "Ir para o login →",
+      invalidLink: {
+        heading: "Este link não é válido",
+        message: "Este link de redefinição de senha está incompleto ou já expirou. Solicite um novo.",
+        cta: "Solicitar novo link →",
+      },
+    },
+
+    logout: "Sair"
   },
-  reset: {
-    heading: "Redefinir sua senha",
-    sub: "Digite o token do seu e-mail e escolha uma nova senha.",
-    userId: "ID do usuário",
-    userIdPlaceholder: "ID do usuário",
-    token: "Token de redefinição",
-    tokenPlaceholder: "Cole seu token de redefinição",
-    newPassword: "Nova senha",
-    newPasswordPlaceholder: "••••••••",
-    submit: "Redefinir senha →",
-    submitting: "Redefinindo…",
-    missingFileds: "Todos os campos são obrigatórios.",
-    success: "Senha redefinida com sucesso! Agora você pode entrar."
-  },
-  logout: "Sair"
-},
   booking: {
     title: 'As minhas reservas',
     create: 'Nova reserva',

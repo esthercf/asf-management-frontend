@@ -38,6 +38,41 @@ const es: AppLocale = {
     }
   },
   auth: {
+    forgotPassword: {
+      heading: '¿Has olvidado tu contraseña?',
+      sub: "Introduce tu correo electrónico y te enviaremos un enlace para restablecerla.",
+      email: 'Correo electrónico',
+      submit: 'Enviar enlace de restablecimiento →',
+      submitting: 'Enviando…',
+      error: {
+        empty: 'Por favor, introduce tu correo electrónico.',
+      },
+      success: {
+        heading: 'Revisa tu bandeja de entrada',
+        message: "Si existe una cuenta con ese correo, hemos enviado un enlace para restablecer la contraseña. El enlace caduca en 15 minutos.",
+      },
+      backToLogin: '← Volver a iniciar sesión',
+    },
+
+    resetPassword: {
+      heading: 'Establece una nueva contraseña',
+      sub: 'Introduce tu nueva contraseña dos veces para confirmarla.',
+      newPassword: 'Nueva contraseña',
+      confirmPassword: 'Confirmar nueva contraseña',
+      generate: 'Generar contraseña segura',
+      submit: 'Restablecer contraseña →',
+      submitting: 'Restableciendo…',
+      success: {
+        heading: 'Contraseña actualizada',
+        message: 'Tu contraseña ha sido restablecida. Ahora puedes iniciar sesión.',
+      },
+      goToLogin: 'Ir a iniciar sesión →',
+      invalidLink: {
+        heading: 'Este enlace no es válido',
+        message: 'Este enlace de restablecimiento de contraseña está incompleto o ya ha caducado. Por favor, solicita uno nuevo.',
+        cta: 'Solicitar un nuevo enlace →',
+      },
+    },
     login: {
       heading: "Bienvenido de nuevo.",
       sub: "Inicia sesión en tu cuenta.",

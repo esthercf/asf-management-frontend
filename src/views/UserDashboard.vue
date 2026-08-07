@@ -276,9 +276,9 @@
           </div>
           <div style="display:flex; gap:.75rem; margin-top:1.75rem;">
             <button class="btn btn-primary" @click="startBookingFlow">+ {{ t('staff.newBooking.anotherBooking')
-            }}</button>
+              }}</button>
             <button class="btn btn-secondary" @click="view = 'mybookings'; loadMyBookings()">{{ t('user.nav.myBookings')
-            }}</button>
+              }}</button>
           </div>
         </div>
       </div>
@@ -398,19 +398,21 @@
 </template>
 
 <script setup lang="ts">
+
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useBookingApi } from '../composables/useBookingApi';
 import { useAuthStore } from '../stores/auth.store';
 import { useSessionApi } from '../composables/useSessionApi';
-import { useUserApi } from '../composables/useUserApi';
-import { UsageEnum, RoomSizeEnum, BookingTypeEnum } from '../enums/booking.enum';
+import { UsageEnum, } from '../enums/booking.enum';
 import { BookingDto, AvailableRoomDto, BookingDayOption, BookingSlotOption, LockAutoResult } from '../types/booking.types';
+import { useUserProfileStore } from '../stores/user-profile.store';
 import { UserDto } from '../types/user.types';
 import { extractErrorMessage } from '../utiles/error.utiles';
-import { useUserProfileStore } from '../stores/user-profile.store';
-
+import { formatMinutes, isPastBooking } from '../utiles/booking.format.utiles';
+import { useBookingLabels } from '../composables/useBookingLabels';
+import { useBookingAvailability } from '../composables/useBookingAvailability';
 
 // ── Setup ─────────────────────────────────────────────────────────────────
 const { t } = useI18n();
@@ -418,9 +420,8 @@ const router = useRouter();
 const auth = useAuthStore();
 const userProfile = useUserProfileStore();
 const bookingApi = useBookingApi();
-const userApi = useUserApi();
+const { bookingTypeLabel } = useBookingLabels();
 const sessionApi = useSessionApi();
-const bookingpi = useBookingApi();
 
 // ── View state ────────────────────────────────────────────────────────────
 type ViewName = 'mybookings' | 'book' | 'special' | 'profile'
@@ -505,7 +506,7 @@ const nextBooking = computed<BookingDto | null>(() => {
 async function cancelBooking(id: string) {
   if (!confirm(t('staff.bookings.cancelConfirm'))) return
   try {
-    await bookingpi.deleteBooking(id)
+    await bookingApi.deleteBooking(id)
     await loadMyBookings()
   } catch (e) {
     console.error(extractErrorMessage(e))
@@ -672,40 +673,7 @@ function onBookingErrorClose() {
   startBookingFlow()
 }
 
-const availableDays = computed<BookingDayOption[]>(() => {
-  const dayMap = new Map<string, BookingDayOption>()
-  for (const room of availability.value) {
-    for (const slot of (room.available ?? [])) {
-      if (!dayMap.has(slot.date)) {
-        const d = new Date(slot.date + 'T00:00:00')
-        dayMap.set(slot.date, {
-          iso: slot.date,
-          weekday: d.toLocaleDateString('en', { weekday: 'short' }),
-          dayNum: slot.day,
-          month: d.toLocaleDateString('en', { month: 'short' }),
-          slotsCount: 0,
-        })
-      }
-      dayMap.get(slot.date)!.slotsCount++
-    }
-  }
-  return Array.from(dayMap.values()).sort((a, b) => a.iso.localeCompare(b.iso))
-})
-
-const nbSlotsForDay = computed<BookingSlotOption[]>(() => {
-  if (!nbDay.value) return []
-  const slotMap = new Map<number, BookingSlotOption>()
-  for (const room of availability.value) {
-    for (const slot of (room.available ?? [])) {
-      if (slot.date !== nbDay.value.iso) continue
-      if (!slotMap.has(slot.startTime)) {
-        slotMap.set(slot.startTime, { ...slot, roomCount: 0, key: slot.startTime })
-      }
-      slotMap.get(slot.startTime)!.roomCount++
-    }
-  }
-  return Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
-})
+const { availableDays, slotsForSelectedDay: nbSlotsForDay } = useBookingAvailability(availability, nbDay)
 
 function formatTimer(seconds: number): string {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0')
@@ -725,25 +693,6 @@ onUnmounted(() => {
 })
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-function formatMinutes(mins: number | undefined | null): string {
-  if (mins == null) return ''
-  return `${Math.floor(mins / 60).toString().padStart(2, '0')}:${(mins % 60).toString().padStart(2, '0')}`
-}
-
-function isPastBooking(booking: BookingDto): boolean {
-  const d = new Date(booking.date + 'T00:00:00')
-  d.setMinutes(booking.endTime)
-  return d < new Date()
-}
-
-function sizeEmoji(size: RoomSizeEnum | undefined): string {
-  const emojis: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]: '🟢', [RoomSizeEnum.MEDIUM]: '🔵',
-    [RoomSizeEnum.BIG]: '🟣', [RoomSizeEnum.BNAIG]: '🏠',
-  }
-  return size ? (emojis[size] ?? '🏠') : '🏠'
-}
-
 function monthName(month: number): string {
   return new Date(2000, month - 1, 1).toLocaleDateString('en', { month: 'short' })
 }
@@ -751,10 +700,6 @@ function monthName(month: number): string {
 function formatPhone(u: UserDto): string {
   if (!u.phoneNumber) return '—'
   return u.phoneCode ? `+${u.phoneCode} ${u.phoneNumber}` : u.phoneNumber
-}
-
-function bookingTypeLabel(bt: BookingTypeEnum): string {
-  return t(`staff.users.bookingTypes.${bt}`)
 }
 </script>
 

@@ -38,6 +38,43 @@ const de: AppLocale = {
     }
   },
   auth: {
+
+
+    forgotPassword: {
+      heading: 'Passwort vergessen?',
+      sub: "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.",
+      email: 'E-Mail',
+      submit: 'Link zum Zurücksetzen senden →',
+      submitting: 'Wird gesendet…',
+      error: {
+        empty: 'Bitte gib deine E-Mail-Adresse ein.',
+      },
+      success: {
+        heading: 'Posteingang prüfen',
+        message: "Falls ein Konto mit dieser E-Mail existiert, haben wir einen Link zum Zurücksetzen gesendet. Der Link läuft in 15 Minuten ab.",
+      },
+      backToLogin: '← Zurück zur Anmeldung',
+    },
+
+    resetPassword: {
+      heading: 'Neues Passwort festlegen',
+      sub: 'Gib dein neues Passwort zweimal ein, um es zu bestätigen.',
+      newPassword: 'Neues Passwort',
+      confirmPassword: 'Neues Passwort bestätigen',
+      generate: 'Starkes Passwort generieren',
+      submit: 'Passwort zurücksetzen →',
+      submitting: 'Wird zurückgesetzt…',
+      success: {
+        heading: 'Passwort aktualisiert',
+        message: 'Dein Passwort wurde zurückgesetzt. Du kannst dich jetzt anmelden.',
+      },
+      goToLogin: 'Zur Anmeldung →',
+      invalidLink: {
+        heading: 'Dieser Link ist ungültig',
+        message: 'Dieser Passwort-Reset-Link ist unvollständig oder bereits abgelaufen. Bitte fordere einen neuen an.',
+        cta: 'Neuen Link anfordern →',
+      },
+    },
     login: {
       heading: "Willkommen zurück.",
       sub: "Melden Sie sich bei Ihrem Konto an.",

@@ -67,6 +67,42 @@ const fr: AppLocale = {
       missingFileds: "Tous les champs sont obligatoires.",
       success: "Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter."
     },
+
+    forgotPassword: {
+      heading: "Mot de passe oublié ?",
+      sub: "Entrez votre adresse e-mail et nous vous enverrons un lien pour le réinitialiser.",
+      email: "E-mail",
+      submit: "Envoyer le lien de réinitialisation →",
+      submitting: "Envoi…",
+      error: {
+        empty: "Veuillez entrer votre adresse e-mail.",
+      },
+      success: {
+        heading: "Vérifiez votre boîte de réception",
+        message: "Si un compte existe pour cet e-mail, nous avons envoyé un lien pour réinitialiser le mot de passe. Le lien expire dans 15 minutes.",
+      },
+      backToLogin: "← Retour à la connexion",
+    },
+
+    resetPassword: {
+      heading: "Définir un nouveau mot de passe",
+      sub: "Entrez votre nouveau mot de passe deux fois pour confirmer.",
+      newPassword: "Nouveau mot de passe",
+      confirmPassword: "Confirmer le nouveau mot de passe",
+      generate: "Générer un mot de passe fort",
+      submit: "Réinitialiser le mot de passe →",
+      submitting: "Réinitialisation…",
+      success: {
+        heading: "Mot de passe mis à jour",
+        message: "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.",
+      },
+      goToLogin: "Aller à la connexion →",
+      invalidLink: {
+        heading: "Ce lien n'est pas valide",
+        message: "Ce lien de réinitialisation du mot de passe est incomplet ou a déjà expiré. Veuillez en demander un nouveau.",
+        cta: "Demander un nouveau lien →",
+      },
+    },
     logout: "Se déconnecter"
   },
   booking: {

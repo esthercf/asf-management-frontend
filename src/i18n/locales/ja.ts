@@ -42,11 +42,11 @@ const ja: AppLocale = {
       sub: "アカウントにサインインしてください。",
       email: "メールアドレス",
       password: "パスワード",
-      emailPlaceholder: "you@university.edu",
+      emailPlaceholder: "あなた@university.edu",
       passwordPlaceholder: "••••••••",
       submit: "サインイン →",
       submitting: "サインイン中…",
-      forgot: "パスワードをお忘れですか？",
+      forgot: "パスワードを忘れましたか？",
       error: {
         empty: "メールアドレスとパスワードを入力してください。",
         emptyEmail: "メールアドレスを入力してください。",
@@ -54,9 +54,10 @@ const ja: AppLocale = {
         resetFailed: "パスワードのリセットに失敗しました。もう一度お試しください。"
       }
     },
+
     reset: {
       heading: "パスワードをリセット",
-      sub: "メールのトークンを入力し、新しいパスワードを設定してください。",
+      sub: "メールで受け取ったトークンを入力し、新しいパスワードを選択してください。",
       userId: "ユーザーID",
       userIdPlaceholder: "ユーザーID",
       token: "リセットトークン",
@@ -65,9 +66,46 @@ const ja: AppLocale = {
       newPasswordPlaceholder: "••••••••",
       submit: "パスワードをリセット →",
       submitting: "リセット中…",
-      missingFileds: "すべての項目を入力してください。",
-      success: "パスワードが正常にリセットされました！ログインできます。"
+      missingFileds: "すべての項目は必須です。",
+      success: "パスワードが正常にリセットされました！サインインできます。"
     },
+
+    forgotPassword: {
+      heading: "パスワードを忘れましたか？",
+      sub: "メールアドレスを入力すると、リセット用リンクを送信します。",
+      email: "メールアドレス",
+      submit: "リセットリンクを送信 →",
+      submitting: "送信中…",
+      error: {
+        empty: "メールアドレスを入力してください。",
+      },
+      success: {
+        heading: "受信箱を確認してください",
+        message: "そのメールアドレスにアカウントが存在する場合、パスワードリセット用リンクを送信しました。リンクは15分で期限切れになります。",
+      },
+      backToLogin: "← サインインに戻る",
+    },
+
+    resetPassword: {
+      heading: "新しいパスワードを設定",
+      sub: "確認のため、新しいパスワードを2回入力してください。",
+      newPassword: "新しいパスワード",
+      confirmPassword: "新しいパスワードを確認",
+      generate: "強力なパスワードを生成",
+      submit: "パスワードをリセット →",
+      submitting: "リセット中…",
+      success: {
+        heading: "パスワードが更新されました",
+        message: "パスワードがリセットされました。サインインできます。",
+      },
+      goToLogin: "サインインへ →",
+      invalidLink: {
+        heading: "このリンクは無効です",
+        message: "このパスワードリセットリンクは不完全か、すでに期限切れです。新しいリンクをリクエストしてください。",
+        cta: "新しいリンクをリクエスト →",
+      },
+    },
+
     logout: "サインアウト"
   },
   booking: {

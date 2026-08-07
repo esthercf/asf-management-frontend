@@ -3,10 +3,11 @@ import { ref, computed } from 'vue'
 import { RoomDto, GetRoomsParams, CreateRoomDto, UpdateRoomDto } from '../types/room.types'
 import { BookingDto, CreateBookingDto, GetBookingsParams } from '../types/booking.types'
 import { useBookingApi } from '../composables/useBookingApi'
+import { useRoomApi } from '../composables/useRoomApi'
 
 export const useRoomStore = defineStore('rooms', () => {
-  const api = useBookingApi()
-
+  const bookingApi = useBookingApi()
+  const roomApi = useRoomApi()
   // ── State ────────────────────────────────────────────
   const rooms = ref<RoomDto[]>([])
   const bookings = ref<BookingDto[]>([])
@@ -25,7 +26,7 @@ export const useRoomStore = defineStore('rooms', () => {
   async function fetchRooms(params?: GetRoomsParams) {
     try {
       loading.value = true
-      const result = await api.getRooms(params)
+      const result = await roomApi.getRooms(params)
       rooms.value = result.data   // DatatableResult<RoomDto>
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)
@@ -37,7 +38,7 @@ export const useRoomStore = defineStore('rooms', () => {
   async function fetchBookings(params?: GetBookingsParams) {
     try {
       loading.value = true
-      const result = await api.getBookings(params)
+      const result = await bookingApi.getBookings(params)
       bookings.value = result.data   // DatatableResult<BookingDto>
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)
@@ -48,7 +49,7 @@ export const useRoomStore = defineStore('rooms', () => {
 
   async function addRoom(dto: CreateRoomDto) {
     try {
-      const room = await api.createRoom(dto)
+      const room = await roomApi.createRoom(dto)
       rooms.value.push(room)
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)
@@ -57,7 +58,7 @@ export const useRoomStore = defineStore('rooms', () => {
 
   async function updateRoom(id: string, dto: UpdateRoomDto) {
     try {
-      const updated = await api.updateRoom(id, dto)
+      const updated = await roomApi.updateRoom(id, dto)
       const idx = rooms.value.findIndex(r => r.id === id)
       if (idx !== -1) rooms.value[idx] = updated
     } catch (e: any) {
@@ -67,7 +68,7 @@ export const useRoomStore = defineStore('rooms', () => {
 
   async function deleteRoom(id: string) {
     try {
-      await api.deleteRoom(id)
+      await roomApi.deleteRoom(id)
       rooms.value = rooms.value.filter(r => r.id !== id)
       bookings.value = bookings.value.filter(b => b.roomId !== id)
     } catch (e: any) {
@@ -77,7 +78,7 @@ export const useRoomStore = defineStore('rooms', () => {
 
   async function addBooking(dto: CreateBookingDto) {
     try {
-      const booking = await api.createBooking(dto)
+      const booking = await bookingApi.createBooking(dto)
       bookings.value.push(booking)
       const room = rooms.value.find(r => r.id === booking.roomId)
       if (room) room.active = false
@@ -88,7 +89,7 @@ export const useRoomStore = defineStore('rooms', () => {
 
   async function cancelBooking(id: string) {
     try {
-      await api.deleteBooking(id)
+      await bookingApi.deleteBooking(id)
       bookings.value = bookings.value.filter(b => b.id !== id)
     } catch (e: any) {
       error.value = e.response?.data?.message ?? String(e)

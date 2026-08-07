@@ -164,6 +164,15 @@ const en = {
             bookingType: 'Booking type',
             bookingTypeNone: 'No restriction',
             deleteConfirm: 'Delete this room?',
+            validation: {
+                nameRequired: 'Room name is required.',
+                roomNumberRequired: 'Room number is required.',
+                roomNumberInvalid: 'Room number must be a number.',
+                roomNumberInteger: 'Room number must be a whole number.',
+                roomNumberPositive: 'Room number must be greater than zero.',
+                floorInvalid: 'Floor must be a number.',
+                floorInteger: 'Floor must be a whole number.',
+            },
         },
         bookings: {
             title: 'All Bookings',

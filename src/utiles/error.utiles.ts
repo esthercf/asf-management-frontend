@@ -9,12 +9,6 @@ export interface BackendError {
 }
 
 
-export interface BackendError {
-  code: string
-  message: string
-  context?: Record<string, any>
-}
-
 /**
  * Maps a backend error code (or known HTTP status) to a translated message.
  * Falls back to the backend's raw message, then to a generic translated fallback.

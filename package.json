@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "@primevue/forms": "^4.5.5",
-    "axios": "^1.17.0",
+    "axios": "^1.19.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.0",
     "vue-i18n": "^9.14.5",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",

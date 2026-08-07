@@ -37,39 +37,73 @@ const ca: AppLocale = {
     }
   },
   auth: {
-  login: {
-    heading: "Benvingut de nou.",
-    sub: "Inicia sessió al teu compte.",
-    email: "Correu electrònic",
-    password: "Contrasenya",
-    emailPlaceholder: "tu@universitat.edu",
-    passwordPlaceholder: "••••••••",
-    submit: "Inicia sessió →",
-    submitting: "Iniciant sessió…",
-    forgot: "Has oblidat la contrasenya?",
-    error: {
-      empty: "Si us plau, introdueix el correu i la contrasenya.",
-      emptyEmail: "Si us plau, introdueix el correu.",
-      failed: "Error d'inici de sessió. Torna-ho a provar.",
-      resetFailed: "Error en restablir la contrasenya. Torna-ho a provar."
-    }
+    forgotPassword: {
+      heading: 'Has oblidat la contrasenya?',
+      sub: "Introdueix el teu correu electrònic i t'enviarem un enllaç per restablir-la.",
+      email: 'Correu electrònic',
+      submit: 'Enviar enllaç de restabliment →',
+      submitting: 'Enviant…',
+      error: {
+        empty: 'Si us plau, introdueix el correu electrònic.',
+      },
+      success: {
+        heading: 'Revisa la teva bústia',
+        message: "Si existeix un compte amb aquest correu, hem enviat un enllaç per restablir la contrasenya. L'enllaç caduca en 15 minuts.",
+      },
+      backToLogin: '← Tornar a iniciar sessió',
+    },
+    resetPassword: {
+      heading: 'Estableix una nova contrasenya',
+      sub: 'Introdueix la nova contrasenya dues vegades per confirmar.',
+      newPassword: 'Nova contrasenya',
+      confirmPassword: 'Confirma la nova contrasenya',
+      generate: 'Generar contrasenya forta',
+      submit: 'Restableix la contrasenya →',
+      submitting: 'Restablint…',
+      success: {
+        heading: 'Contrasenya actualitzada',
+        message: 'La teva contrasenya s\'ha restablert. Ara ja pots iniciar sessió.',
+      },
+      goToLogin: 'Anar a iniciar sessió →',
+      invalidLink: {
+        heading: 'Aquest enllaç no és vàlid',
+        message: 'Aquest enllaç de restabliment de contrasenya falta informació o ja ha caducat. Si us plau, sol·licita un de nou.',
+        cta: 'Sol·licita un nou enllaç →',
+      },
+    },
+    login: {
+      heading: "Benvingut de nou.",
+      sub: "Inicia sessió al teu compte.",
+      email: "Correu electrònic",
+      password: "Contrasenya",
+      emailPlaceholder: "tu@universitat.edu",
+      passwordPlaceholder: "••••••••",
+      submit: "Inicia sessió →",
+      submitting: "Iniciant sessió…",
+      forgot: "Has oblidat la contrasenya?",
+      error: {
+        empty: "Si us plau, introdueix el correu i la contrasenya.",
+        emptyEmail: "Si us plau, introdueix el correu.",
+        failed: "Error d'inici de sessió. Torna-ho a provar.",
+        resetFailed: "Error en restablir la contrasenya. Torna-ho a provar."
+      }
+    },
+    reset: {
+      heading: "Restableix la contrasenya",
+      sub: "Introdueix el testimoni del correu i escull una nova contrasenya.",
+      userId: "ID d'usuari",
+      userIdPlaceholder: "ID d'usuari",
+      token: "Testimoni de restabliment",
+      tokenPlaceholder: "Enganxa el testimoni de restabliment",
+      newPassword: "Nova contrasenya",
+      newPasswordPlaceholder: "••••••••",
+      submit: "Restableix la contrasenya →",
+      submitting: "Restablint…",
+      missingFileds: "Tots els camps són obligatoris.",
+      success: "Contrasenya restablerta correctament! Ara ja pots iniciar sessió."
+    },
+    logout: "Tanca sessió"
   },
-  reset: {
-    heading: "Restableix la contrasenya",
-    sub: "Introdueix el testimoni del correu i escull una nova contrasenya.",
-    userId: "ID d'usuari",
-    userIdPlaceholder: "ID d'usuari",
-    token: "Testimoni de restabliment",
-    tokenPlaceholder: "Enganxa el testimoni de restabliment",
-    newPassword: "Nova contrasenya",
-    newPasswordPlaceholder: "••••••••",
-    submit: "Restableix la contrasenya →",
-    submitting: "Restablint…",
-    missingFileds: "Tots els camps són obligatoris.",
-    success: "Contrasenya restablerta correctament! Ara ja pots iniciar sessió."
-  },
-  logout: "Tanca sessió"
-},
   booking: {
     title: 'Les meves reserves',
     create: 'Nova reserva',

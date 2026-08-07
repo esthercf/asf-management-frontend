@@ -48,6 +48,12 @@
     <!-- Main -->
     <main class="main">
 
+      <div v-if="pageError" class="error-banner"
+        style="margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+        <span>⚠️ {{ pageError }}</span>
+        <button class="btn btn-secondary btn-sm" @click="pageError = ''">✕</button>
+      </div>
+
       <!-- ── Overview ── -->
       <div v-if="view === 'overview'">
         <div class="page-header">
@@ -561,17 +567,24 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">{{ t('room.fields.name') }}</label>
-              <input class="form-input" v-model="roomForm.name" placeholder="The Birch Room" />
+              <input class="form-input" :class="{ 'has-error': roomFormFieldErrors.name }" v-model="roomForm.name"
+                placeholder="The Birch Room" />
+              <span v-if="roomFormFieldErrors.name" class="field-error">{{ roomFormFieldErrors.name }}</span>
             </div>
             <div class="form-group">
               <label class="form-label">{{ t('room.fields.roomNumber') }}</label>
-              <input class="form-input" type="number" v-model.number="roomForm.roomNumber" placeholder="101" />
+              <input class="form-input" :class="{ 'has-error': roomFormFieldErrors.roomNumber }" type="number"
+                v-model.number="roomForm.roomNumber" placeholder="101" />
+              <span v-if="roomFormFieldErrors.roomNumber" class="field-error">{{ roomFormFieldErrors.roomNumber
+                }}</span>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">{{ t('room.fields.floor') }}</label>
-              <input class="form-input" type="number" v-model.number="roomForm.floor" placeholder="1" />
+              <input class="form-input" :class="{ 'has-error': roomFormFieldErrors.floor }" type="number"
+                v-model.number="roomForm.floor" placeholder="1" />
+              <span v-if="roomFormFieldErrors.floor" class="field-error">{{ roomFormFieldErrors.floor }}</span>
             </div>
             <div class="form-group">
               <label class="form-label">{{ t('booking.fields.size') }}</label>
@@ -601,7 +614,7 @@
               {{ t('staff.rooms.hasWindows') }}
             </label>
           </div>
-          <div v-if="roomError" class="error-banner">⚠️ {{ roomError }}</div>
+          <div v-if="roomFormError" class="error-banner">⚠️ {{ roomFormError }}</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="roomModal = false">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" @click="saveRoom">
@@ -664,6 +677,11 @@ import UserSelector from '@/components/UserSelector.vue'
 import { useRoomApi } from '../composables/useRoomApi'
 import { useUserApi } from '../composables/useUserApi'
 import { RoomFormState } from '../types/room.types'
+import { formatMinutes, isPastBooking, sizeEmoji } from '../utiles/booking.format.utiles'
+import { useBookingLabels } from '../composables/useBookingLabels'
+import { useBookingAvailability } from '../composables/useBookingAvailability'
+import { roomFormSchema } from '../validation/room.schema'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 
 
 // ── i18n ──────────────────────────────────────────────────────────────────
@@ -675,6 +693,7 @@ const { t } = useI18n()
 const userApi = useUserApi();
 const roomApi = useRoomApi();
 const bookingApi = useBookingApi();
+const { bookingTypeLabel, usageLabel, sizeLabel } = useBookingLabels();
 
 // ── Enum option arrays ────────────────────────────────────────────────────
 const roomSizeOptions = Object.values(RoomSizeEnum)
@@ -711,7 +730,15 @@ const userRoleFilter = ref<RoleType | undefined>(undefined)
 const userBookingTypeFilter = ref<BookingTypeEnum | undefined>(undefined)
 
 // ── Error state ───────────────────────────────────────────────────────────
-const roomError = ref('')
+// pageError: shown in the persistent banner at the top of the page, for any
+// section's load/action failures (rooms, bookings, users, new-booking, etc).
+// roomFormError: scoped only to the room create/edit modal's own error banner
+// (backend/network failures, shown after a failed save attempt).
+// roomFormFieldErrors: per-field client-side validation errors (Zod), shown
+// inline under each input, checked before the save request is even sent.
+const pageError = ref('')
+const roomFormError = ref('')
+const roomFormFieldErrors = ref<Record<string, string>>({})
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────
 onMounted(() => {
@@ -727,7 +754,7 @@ async function loadAvailability() {
   try {
     availability.value = await bookingApi.getAvailability({ page: 1, limit: 1000 }) ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     loadingAvailability.value = false
   }
@@ -739,7 +766,7 @@ async function loadRooms() {
     const data = await roomApi.getRooms({ limit: 200 })
     rooms.value = data?.data ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     loadingRooms.value = false
   }
@@ -756,7 +783,7 @@ async function loadBookings() {
     })
     bookings.value = data?.data ?? []
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     loadingBookings.value = false
   }
@@ -776,7 +803,7 @@ async function loadUsers() {
     users.value = data?.data ?? []
     userTotalPages.value = data?.metadata?.totalPages ?? 1
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     loadingUsers.value = false
   }
@@ -786,7 +813,7 @@ async function loadUsersSelector() {
   try {
     usersSelector.value = await userApi.getUserSelectorOptions()
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     loadingAvailability.value = false
   }
@@ -838,7 +865,8 @@ function openAddRoom() {
     name: '', roomNumber: null, floor: null,
     size: RoomSizeEnum.MEDIUM, comments: '', windows: false, bookingTypeEnum: undefined,
   }
-  roomError.value = ''
+  roomFormError.value = ''
+  roomFormFieldErrors.value = {}
   roomModal.value = true
 }
 
@@ -853,7 +881,8 @@ function openEditRoom(room: RoomDto) {
     windows: !!room.windows,
     bookingTypeEnum: room.bookingTypeEnum ?? undefined,
   }
-  roomError.value = ''
+  roomFormError.value = ''
+  roomFormFieldErrors.value = {}
   roomModal.value = true
 }
 
@@ -870,7 +899,15 @@ function toApiPayload(form: RoomFormState) {
 }
 
 async function saveRoom() {
-  roomError.value = ''
+  roomFormError.value = ''
+  roomFormFieldErrors.value = {}
+
+  const result = roomFormSchema.safeParse(roomForm.value)
+  if (!result.success) {
+    roomFormFieldErrors.value = zodErrorsToFieldMap(result.error, t)
+    return
+  }
+
   try {
     const payload = toApiPayload(roomForm.value)
     if (editingRoom.value) {
@@ -881,7 +918,7 @@ async function saveRoom() {
     roomModal.value = false
     await loadRooms()
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    roomFormError.value = extractErrorMessage(e)
   }
 }
 
@@ -891,7 +928,7 @@ async function removeRoom(id: string) {
     await roomApi.deleteRoom(id)
     await loadRooms()
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   }
 }
 
@@ -901,7 +938,7 @@ async function removeBooking(id: string) {
     await bookingApi.deleteBooking(id)
     await loadBookings()
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   }
 }
 
@@ -912,7 +949,7 @@ async function toggleUserActive(u: UserDto) {
     await userApi.updateUserActiveByEmail(u.email, nextActive)
     u.active = nextActive
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   }
 }
 
@@ -937,7 +974,7 @@ async function saveBookingType() {
     if (idx !== -1) users.value[idx] = updated
     bookingTypeModal.value = false
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   }
 }
 
@@ -984,43 +1021,12 @@ function startNewBooking() {
   loadAvailability()
 }
 
-const availableDays = computed<BookingDayOption[]>(() => {
-  const dayMap = new Map<string, BookingDayOption>()
-  for (const room of availability.value) {
-    for (const slot of (room.available ?? [])) {
-      const key = slot.date
-      if (!dayMap.has(key)) {
-        const d = new Date(slot.date + 'T00:00:00')
-        dayMap.set(key, {
-          iso: slot.date,
-          weekday: d.toLocaleDateString('en', { weekday: 'short' }),
-          dayNum: slot.day,
-          month: d.toLocaleDateString('en', { month: 'short' }),
-          slotsCount: 0,
-        })
-      }
-      dayMap.get(key)!.slotsCount++
-    }
-  }
-  return Array.from(dayMap.values()).sort((a, b) => a.iso.localeCompare(b.iso))
-})
+const { availableDays, slotsForSelectedDay: nbSlotsForDay } = useBookingAvailability(availability, nbDay)
 
-const nbSlotsForDay = computed<BookingSlotOption[]>(() => {
-  if (!nbDay.value) return []
-  const slotMap = new Map<number, BookingSlotOption>()
-  for (const room of availability.value) {
-    for (const slot of (room.available ?? [])) {
-      if (slot.date !== nbDay.value.iso) continue
-      const key = slot.startTime
-      if (!slotMap.has(key)) {
-        slotMap.set(key, { ...slot, roomCount: 0, key })
-      }
-      slotMap.get(key)!.roomCount++
-    }
-  }
-  return Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
-})
-
+// Staff-only: explicit room choice for the selected slot. Deliberately NOT
+// shared with UserDashboard, which instead auto-assigns a room via
+// bookingApi.lockAuto() to avoid race conditions between users booking the
+// same slot.
 const nbRoomsForSlot = computed<AvailableRoomDto[]>(() => {
   if (!nbDay.value || !nbSlot.value) return []
   return availability.value.filter(room =>
@@ -1057,7 +1063,7 @@ async function nbConfirm() {
       hour: nbSlot.value.hour,
       minutes: nbSlot.value.minutes,
       usage: nbUsage.value,
-      userId: nbSelectedUserId.value ? nbSelectedUserId.value :  undefined,
+      userId: nbSelectedUserId.value ? nbSelectedUserId.value : undefined,
     })
     nbLastBooking.value = {
       dateLabel: `${nbDay.value.weekday}, ${nbDay.value.dayNum} ${nbDay.value.month}`,
@@ -1068,18 +1074,13 @@ async function nbConfirm() {
     loadBookings()
     loadAvailability()
   } catch (e) {
-    roomError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     nbConfirming.value = false
   }
 }
 
-// ── Helper functions ──────────────────────────────────────────────────────
-function formatMinutes(mins: number | undefined | null): string {
-  if (mins == null) return ''
-  return `${Math.floor(mins / 60).toString().padStart(2, '0')}:${(mins % 60).toString().padStart(2, '0')}`
-}
-
+// ── Helper functions (view-specific; shared ones are imported above) ──────
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' })
 }
@@ -1087,40 +1088,6 @@ function formatDate(dateStr: string): string {
 function formatPhone(u: UserDto): string {
   if (!u.phoneNumber) return '—'
   return u.phoneCode ? `+${u.phoneCode} ${u.phoneNumber}` : u.phoneNumber
-}
-
-function sizeLabel(size: RoomSizeEnum): string {
-  const labels: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]: 'Small',
-    [RoomSizeEnum.MEDIUM]: 'Medium',
-    [RoomSizeEnum.BIG]: 'Big',
-    [RoomSizeEnum.BNAIG]: 'N/A',
-  }
-  return labels[size]
-}
-
-function sizeEmoji(size: RoomSizeEnum | undefined): string {
-  const emojis: Record<RoomSizeEnum, string> = {
-    [RoomSizeEnum.SMALL]: '🟢',
-    [RoomSizeEnum.MEDIUM]: '🔵',
-    [RoomSizeEnum.BIG]: '🟣',
-    [RoomSizeEnum.BNAIG]: '🏠',
-  }
-  return size ? (emojis[size] ?? '🏠') : '🏠'
-}
-
-function bookingTypeLabel(bt: BookingTypeEnum): string {
-  return t(`staff.users.bookingTypes.${bt}`)
-}
-
-function usageLabel(usage: UsageEnum): string {
-  return t(`booking.usage.${usage}`)
-}
-
-function isPastBooking(booking: BookingDto): boolean {
-  const bookingDate = new Date(booking.date + 'T00:00:00')
-  bookingDate.setMinutes(booking.endTime)
-  return bookingDate < new Date()
 }
 </script>
 

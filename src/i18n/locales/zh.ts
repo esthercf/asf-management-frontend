@@ -40,7 +40,7 @@ const zh: AppLocale = {
     login: {
       heading: "欢迎回来。",
       sub: "登录到您的账户。",
-      email: "邮箱",
+      email: "电子邮箱",
       password: "密码",
       emailPlaceholder: "you@university.edu",
       passwordPlaceholder: "••••••••",
@@ -48,15 +48,16 @@ const zh: AppLocale = {
       submitting: "正在登录…",
       forgot: "忘记密码？",
       error: {
-        empty: "请输入邮箱和密码。",
-        emptyEmail: "请输入邮箱。",
+        empty: "请输入电子邮箱和密码。",
+        emptyEmail: "请输入电子邮箱。",
         failed: "登录失败，请重试。",
         resetFailed: "密码重置失败，请重试。"
       }
     },
+
     reset: {
-      heading: "重置密码",
-      sub: "输入您邮箱中的令牌并设置新密码。",
+      heading: "重置您的密码",
+      sub: "输入您邮件中的令牌并选择一个新密码。",
       userId: "用户ID",
       userIdPlaceholder: "用户ID",
       token: "重置令牌",
@@ -65,9 +66,46 @@ const zh: AppLocale = {
       newPasswordPlaceholder: "••••••••",
       submit: "重置密码 →",
       submitting: "正在重置…",
-      missingFileds: "所有字段都是必填项。",
-      success: "密码已成功重置！现在可以登录了。"
+      missingFileds: "所有字段都是必填的。",
+      success: "密码已成功重置！您现在可以登录。"
     },
+
+    forgotPassword: {
+      heading: "忘记密码？",
+      sub: "请输入您的电子邮箱，我们会发送一个重置链接。",
+      email: "电子邮箱",
+      submit: "发送重置链接 →",
+      submitting: "正在发送…",
+      error: {
+        empty: "请输入电子邮箱。",
+      },
+      success: {
+        heading: "检查您的收件箱",
+        message: "如果该邮箱存在账户，我们已发送一个密码重置链接。该链接将在15分钟后过期。",
+      },
+      backToLogin: "← 返回登录",
+    },
+
+    resetPassword: {
+      heading: "设置新密码",
+      sub: "请两次输入新密码以确认。",
+      newPassword: "新密码",
+      confirmPassword: "确认新密码",
+      generate: "生成强密码",
+      submit: "重置密码 →",
+      submitting: "正在重置…",
+      success: {
+        heading: "密码已更新",
+        message: "您的密码已重置，现在可以登录。",
+      },
+      goToLogin: "前往登录 →",
+      invalidLink: {
+        heading: "该链接无效",
+        message: "该密码重置链接信息不完整或已过期。请请求新的链接。",
+        cta: "请求新链接 →",
+      },
+    },
+
     logout: "退出登录"
   },
   booking: {

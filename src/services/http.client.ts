@@ -19,7 +19,7 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config
 })
 
-// On 401 → try refresh once, queue concurrent requests, redirect on failure
+// On 401 (or 403 InvalidTokenException) → try refresh once, queue concurrent requests, redirect on failure
 let isRefreshing = false
 let queue: Array<() => void> = []
 
@@ -30,7 +30,14 @@ client.interceptors.response.use(
     const toast = useToastStore();
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }// the original request that failed
 
-    if (error.response?.status === 401 && !original._retry) {// unauthorized, token expired && we haven't already tried once (prevents infinite loops)
+    // Backend signals an expired/invalid token two different ways depending on the endpoint:
+    // a plain 401, or a 403 with code 'InvalidTokenException'. Both should trigger the same
+    // silent refresh-and-retry flow.
+    const isExpiredToken =
+      error.response?.status === 401 ||
+      (error.response?.status === 403 && error.response?.data?.code === 'InvalidTokenException')
+
+    if (isExpiredToken && !original._retry) {// token expired && we haven't already tried once (prevents infinite loops)
       original._retry = true
 
       if (isRefreshing) {
@@ -52,10 +59,9 @@ client.interceptors.response.use(
         isRefreshing = false // always reset the flag, success or failure
       }
     }
-    if (error.response?.status !== 401) {
+    if (!isExpiredToken) {
       toast.show(extractErrorMessage(error))
     }
     return Promise.reject(error)
   }
 )
-

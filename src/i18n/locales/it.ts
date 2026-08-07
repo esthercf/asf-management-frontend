@@ -38,37 +38,75 @@ const it: AppLocale = {
   },
   auth: {
     login: {
-      heading: "Benvingut de nou.",
-      sub: "Inicia sessió al teu compte.",
-      email: "Correu electrònic",
-      password: "Contrasenya",
-      emailPlaceholder: "tu@universitat.edu",
+      heading: "Bentornato.",
+      sub: "Accedi al tuo account.",
+      email: "E-mail",
+      password: "Password",
+      emailPlaceholder: "tu@università.edu",
       passwordPlaceholder: "••••••••",
-      submit: "Inicia sessió →",
-      submitting: "Iniciant sessió…",
-      forgot: "Has oblidat la contrasenya?",
+      submit: "Accedi →",
+      submitting: "Accesso…",
+      forgot: "Password dimenticata?",
       error: {
-        empty: "Si us plau, introdueix el correu i la contrasenya.",
-        emptyEmail: "Si us plau, introdueix el correu.",
-        failed: "Error d'inici de sessió. Torna-ho a provar.",
-        resetFailed: "Error en restablir la contrasenya. Torna-ho a provar."
+        empty: "Inserisci la tua e-mail e la password.",
+        emptyEmail: "Inserisci la tua e-mail.",
+        failed: "Accesso non riuscito. Riprova.",
+        resetFailed: "Reset della password non riuscito. Riprova."
       }
     },
+
     reset: {
-      heading: "Restableix la contrasenya",
-      sub: "Introdueix el testimoni del correu i escull una nova contrasenya.",
-      userId: "ID d'usuari",
-      userIdPlaceholder: "ID d'usuari",
-      token: "Testimoni de restabliment",
-      tokenPlaceholder: "Enganxa el testimoni de restabliment",
-      newPassword: "Nova contrasenya",
+      heading: "Reimposta la tua password",
+      sub: "Inserisci il token ricevuto via e-mail e scegli una nuova password.",
+      userId: "ID utente",
+      userIdPlaceholder: "ID utente",
+      token: "Token di reimpostazione",
+      tokenPlaceholder: "Incolla il tuo token di reimpostazione",
+      newPassword: "Nuova password",
       newPasswordPlaceholder: "••••••••",
-      submit: "Restableix la contrasenya →",
-      submitting: "Restablint…",
-      missingFileds: "Tots els camps són obligatoris.",
-      success: "Contrasenya restablerta correctament! Ara ja pots iniciar sessió."
+      submit: "Reimposta password →",
+      submitting: "Reimpostazione…",
+      missingFileds: "Tutti i campi sono obbligatori.",
+      success: "Password reimpostata con successo! Ora puoi accedere."
     },
-    logout: "Tanca sessió"
+
+    forgotPassword: {
+      heading: "Hai dimenticato la password?",
+      sub: "Inserisci la tua e-mail e ti invieremo un link per reimpostarla.",
+      email: "E-mail",
+      submit: "Invia link di reimpostazione →",
+      submitting: "Invio…",
+      error: {
+        empty: "Inserisci la tua e-mail.",
+      },
+      success: {
+        heading: "Controlla la tua casella di posta",
+        message: "Se esiste un account con questa e-mail, abbiamo inviato un link per reimpostare la password. Il link scade in 15 minuti.",
+      },
+      backToLogin: "← Torna al login",
+    },
+
+    resetPassword: {
+      heading: "Imposta una nuova password",
+      sub: "Inserisci la nuova password due volte per confermare.",
+      newPassword: "Nuova password",
+      confirmPassword: "Conferma nuova password",
+      generate: "Genera password sicura",
+      submit: "Reimposta password →",
+      submitting: "Reimpostazione…",
+      success: {
+        heading: "Password aggiornata",
+        message: "La tua password è stata reimpostata. Ora puoi accedere.",
+      },
+      goToLogin: "Vai al login →",
+      invalidLink: {
+        heading: "Questo link non è valido",
+        message: "Questo link di reimpostazione è incompleto o è già scaduto. Richiedine uno nuovo.",
+        cta: "Richiedi un nuovo link →",
+      },
+    },
+
+    logout: "Disconnettersi"
   }
   ,
   booking: {

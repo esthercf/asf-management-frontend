@@ -37,39 +37,77 @@ const ko: AppLocale = {
     }
   },
   auth: {
-    login: {
-      heading: "다시 오신 것을 환영합니다.",
-      sub: "계정에 로그인하세요.",
-      email: "이메일",
-      password: "비밀번호",
-      emailPlaceholder: "you@university.edu",
-      passwordPlaceholder: "••••••••",
-      submit: "로그인 →",
-      submitting: "로그인 중…",
-      forgot: "비밀번호를 잊으셨나요?",
-      error: {
-        empty: "이메일과 비밀번호를 입력하세요.",
-        emptyEmail: "이메일을 입력하세요.",
-        failed: "로그인에 실패했습니다. 다시 시도하세요.",
-        resetFailed: "비밀번호 재설정에 실패했습니다. 다시 시도하세요."
-      }
-    },
-    reset: {
-      heading: "비밀번호 재설정",
-      sub: "이메일에서 받은 토큰을 입력하고 새 비밀번호를 설정하세요.",
-      userId: "사용자 ID",
-      userIdPlaceholder: "사용자 ID",
-      token: "재설정 토큰",
-      tokenPlaceholder: "재설정 토큰을 붙여넣으세요",
-      newPassword: "새 비밀번호",
-      newPasswordPlaceholder: "••••••••",
-      submit: "비밀번호 재설정 →",
-      submitting: "재설정 중…",
-      missingFileds: "모든 필드를 입력해야 합니다.",
-      success: "비밀번호가 성공적으로 재설정되었습니다! 이제 로그인할 수 있습니다."
-    },
-    logout: "로그아웃"
+  login: {
+    heading: "다시 오신 것을 환영합니다.",
+    sub: "계정에 로그인하세요.",
+    email: "이메일",
+    password: "비밀번호",
+    emailPlaceholder: "you@university.edu",
+    passwordPlaceholder: "••••••••",
+    submit: "로그인 →",
+    submitting: "로그인 중…",
+    forgot: "비밀번호를 잊으셨나요?",
+    error: {
+      empty: "이메일과 비밀번호를 입력하세요.",
+      emptyEmail: "이메일을 입력하세요.",
+      failed: "로그인에 실패했습니다. 다시 시도하세요.",
+      resetFailed: "비밀번호 재설정에 실패했습니다. 다시 시도하세요."
+    }
   },
+
+  reset: {
+    heading: "비밀번호 재설정",
+    sub: "이메일로 받은 토큰을 입력하고 새 비밀번호를 선택하세요.",
+    userId: "사용자 ID",
+    userIdPlaceholder: "사용자 ID",
+    token: "재설정 토큰",
+    tokenPlaceholder: "재설정 토큰을 붙여넣으세요",
+    newPassword: "새 비밀번호",
+    newPasswordPlaceholder: "••••••••",
+    submit: "비밀번호 재설정 →",
+    submitting: "재설정 중…",
+    missingFileds: "모든 항목은 필수입니다.",
+    success: "비밀번호가 성공적으로 재설정되었습니다! 이제 로그인할 수 있습니다."
+  },
+
+  forgotPassword: {
+    heading: "비밀번호를 잊으셨나요?",
+    sub: "이메일 주소를 입력하면 재설정 링크를 보내드립니다.",
+    email: "이메일",
+    submit: "재설정 링크 보내기 →",
+    submitting: "전송 중…",
+    error: {
+      empty: "이메일 주소를 입력하세요.",
+    },
+    success: {
+      heading: "받은 편지함을 확인하세요",
+      message: "해당 이메일로 등록된 계정이 있으면 비밀번호 재설정 링크를 보냈습니다. 링크는 15분 후 만료됩니다.",
+    },
+    backToLogin: "← 로그인으로 돌아가기",
+  },
+
+  resetPassword: {
+    heading: "새 비밀번호 설정",
+    sub: "확인을 위해 새 비밀번호를 두 번 입력하세요.",
+    newPassword: "새 비밀번호",
+    confirmPassword: "새 비밀번호 확인",
+    generate: "강력한 비밀번호 생성",
+    submit: "비밀번호 재설정 →",
+    submitting: "재설정 중…",
+    success: {
+      heading: "비밀번호가 업데이트되었습니다",
+      message: "비밀번호가 재설정되었습니다. 이제 로그인할 수 있습니다.",
+    },
+    goToLogin: "로그인으로 이동 →",
+    invalidLink: {
+      heading: "이 링크는 유효하지 않습니다",
+      message: "이 비밀번호 재설정 링크는 불완전하거나 이미 만료되었습니다. 새 링크를 요청하세요.",
+      cta: "새 링크 요청 →",
+    },
+  },
+
+  logout: "로그아웃"
+},
   booking: {
     title: '내 예약',
     create: '새 예약',

@@ -30,13 +30,28 @@
             </button>
           </div>
           <div class="password-field-wrapper">
-            <input class="form-input" :type="showPassword ? 'text' : 'password'" v-model="password"
-              placeholder="••••••••" @keydown.enter="submit" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.password }"
+              :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="••••••••"
+              @keydown.enter="submit" />
             <button type="button" class="toggle-visibility" @click="showPassword = !showPassword"
               :aria-label="showPassword ? 'Hide password' : 'Show password'">
               {{ showPassword ? '🙈' : '👁' }}
             </button>
           </div>
+          <span v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.75rem">
+          <label class="form-label">{{ t('auth.resetPassword.confirmPassword') }}</label>
+          <div class="password-field-wrapper">
+            <input class="form-input" :class="{ 'has-error': fieldErrors.confirmPassword }"
+              :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword" placeholder="••I••••••"
+              @keydown.enter="submit" />
+            <button type="button" class="toggle-visibility" @click="showConfirmPassword = !showConfirmPassword"
+              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+              {{ showConfirmPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <span v-if="fieldErrors.confirmPassword" class="field-error">{{ fieldErrors.confirmPassword }}</span>
         </div>
         <div class="form-group" style="margin-bottom: 1.75rem">
           <label class="form-label">{{ t('auth.resetPassword.confirmPassword') }}</label>
@@ -52,8 +67,8 @@
 
         <div v-if="error" class="error-banner">⚠️ {{ error }}</div>
 
-        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;"
-          :disabled="loading" @click="submit">
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading"
+          @click="submit">
           {{ loading ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit') }}
         </button>
       </template>
@@ -86,6 +101,8 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePasswordApi } from '../composables/useSessionApi'
 import { generateStrongPassword } from '../utiles/generateStrongPassword'
+import { resetPasswordSchema } from '../validation/resetPassword.schema'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 const { t } = useI18n()
 const route = useRoute()
 const api = usePasswordApi()
@@ -100,6 +117,7 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
+const fieldErrors = ref<Record<string, string>>({})
 const done = ref(false)
 
 onMounted(() => {
@@ -112,19 +130,6 @@ onMounted(() => {
     linkValid.value = false
   }
 })
-
-// Mirrors the backend's strength rule (used there for non-local environments) —
-// enforced here unconditionally so users always get clear, immediate feedback.
-function validatePassword(pwd: string): string {
-  if (!pwd) return t('common.validation.required')
-  if (pwd.length < 8) return t('common.validation.passwordTooShort')
-  if (!/[A-Z]/.test(pwd)) return t('common.validation.passwordNeedsUppercase')
-  if (!/[a-z]/.test(pwd)) return t('common.validation.passwordNeedsLowercase')
-  if (!/\d/.test(pwd)) return t('common.validation.passwordNeedsNumber')
-  if (!/[@#$!%*?&]/.test(pwd)) return t('common.validation.passwordNeedsSpecial')
-  return ''
-}
-
 function suggestPassword() {
   const generated = generateStrongPassword()
   password.value = generated
@@ -132,17 +137,18 @@ function suggestPassword() {
   showPassword.value = true
   showConfirmPassword.value = true
   error.value = ''
+  fieldErrors.value = {}
 }
 async function submit() {
   error.value = ''
+  fieldErrors.value = {}
 
-  const strengthError = validatePassword(password.value)
-  if (strengthError) {
-    error.value = strengthError
-    return
-  }
-  if (password.value !== confirmPassword.value) {
-    error.value = t('common.validation.passwordMismatch')
+  const result = resetPasswordSchema.safeParse({
+    password: password.value,
+    confirmPassword: confirmPassword.value,
+  })
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
 
