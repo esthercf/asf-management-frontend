@@ -66,7 +66,41 @@ const en = {
             missingFileds: "All fields are required.",
             success: "Password reset successful! You can now log in."
         },
-        logout: 'Sign out'
+        logout: 'Sign out',
+        forgotPassword: {
+            heading: 'Forgot your password?',
+            sub: "Enter your email and we'll send you a reset link.",
+            email: 'Email',
+            submit: 'Send reset link →',
+            submitting: 'Sending…',
+            error: {
+                empty: 'Please enter your email.',
+            },
+            success: {
+                heading: 'Check your inbox',
+                message: "If an account exists for that email, we've sent a link to reset your password. The link expires in 15 minutes.",
+            },
+            backToLogin: '← Back to sign in',
+        },
+        resetPassword: {
+            heading: 'Set a new password',
+            sub: 'Enter your new password twice to confirm.',
+            newPassword: 'New password',
+            confirmPassword: 'Confirm new password',
+            generate: 'Generate strong password',
+            submit: 'Reset password →',
+            submitting: 'Resetting…',
+            success: {
+                heading: 'Password updated',
+                message: 'Your password has been reset. You can now sign in.',
+            },
+            goToLogin: 'Go to sign in →',
+            invalidLink: {
+                heading: 'This link is invalid',
+                message: 'This password reset link is missing information or has already expired. Please request a new one.',
+                cta: 'Request a new link →',
+            },
+        },
     },
     booking: {
         title: 'My Bookings',

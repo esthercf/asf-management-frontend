@@ -36,14 +36,13 @@ export function usePasswordApi() {
   }
 
   // Update password anonymously (public, after reset link/token)
-  async function updateAnonymous(userId: string, token: string, newPassword: string): Promise<void> {
+  async function updateAnonymous(email: string, token: string, newPassword: string): Promise<void> {
     await client.post('/users/password/update', {
-      userId,
+      username: email,
       token,
       password: newPassword,
     })
   }
-
   // Update password while logged in (protected)
   async function updateAuthenticated(newPassword: string): Promise<void> {
     await client.post('/users/password', { password: newPassword })

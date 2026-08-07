@@ -17,11 +17,13 @@
         <input class="form-input" type="email" v-model="email" placeholder="you@university.edu"
           @keydown.enter="login" />
       </div>
-      <div class="form-group" style="margin-bottom: 1.75rem">
+      <div class="form-group" style="margin-bottom: .6rem">
         <label class="form-label">Password</label>
         <input class="form-input" type="password" v-model="password" placeholder="••••••••" @keydown.enter="login" />
       </div>
-
+      <div class="forgot-link">
+        <router-link to="/forgot-password">{{ t('auth.login.forgot') }}</router-link>
+      </div>
       <div v-if="error" class="error-banner">⚠️ {{ error }}</div>
 
       <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading"
@@ -29,10 +31,6 @@
         {{ loading ? 'Signing in…' : 'Sign in →' }}
       </button>
 
-      <!--forgot password button -->
-      <button class="btn btn-link" style="margin-top:1rem; width:100%; justify-content:center;" @click="forgotPassword">
-        {{ t('auth.login.forgot') }}
-      </button>
     </div>
 
     <div class="login-art">
@@ -54,13 +52,12 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth.store';
 import { useUserProfileStore } from '../stores/user-profile.store';
-import { usePasswordApi, useSessionApi } from '../composables/useSessionApi';
-import { extractErrorMessage } from '../utiles/error.utiles';
+
+import { useSessionApi } from '../composables/useSessionApi';
 
 const { t } = useI18n()
 const router = useRouter()
 const api = useSessionApi()
-const passwordApi = usePasswordApi()
 const auth = useAuthStore()
 const userProfile = useUserProfileStore()
 
@@ -68,7 +65,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
-const success = ref('')
+
 
 async function login() {
   error.value = ''
@@ -96,19 +93,7 @@ async function login() {
   }
 }
 
-async function forgotPassword() {
-  error.value = ''
-  if (!email.value) {
-    error.value = t('auth.login.error.emptyEmail')
-    return
-  }
-  try {
-    await passwordApi.requestReset(email.value)
-    success.value = t('reset.success')
-  } catch (e: any) {
-     error.value = extractErrorMessage(e)
-  }
-}
+
 </script>
 <style scoped>
 .login-page {
@@ -246,6 +231,10 @@ async function forgotPassword() {
   color: rgba(255, 255, 255, .6);
   font-weight: 700;
 }
+
+.forgot-link { text-align: right; margin-bottom: 1.5rem; }
+.forgot-link a { color: var(--navy); font-weight: 700; font-size: .8rem; text-decoration: none; }
+.forgot-link a:hover { text-decoration: underline; }
 
 @media (max-width: 768px) {
   .login-page {

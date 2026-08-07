@@ -5,12 +5,24 @@ import StaffDashboard from '@/views/StaffDashboard.vue'
 import LoginPage from '@/views/LoginPage.vue'
 import { STAFF_ROLES } from '../enums/roles.enum'
 import { useAuthStore } from '../stores/auth.store'
+import ForgotPasswordPage from '@/views/ForgotPasswordPage.vue'
+import ResetPasswordPage from '@/views/ResetPasswordPage.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/login' },
   {
     path: '/login',
     component: LoginPage,
+    meta: { public: true },
+  },
+  {
+    path: '/forgot-password',
+    component: ForgotPasswordPage,
+    meta: { public: true },
+  },
+  {
+    path: '/reset-password',
+    component: ResetPasswordPage,
     meta: { public: true },
   },
   {
@@ -31,7 +43,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  
+
   const auth = useAuthStore()
 
   // Public routes — always accessible
