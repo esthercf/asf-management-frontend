@@ -14,12 +14,17 @@
 
       <div class="form-group">
         <label class="form-label">Email</label>
-        <input class="form-input" type="email" v-model="email" placeholder="you@university.edu"
-          @keydown.enter="login" />
+        <input class="form-input" :class="{ 'has-error': fieldErrors.email }" type="email" v-model="email" +
+          placeholder="you@university.edu" @keydown.enter="login" />
+        + <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
+
       </div>
       <div class="form-group" style="margin-bottom: .6rem">
         <label class="form-label">Password</label>
-        <input class="form-input" type="password" v-model="password" placeholder="••••••••" @keydown.enter="login" />
+        <input class="form-input" :class="{ 'has-error': fieldErrors.password }" type="password" v-model="password" +
+          placeholder="••••••••" @keydown.enter="login" />
+        + <span v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</span>
+
       </div>
       <div class="forgot-link">
         <router-link to="/forgot-password">{{ t('auth.login.forgot') }}</router-link>
@@ -52,7 +57,8 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth.store';
 import { useUserProfileStore } from '../stores/user-profile.store';
-
+import { loginSchema } from '../validation/login.schema';
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles';
 import { useSessionApi } from '../composables/useSessionApi';
 
 const { t } = useI18n()
@@ -60,7 +66,7 @@ const router = useRouter()
 const api = useSessionApi()
 const auth = useAuthStore()
 const userProfile = useUserProfileStore()
-
+const fieldErrors = ref<Record<string, string>>({})
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -69,10 +75,14 @@ const error = ref('')
 
 async function login() {
   error.value = ''
-  if (!email.value || !password.value) {
-    error.value = t('auth.login.error.empty')
+  fieldErrors.value = {}
+
+  const result = loginSchema.safeParse({ email: email.value, password: password.value })
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
+
   loading.value = true
   try {
     const session = await api.login(email.value, password.value)
@@ -232,9 +242,21 @@ async function login() {
   font-weight: 700;
 }
 
-.forgot-link { text-align: right; margin-bottom: 1.5rem; }
-.forgot-link a { color: var(--navy); font-weight: 700; font-size: .8rem; text-decoration: none; }
-.forgot-link a:hover { text-decoration: underline; }
+.forgot-link {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-link a {
+  color: var(--navy);
+  font-weight: 700;
+  font-size: .8rem;
+  text-decoration: none;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
 
 @media (max-width: 768px) {
   .login-page {
