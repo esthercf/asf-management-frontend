@@ -14,7 +14,7 @@
 
       <div class="form-group">
         <label class="form-label">Email</label>
-        <input class="form-input" :class="{ 'has-error': fieldErrors.email }" type="email" v-model="email" +
+        <input class="form-input" :class="{ 'has-error': fieldErrors.email }" type="email" v-model="email"
           placeholder="you@university.edu" @keydown.enter="login" />
         <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
 
@@ -48,6 +48,28 @@
       <div class="art-blob blob1"></div>
       <div class="art-blob blob2"></div>
       <div class="art-blob blob3"></div>
+      <a :href="promoHref" target="_blank" rel="noopener sponsored" class="promo-card">
+        <div class="promo-slides">
+          <div v-for="(slide, i) in promoSlides" :key="i" class="promo-slide" :class="{ active: i === activeSlide }"
+            :style="{ backgroundImage: `url(${slide.image})` }" />
+          <div class="promo-scrim"></div>
+        </div>
+
+        <div class="promo-content">
+          <span class="promo-eyebrow">Sponsored</span>
+          <div class="promo-brand">
+            <img :src="promoLogo" alt="" class="promo-logo" />
+            <span class="promo-wordmark">{{ promoTitle }}</span>
+          </div>
+          <p class="promo-text">{{ promoSlides[activeSlide].text }}</p>
+          <span class="promo-link">{{ promoLinkText }}</span>
+
+          <div class="promo-dots" @click.prevent>
+            <button v-for="(slide, i) in promoSlides" :key="i" class="promo-dot" :class="{ active: i === activeSlide }"
+              :aria-label="`Show slide ${i + 1}`" @click="activeSlide = i" />
+          </div>
+        </div>
+      </a>
       <div class="art-text">
         <p class="art-quote">
           "Prepare with focus, perform with brilliance."</p>
@@ -58,7 +80,7 @@
 </template>
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth.store';
@@ -68,6 +90,41 @@ import { zodErrorsToFieldMap } from '../utiles/zod.utiles';
 import { useSessionApi } from '../composables/useSessionApi';
 
 const { t } = useI18n()
+const promoSlides = [
+  {
+    image: 'https://adlibitumclass.com/storage/homepage_images/home-en-1201.jpg',
+    text: 'Video masterclasses from the world\'s top saxophonists.',
+  },
+  {
+    image: 'https://adlibitumclass.com/storage/teachers_middle/kbSUTyLxuja3JCO8KG99qmekyrRlhwyaxd8xEncX.jpg',
+    text: 'Featuring David Salleras — and more names you already know.',
+  },
+  {
+    image: 'https://adlibitumclass.com/storage/homepage_teachers/X8UL29maJAf4xPoj9grSlCHjgmrLs2XTaw7qQvpL.jpg',
+    text: 'Watch, learn, and revisit lessons anytime.',
+  },
+]
+
+const promoTitle = 'AdlibitumClass'
+const promoLinkText = 'Explore AdlibitumClass →'
+const promoHref = 'https://adlibitumclass.com/'
+const promoLogo = 'https://adlibitumclass.com/img/AD-logo-letters-200.png'
+
+const activeSlide = ref(0)
+let promoTimer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!prefersReducedMotion && promoSlides.length > 1) {
+    promoTimer = setInterval(() => {
+      activeSlide.value = (activeSlide.value + 1) % promoSlides.length
+    }, 5000)
+  }
+})
+
+onUnmounted(() => {
+  if (promoTimer) clearInterval(promoTimer)
+})
 const router = useRouter()
 const api = useSessionApi()
 const auth = useAuthStore()
@@ -249,6 +306,153 @@ async function login() {
   font-weight: 700;
 }
 
+.promo-card {
+  position: absolute;
+  top: 3rem;
+  left: 3rem;
+  right: 3rem;
+  height: 480px;
+  z-index: 1;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--amber);
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+  transition: transform .2s ease;
+}
+
+.promo-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2.2rem 2.4rem;
+}
+
+.promo-eyebrow {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: .9rem;
+}
+
+.promo-brand {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin-bottom: .8rem;
+}
+
+.promo-logo {
+  height: 30px;
+  width: auto;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+}
+
+.promo-wordmark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--white);
+}
+
+.promo-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .88);
+  margin-bottom: 1.3rem;
+  min-height: 3em;
+  max-width: 85%;
+}
+
+.promo-link {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--amber);
+}
+
+.promo-dots {
+  display: flex;
+  gap: .5rem;
+  margin-top: 1.3rem;
+}
+
+.promo-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.promo-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.promo-slide.active {
+  opacity: 1;
+}
+
+.promo-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 16, 28, .25) 0%, rgba(8, 16, 28, .55) 55%, rgba(8, 16, 28, .92) 100%);
+}
+
+.promo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, .35);
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.promo-dot.active {
+  background: var(--amber);
+  transform: scale(1.4);
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap .form-input {
+  padding-right: 2.6rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: .6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: .2rem;
+  opacity: .7;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .promo-card {
+    height: 360px;
+  }
+}
+
 .forgot-link {
   text-align: right;
   margin-bottom: 1.5rem;
@@ -277,30 +481,5 @@ async function login() {
   .login-card {
     padding: 2rem 1.5rem;
   }
-  .password-input-wrap {
-  position: relative;
-}
-
-.password-input-wrap .form-input {
-  padding-right: 2.6rem;
-}
-
-.password-toggle {
-  position: absolute;
-  right: .6rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: .2rem;
-  opacity: .7;
-}
-
-.password-toggle:hover {
-  opacity: 1;
-}
 }
 </style>
