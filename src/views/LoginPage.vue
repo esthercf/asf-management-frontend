@@ -16,15 +16,21 @@
         <label class="form-label">Email</label>
         <input class="form-input" :class="{ 'has-error': fieldErrors.email }" type="email" v-model="email" +
           placeholder="you@university.edu" @keydown.enter="login" />
-        + <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
+        <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
 
       </div>
       <div class="form-group" style="margin-bottom: .6rem">
         <label class="form-label">Password</label>
-        <input class="form-input" :class="{ 'has-error': fieldErrors.password }" type="password" v-model="password" +
-          placeholder="••••••••" @keydown.enter="login" />
-        + <span v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</span>
-
+        <div class="password-input-wrap">
+          <input class="form-input" :class="{ 'has-error': fieldErrors.password }"
+            :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="••••••••"
+            @keydown.enter="login" />
+          <button type="button" class="password-toggle" :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            @click="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁' }}
+          </button>
+        </div>
+        <span v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</span>
       </div>
       <div class="forgot-link">
         <router-link to="/forgot-password">{{ t('auth.login.forgot') }}</router-link>
@@ -69,6 +75,7 @@ const userProfile = useUserProfileStore()
 const fieldErrors = ref<Record<string, string>>({})
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
 
@@ -270,5 +277,30 @@ async function login() {
   .login-card {
     padding: 2rem 1.5rem;
   }
+  .password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap .form-input {
+  padding-right: 2.6rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: .6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: .2rem;
+  opacity: .7;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
 }
 </style>
