@@ -178,6 +178,13 @@ async function searchByFolderCode() {
     try {
         const data = await usersApi.getUsers({ page: 1, limit: 1, folderCode: folderCode.value.trim() })
         folderUser.value = data?.data?.[0] ?? null
+        // Auto-select: a folder code search only ever returns one possible
+        // match, so there's no ambiguity to resolve via a separate click —
+        // requiring one just adds a confusing extra step where the result
+        // looks selected but isn't yet.
+        if (folderUser.value) {
+            pick(folderUser.value)
+        }
     } catch {
         folderUser.value = null
     } finally {
@@ -200,14 +207,21 @@ function close() {
 }
 
 async function confirm() {
-    if (!picked.value || !props.bookingId) return
+    console.log('DEBUG confirm() called. picked:', picked.value, 'bookingId:', props.bookingId)
+    if (!picked.value || !props.bookingId) {
+        console.log('DEBUG confirm() returning early - picked or bookingId is falsy')
+        return
+    }
     saving.value = true
     error.value = ''
     try {
+        console.log('DEBUG calling assignBookingUser with', props.bookingId, picked.value.id)
         await api.assignBookingUser(props.bookingId, picked.value.id)
+        console.log('DEBUG assignBookingUser succeeded')
         emit('assigned', picked.value)
         close()
     } catch (e) {
+        console.log('DEBUG assignBookingUser threw:', e)
         error.value = extractErrorMessage(e)
     } finally {
         saving.value = false
