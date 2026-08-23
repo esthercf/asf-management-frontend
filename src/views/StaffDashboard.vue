@@ -1270,7 +1270,6 @@ function formatPhone(u: UserDto): string {
 
 .clickable-row {
   cursor: pointer;
-  transition: var(--transition);
 }
 
 .clickable-row:hover {
