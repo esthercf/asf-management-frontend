@@ -39,7 +39,10 @@
 
       <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading"
         @click="login">
-        {{ loading ? 'Signing in…' : 'Sign in →' }}
+        <InlineSpinner v-if="loading" />
+        <template v-else>
+          {{ t('auth.login.signIn') }} →
+        </template>
       </button>
 
     </div>
@@ -88,6 +91,7 @@ import { useUserProfileStore } from '../stores/user-profile.store';
 import { loginSchema } from '../validation/login.schema';
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles';
 import { useSessionApi } from '../composables/useSessionApi';
+import InlineSpinner from '../components/InlineSpinner .vue';
 
 const { t } = useI18n()
 const promoSlides = [
