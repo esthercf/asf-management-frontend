@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const zh: AppLocale = {
   common: {
+    close: '关闭',
     loading: '加载中…',
     error: '出现错误。',
     save: '保存更改',
@@ -146,6 +147,13 @@ const zh: AppLocale = {
       availabilityTitle: '房间可用性',
     },
     rooms: {
+      viewStatus: '查看状态',
+      selectDay: '选择日期',
+      slot: '时间段',
+      student: '学生',
+      booked: '已预约',
+      free: '空闲',
+      noSlotsThisDay: '该日没有可用的时间段。',
       subtitle: '添加、编辑或删除学习空间。',
       windows: '窗户',
       comments: '备注',
@@ -216,6 +224,8 @@ const zh: AppLocale = {
       },
     },
     users: {
+      teacherName: '教师',
+      folderCode: '文件夹代码',
       title: '管理用户',
       subtitle: '查看、筛选并更新用户访问权限。',
       searchPlaceholder: '按姓名或电子邮件搜索…',

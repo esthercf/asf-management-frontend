@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const it: AppLocale = {
   common: {
+    close: 'Chiudi',
     loading: 'Caricamento…',
     error: 'Qualcosa è andato storto.',
     save: 'Salva modifiche',
@@ -147,6 +148,13 @@ const it: AppLocale = {
       availabilityTitle: 'Disponibilità sale',
     },
     rooms: {
+      viewStatus: 'Vedi stato',
+      selectDay: 'Seleziona un giorno',
+      slot: 'Fascia oraria',
+      student: 'Studente',
+      booked: 'Prenotato',
+      free: 'Libero',
+      noSlotsThisDay: 'Nessuna fascia disponibile per questo giorno.',
       subtitle: 'Aggiungi, modifica o elimina spazi di studio.',
       windows: 'Finestre',
       comments: 'Commenti',
@@ -218,6 +226,8 @@ const it: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Insegnante',
+      folderCode: 'Codice cartella',
       title: 'Gestisci utenti',
       subtitle: 'Visualizza, filtra e aggiorna l’accesso degli utenti.',
       searchPlaceholder: 'Cerca per nome o e-mail…',

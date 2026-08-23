@@ -45,7 +45,11 @@ export const useUserProfileStore = defineStore('userProfile', {
         // Import here to avoid circular dependency between stores and composables
         const { useUserApi } = await import('../composables/useUserApi')
         const userApi = useUserApi()
-        this.profile = await userApi.getUser(userId)
+        // getMe(), not getUser(userId) — this store is always used for the
+        // CURRENT user's own profile (see LoginPage.vue / UserDashboard.vue),
+        // and getUser(id) is staff-only, which would reject a regular user
+        // fetching their own record.
+        this.profile = await userApi.getMe()
       } catch {
         this.profile = null
       } finally {

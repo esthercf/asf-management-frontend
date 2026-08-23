@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const ja: AppLocale = {
   common: {
+    close: '閉じる',
     loading: '読み込み中…',
     error: 'エラーが発生しました。',
     save: '変更を保存',
@@ -146,6 +147,13 @@ const ja: AppLocale = {
       availabilityTitle: '部屋の空き状況',
     },
     rooms: {
+      viewStatus: 'ステータスを見る',
+      selectDay: '日付を選択',
+      slot: '時間枠',
+      student: '学生',
+      booked: '予約済み',
+      free: '空き',
+      noSlotsThisDay: 'この日に利用可能な枠はありません。',
       subtitle: '学習スペースを追加、編集、削除します。',
       windows: '窓',
       comments: 'コメント',
@@ -218,6 +226,8 @@ const ja: AppLocale = {
       },
     },
     users: {
+      teacherName: '教師',
+      folderCode: 'フォルダコード',
       title: 'ユーザー管理',
       subtitle: 'ユーザーアクセスの表示、フィルタリング、更新。',
       searchPlaceholder: '名前またはメールで検索…',

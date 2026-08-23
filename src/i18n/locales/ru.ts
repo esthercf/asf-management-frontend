@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const ru: AppLocale = {
   common: {
+    close: 'Закрыть',
     loading: 'Загрузка…',
     error: 'Что-то пошло не так.',
     save: 'Сохранить изменения',
@@ -146,6 +147,13 @@ const ru: AppLocale = {
       availabilityTitle: 'Доступность комнат',
     },
     rooms: {
+      viewStatus: 'Посмотреть статус',
+      selectDay: 'Выбрать день',
+      slot: 'Временной слот',
+      student: 'Студент',
+      booked: 'Забронировано',
+      free: 'Свободно',
+      noSlotsThisDay: 'Нет слотов на этот день.',
       subtitle: 'Добавьте, измените или удалите учебные помещения.',
       windows: 'Окна',
       comments: 'Комментарии',
@@ -217,6 +225,8 @@ const ru: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Преподаватель',
+      folderCode: 'Код папки',
       title: 'Управление пользователями',
       subtitle: 'Просмотр, фильтрация и обновление доступа пользователей.',
       searchPlaceholder: 'Поиск по имени или электронной почте…',

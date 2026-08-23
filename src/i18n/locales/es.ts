@@ -3,6 +3,7 @@ import type { AppLocale } from './en'
 
 const es: AppLocale = {
   common: {
+    close: 'Cerrar',
     loading: 'Cargando…',
     error: 'Algo salió mal.',
     save: 'Guardar cambios',
@@ -146,6 +147,13 @@ const es: AppLocale = {
       availabilityTitle: 'Disponibilidad de salas',
     },
     rooms: {
+      viewStatus: 'Ver estado',
+      selectDay: 'Seleccionar un día',
+      slot: 'Franja horaria',
+      student: 'Estudiante',
+      booked: 'Reservado',
+      free: 'Libre',
+      noSlotsThisDay: 'No hay franjas para este día.',
       subtitle: 'Añadir, editar o eliminar espacios de estudio.',
       windows: 'Ventanas',
       comments: 'Comentarios',
@@ -217,6 +225,8 @@ const es: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Profesor',
+      folderCode: 'Código de carpeta',
       title: 'Gestionar usuarios',
       subtitle: 'Ver, filtrar y actualizar el acceso de los usuarios.',
       searchPlaceholder: 'Buscar por nombre o correo electrónico…',

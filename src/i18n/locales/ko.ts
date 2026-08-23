@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const ko: AppLocale = {
   common: {
+    close: '닫기',
     loading: '로딩 중…',
     error: '오류가 발생했습니다.',
     save: '변경 사항 저장',
@@ -146,6 +147,13 @@ const ko: AppLocale = {
       availabilityTitle: '방 이용 가능 여부',
     },
     rooms: {
+      viewStatus: '상태 보기',
+      selectDay: '날짜 선택',
+      slot: '시간대',
+      student: '학생',
+      booked: '예약됨',
+      free: '비어 있음',
+      noSlotsThisDay: '이 날에는 가능한 시간대가 없습니다.',
       subtitle: '학습 공간을 추가, 편집 또는 삭제합니다.',
       windows: '창문',
       comments: '댓글',
@@ -217,6 +225,8 @@ const ko: AppLocale = {
       },
     },
     users: {
+      teacherName: '교사',
+      folderCode: '폴더 코드',
       title: '사용자 관리',
       subtitle: '사용자 접근 권한을 확인, 필터링 및 업데이트합니다.',
       searchPlaceholder: '이름 또는 이메일로 검색…',

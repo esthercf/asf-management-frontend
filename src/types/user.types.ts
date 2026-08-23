@@ -16,6 +16,7 @@ export interface UserDto {
   surnames: string,
   email: string,
   teacherName?: string,
+  folderCode?: string,
   phoneNumber?: string,
   phoneCode?: string,
   language: LanguageEnum,
@@ -26,6 +27,7 @@ export interface UserDto {
   bookingTypeEnum: BookingTypeEnum[],
 }
 
+/**Esther: This is not in use 23-08-2027. We keep the code just in case business logic changes necessities. */
 export interface UpdateUserDto {
   firstnames?: string,
   surnames?: string,

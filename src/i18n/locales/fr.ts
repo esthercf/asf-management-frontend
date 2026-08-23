@@ -1,6 +1,7 @@
 import type { AppLocale } from './en'
 const fr: AppLocale = {
   common: {
+    close: 'Fermer',
     loading: 'Chargement…',
     error: 'Une erreur est survenue.',
     save: 'Enregistrer les modifications',
@@ -145,6 +146,13 @@ const fr: AppLocale = {
       availabilityTitle: 'Disponibilité des salles',
     },
     rooms: {
+      viewStatus: 'Voir l’état',
+      selectDay: 'Sélectionner un jour',
+      slot: 'Créneau horaire',
+      student: 'Étudiant',
+      booked: 'Réservé',
+      free: 'Libre',
+      noSlotsThisDay: 'Aucun créneau disponible ce jour-là.',
       subtitle: 'Ajouter, modifier ou supprimer des espaces d’étude.',
       windows: 'Fenêtres',
       comments: 'Commentaires',
@@ -216,6 +224,8 @@ const fr: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Professeur',
+      folderCode: 'Code du dossier',
       title: 'Gérer les utilisateurs',
       subtitle: 'Afficher, filtrer et mettre à jour l’accès des utilisateurs.',
       searchPlaceholder: 'Rechercher par nom ou e-mail…',

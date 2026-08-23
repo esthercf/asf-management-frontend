@@ -1,5 +1,6 @@
 const en = {
     common: {
+        close: 'Close',
         loading: 'Loading…',
         error: 'Something went wrong.',
         save: 'Save changes',
@@ -142,6 +143,13 @@ const en = {
             availabilityTitle: 'Room Availability',
         },
         rooms: {
+            viewStatus: 'View status',
+            selectDay: 'Select a day',
+            slot: 'Time slot',
+            student: 'Student',
+            booked: 'Booked',
+            free: 'Free',
+            noSlotsThisDay: 'No slots for this day.',
             subtitle: 'Add, edit, or remove study spaces.',
             windows: 'Windows',
             comments: 'Comments',
@@ -214,6 +222,8 @@ const en = {
             },
         },
         users: {
+            teacherName: 'Teacher',
+            folderCode: 'Folder code',
             title: 'Manage Users',
             subtitle: 'View, filter, and update user access.',
             searchPlaceholder: 'Search by name or email…',

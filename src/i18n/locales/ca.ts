@@ -2,6 +2,7 @@ import type { AppLocale } from './en'
 
 const ca: AppLocale = {
   common: {
+    close: 'Tanca',
     loading: 'Carregant…',
     error: 'Alguna cosa ha anat malament.',
     save: 'Desar',
@@ -144,6 +145,13 @@ const ca: AppLocale = {
       availabilityTitle: 'Disponibilitat de sales',
     },
     rooms: {
+      viewStatus: 'Veure estat',
+      selectDay: 'Selecciona un dia',
+      slot: 'Franja horària',
+      student: 'Estudiant',
+      booked: 'Reservat',
+      free: 'Lliure',
+      noSlotsThisDay: 'No hi ha franges per a aquest dia.',
       subtitle: 'Afegeix, edita o elimina espais d\'estudi.',
       windows: 'Finestres',
       comments: 'Comentaris',
@@ -215,6 +223,8 @@ const ca: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Professor',
+      folderCode: 'Codi de carpeta',
       title: 'Gestiona els usuaris',
       subtitle: 'Visualitza, filtra i actualitza l’accés dels usuaris.',
       searchPlaceholder: 'Cerca per nom o correu electrònic…',

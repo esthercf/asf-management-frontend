@@ -163,8 +163,8 @@
                 </td>
                 <td>
                   <div style="display:flex; gap:.5rem;">
-                    <button class="btn btn-secondary btn-sm" @click="openEditRoom(room)">
-                      {{ t('common.edit') }}
+                    <button class="btn btn-secondary btn-sm" @click="openRoomStatusModal(room)">
+                      {{ t('staff.rooms.viewStatus') }}
                     </button>
                     <button class="btn btn-danger btn-sm" @click="removeRoom(room.id)">
                       {{ t('common.delete') }}
@@ -224,9 +224,8 @@
                 <tr>
                   <th>{{ t('staff.users.columns.name') }}</th>
                   <th>{{ t('staff.users.columns.email') }}</th>
-                  <th>{{ t('staff.users.columns.country') }}</th>
-                  <th>{{ t('staff.users.columns.language') }}</th>
-                  <th>{{ t('staff.users.columns.phone') }}</th>
+                  <th>{{ t('staff.users.columns.teacherName') }}</th>
+                  <th>{{ t('staff.users.columns.folderCode') }}</th>
                   <th>{{ t('staff.users.columns.tshirt') }}</th>
                   <th>{{ t('staff.users.columns.bookingType') }}</th>
                   <th>{{ t('staff.users.columns.status') }}</th>
@@ -234,7 +233,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="u in users" :key="u.id">
+                <tr v-for="u in users" :key="u.id" class="clickable-row" @click="openUserDetailsModal(u)">
                   <td>
                     <div style="display:flex; align-items:center; gap:.6rem;">
                       <div class="avatar avatar-sage" style="width:28px; height:28px; font-size:.7rem;">
@@ -244,9 +243,8 @@
                     </div>
                   </td>
                   <td>{{ u.email }}</td>
-                  <td>{{ u.countryCode }}</td>
-                  <td>{{ u.language }}</td>
-                  <td>{{ formatPhone(u) }}</td>
+                  <td>{{ u.teacherName ?? '—' }}</td>
+                  <td>{{ u.folderCode ?? '—' }}</td>
                   <td>{{ u.tshirtEnum ?? '—' }}</td>
                   <td>
                     <div class="bt-tags">
@@ -261,11 +259,8 @@
                       {{ u.active ? t('staff.users.active') : t('staff.users.inactive') }}
                     </span>
                   </td>
-                  <td>
+                  <td @click.stop>
                     <div style="display:flex; flex-direction:column; gap:.4rem;">
-                      <button class="btn btn-secondary btn-sm" @click="openBookingTypeModal(u)">
-                        {{ t('staff.users.editBookingType') }}
-                      </button>
                       <button class="btn btn-sm" :class="u.active ? 'btn-danger' : 'btn-primary'"
                         @click="toggleUserActive(u)">
                         {{ u.active ? t('staff.users.deactivate') : t('staff.users.activate') }}
@@ -650,6 +645,89 @@
       </div>
     </Teleport>
 
+    <!-- View User Details Modal (read-only) -->
+    <Teleport to="body">
+      <div v-if="userDetailsModal" class="modal-overlay" @click.self="userDetailsModal = false">
+        <div class="modal">
+          <h2 class="modal-title">
+            {{ viewingUser?.firstnames }} {{ viewingUser?.surnames }}
+          </h2>
+          <div class="details-grid" v-if="viewingUser">
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.email') }}</span><span>{{ viewingUser.email }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.teacherName') }}</span><span>{{ viewingUser.teacherName ?? '—' }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.folderCode') }}</span><span>{{ viewingUser.folderCode ?? '—' }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.country') }}</span><span>{{ viewingUser.countryCode }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.language') }}</span><span>{{ viewingUser.language }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.phone') }}</span><span>{{ formatPhone(viewingUser) }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.tshirt') }}</span><span>{{ viewingUser.tshirtEnum ?? '—' }}</span></div>
+            <div class="detail-row">
+              <span class="detail-label">{{ t('staff.users.columns.bookingType') }}</span>
+              <span>
+                <span v-for="bt in viewingUser.bookingTypeEnum" :key="bt" class="badge badge-lav bt-tag">{{ bookingTypeLabel(bt) }}</span>
+                <span v-if="!viewingUser.bookingTypeEnum?.length">—</span>
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">{{ t('staff.users.columns.status') }}</span>
+              <span class="badge" :class="viewingUser.active ? 'badge-green' : 'badge-coral'">
+                {{ viewingUser.active ? t('staff.users.active') : t('staff.users.inactive') }}
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="userDetailsModal = false">{{ t('common.close') }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Room Status Modal -->
+    <Teleport to="body">
+      <div v-if="roomStatusModal" class="modal-overlay" @click.self="roomStatusModal = false">
+        <div class="modal">
+          <h2 class="modal-title">{{ viewingRoom?.name }} — {{ t('staff.rooms.viewStatus') }}</h2>
+          <div class="form-group">
+            <label class="form-label">{{ t('staff.rooms.selectDay') }}</label>
+            <input type="date" class="form-input" v-model="roomStatusDate" @change="loadRoomStatus" />
+          </div>
+          <div v-if="loadingRoomStatus" class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>{{ t('common.loading') }}</p>
+          </div>
+          <div v-else-if="roomStatusDate" class="card" style="overflow:hidden; margin-top:1rem;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>{{ t('staff.rooms.slot') }}</th>
+                  <th>{{ t('staff.users.columns.status') }}</th>
+                  <th>{{ t('staff.rooms.student') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="slot in roomStatusSlots" :key="slot.startTime">
+                  <td>{{ formatSlotTime(slot.startTime) }}</td>
+                  <td>
+                    <span class="badge" :class="slot.booking ? 'badge-coral' : 'badge-green'">
+                      {{ slot.booking ? t('staff.rooms.booked') : t('staff.rooms.free') }}
+                    </span>
+                  </td>
+                  <td>
+                    {{ slot.booking?.user ? `${slot.booking.user.firstnames} ${slot.booking.user.surnames}` : '—' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="roomStatusSlots.length === 0" class="empty-state">
+              <p>{{ t('staff.rooms.noSlotsThisDay') }}</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="roomStatusModal = false">{{ t('common.close') }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Assign User to Booking Modal -->
     <AssignUserModal v-model="assignUserModalOpen" :booking-id="assigningBookingId" @assigned="onUserAssigned" />
   </div>
@@ -668,6 +746,7 @@ import type {
   RoomDto,
   BookingDto,
   AvailableRoomDto,
+  AvailableBookingDto,
   BookingDayOption,
   BookingSlotOption,
   UserBaseDto,
@@ -932,6 +1011,57 @@ async function removeRoom(id: string) {
   }
 }
 
+// ── Room status modal ─────────────────────────────────────────────────────
+const roomStatusModal = ref(false)
+const viewingRoom = ref<RoomDto | null>(null)
+const roomStatusDate = ref('')
+const loadingRoomStatus = ref(false)
+const roomStatusSlots = ref<Array<{ startTime: number; booking?: BookingDto }>>([])
+
+function openRoomStatusModal(room: RoomDto) {
+  viewingRoom.value = room
+  roomStatusDate.value = ''
+  roomStatusSlots.value = []
+  roomStatusModal.value = true
+}
+
+async function loadRoomStatus() {
+  if (!viewingRoom.value || !roomStatusDate.value) return
+  loadingRoomStatus.value = true
+  try {
+    const selectedDate = new Date(roomStatusDate.value + 'T00:00:00')
+    const day = selectedDate.getDate()
+    const month = selectedDate.getMonth() + 1
+
+    const [availability, bookingsResult] = await Promise.all([
+      bookingApi.getAvailability({ roomId: viewingRoom.value.id, limit: 1000 }),
+      bookingApi.getBookings({ roomId: viewingRoom.value.id, day, month, limit: 200 }),
+    ])
+
+    const freeSlotsForDay = availability
+      .flatMap((r: AvailableRoomDto) => r.available ?? [])
+      .filter((s: AvailableBookingDto) => s.date === roomStatusDate.value)
+
+    const slotMap = new Map<number, { startTime: number; booking?: BookingDto }>()
+    for (const slot of freeSlotsForDay) {
+      slotMap.set(slot.startTime, { startTime: slot.startTime })
+    }
+    for (const booking of bookingsResult.data) {
+      slotMap.set(booking.startTime, { startTime: booking.startTime, booking })
+    }
+
+    roomStatusSlots.value = Array.from(slotMap.values()).sort((a, b) => a.startTime - b.startTime)
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    loadingRoomStatus.value = false
+  }
+}
+
+function formatSlotTime(minutes: number): string {
+  return formatMinutes(minutes)
+}
+
 async function removeBooking(id: string) {
   if (!confirm(t('staff.bookings.cancelConfirm'))) return
   try {
@@ -951,6 +1081,15 @@ async function toggleUserActive(u: UserDto) {
   } catch (e) {
     pageError.value = extractErrorMessage(e)
   }
+}
+
+// ── User details modal (read-only) ────────────────────────────────────────
+const userDetailsModal = ref(false)
+const viewingUser = ref<UserDto | null>(null)
+
+function openUserDetailsModal(u: UserDto) {
+  viewingUser.value = u
+  userDetailsModal.value = true
 }
 
 // ── User booking type modal ───────────────────────────────────────────────
@@ -1092,6 +1231,35 @@ function formatPhone(u: UserDto): string {
 </script>
 
 <style scoped>
+.clickable-row {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.clickable-row:hover {
+  background: var(--sage-light, rgba(0,0,0,0.03));
+}
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin: 1rem 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
 .steps-row {
   display: flex;
   align-items: center;

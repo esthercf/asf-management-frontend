@@ -3,6 +3,7 @@ import type { AppLocale } from './en'
 
 const de: AppLocale = {
   common: {
+    close: 'Schließen',
     loading: 'Laden…',
     error: 'Etwas ist schiefgelaufen.',
     save: 'Änderungen speichern',
@@ -149,6 +150,13 @@ const de: AppLocale = {
       availabilityTitle: 'Raumverfügbarkeit',
     },
     rooms: {
+      viewStatus: 'Status anzeigen',
+      selectDay: 'Tag auswählen',
+      slot: 'Zeitfenster',
+      student: 'Student',
+      booked: 'Gebucht',
+      free: 'Frei',
+      noSlotsThisDay: 'Keine Zeitfenster an diesem Tag.',
       subtitle: 'Studienräume hinzufügen, bearbeiten oder entfernen.',
       windows: 'Fenster',
       comments: 'Kommentare',
@@ -220,6 +228,8 @@ const de: AppLocale = {
       },
     },
     users: {
+      teacherName: 'Lehrer',
+      folderCode: 'Ordnercode',
       title: 'Benutzer verwalten',
       subtitle: 'Benutzerzugriff anzeigen, filtern und aktualisieren.',
       searchPlaceholder: 'Suche nach Name oder E-Mail…',
