@@ -248,6 +248,8 @@ const ru: AppLocale = {
         allBookingTypes: 'Все типы бронирования',
       },
       columns: {
+        teacherName: 'Преподаватель',
+        folderCode: 'Код папки',
         name: 'Имя',
         email: 'Электронная почта',
         country: 'Страна',

@@ -249,6 +249,8 @@ const ja: AppLocale = {
         allBookingTypes: 'すべての予約タイプ',
       },
       columns: {
+        teacherName: '教師',
+        folderCode: 'フォルダコード',
         name: '名前',
         email: 'メール',
         country: '国',

@@ -248,6 +248,8 @@ const ko: AppLocale = {
         allBookingTypes: '모든 예약 유형',
       },
       columns: {
+        teacherName: '교사',
+        folderCode: '폴더 코드',
         name: '이름',
         email: '이메일',
         country: '국가',

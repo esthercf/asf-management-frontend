@@ -249,6 +249,8 @@ const it: AppLocale = {
         allBookingTypes: 'Tutti i tipi di prenotazione',
       },
       columns: {
+        teacherName: 'Insegnante',
+        folderCode: 'Codice cartella',
         name: 'Nome',
         email: 'E-mail',
         country: 'Paese',

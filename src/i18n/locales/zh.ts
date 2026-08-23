@@ -247,6 +247,8 @@ const zh: AppLocale = {
         allBookingTypes: '所有预订类型',
       },
       columns: {
+        teacherName: '教师',
+        folderCode: '文件夹代码',
         name: '姓名',
         email: '电子邮件',
         country: '国家',

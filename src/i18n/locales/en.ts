@@ -245,6 +245,8 @@ const en = {
                 allBookingTypes: 'All booking types',
             },
             columns: {
+                teacherName: 'Teacher',
+                folderCode: 'Folder code',
                 name: 'Name',
                 email: 'Email',
                 country: 'Country',

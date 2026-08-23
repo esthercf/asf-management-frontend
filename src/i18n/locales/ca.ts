@@ -246,6 +246,8 @@ const ca: AppLocale = {
         allBookingTypes: 'Tots els tipus de reserva',
       },
       columns: {
+        teacherName: 'Professor',
+        folderCode: 'Codi de carpeta',
         name: 'Nom',
         email: 'Correu electrònic',
         country: 'País',
