@@ -91,7 +91,7 @@ import { useUserProfileStore } from '../stores/user-profile.store';
 import { loginSchema } from '../validation/login.schema';
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles';
 import { useSessionApi } from '../composables/useSessionApi';
-import InlineSpinner from '../components/InlineSpinner .vue';
+import InlineSpinner from '../components/InlineSpinner.vue';
 
 const { t } = useI18n()
 const promoSlides = [
