@@ -41,7 +41,7 @@
         @click="login">
         <InlineSpinner v-if="loading" />
         <template v-else>
-          {{ t('auth.login.signIn') }} →
+          {{ t('auth.login.submit') }} →
         </template>
       </button>
 
@@ -104,10 +104,23 @@ const promoSlides = [
     text: 'Featuring David Salleras — and more names you already know.',
   },
   {
-    image: 'https://adlibitumclass.com/storage/homepage_teachers/X8UL29maJAf4xPoj9grSlCHjgmrLs2XTaw7qQvpL.jpg',
+    image: 'https://adlibitumclass.com/storage/teachers/ZMQJBagJezIfZ9BjLsGLzlrrWvg4yatSrKc5TfW7.jpg',
     text: 'Watch, learn, and revisit lessons anytime.',
   },
+  {
+    image: 'https://adlibitumclass.com/storage/teachers/tRaLZMruycGBnKsxxOLpLiyGBNytB5ez3Jxjh1Sf.jpg',
+    text: 'Capions and subtitles in 25 languages',
+  },
+  {
+    image: 'https://adlibitumclass.com/storage/teachers/DnKZvVz2bYsrQiWs6cB2teUu5BcIKsQxHJ4Gxdtl.jpg',
+    text: 'Choose your membership from 18€',
+  },
+  {
+    image: 'https://adlibitumclass.com/storage/homepage_teachers/X8UL29maJAf4xPoj9grSlCHjgmrLs2XTaw7qQvpL.jpg',
+    text: 'Average of 20 lessons per teacher',
+  },
 ]
+
 
 const promoTitle = 'AdlibitumClass'
 const promoLinkText = 'Explore AdlibitumClass →'
