@@ -112,12 +112,12 @@ const promoSlides = [
     text: 'Capions and subtitles in 25 languages',
   },
   {
-    image: 'https://adlibitumclass.com/storage/teachers/DnKZvVz2bYsrQiWs6cB2teUu5BcIKsQxHJ4Gxdtl.jpg',
-    text: 'Choose your membership from 18€',
+    image: 'https://adlibitumclass.com/storage/teachers/BTIyK51I4b9EUsRznvkEqNZpQb2J1gr8j0jenxBm.jpg"',
+    text: 'Listen our podcasts',
   },
   {
     image: 'https://adlibitumclass.com/storage/homepage_teachers/X8UL29maJAf4xPoj9grSlCHjgmrLs2XTaw7qQvpL.jpg',
-    text: 'Average of 20 lessons per teacher',
+    text: 'Choose your membership from 18€',
   },
 ]
 
