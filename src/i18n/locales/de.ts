@@ -181,7 +181,7 @@ const de: AppLocale = {
       searchPlaceholder: 'Suche nach Benutzer oder Raum…',
       unassigned: 'Nicht zugewiesen',
       assignUser: 'Benutzer zuweisen',
-      reassignUser: 'Benutzer neu zuweisen',
+      userAssigned: 'Benutzer zugewiesen',
       assignUserHint: 'Suche nach einem Benutzer über Name, E-Mail oder Aktennummer.',
       searchByNameEmail: 'Name oder E-Mail',
       searchByFolderCode: 'Aktennummer',

@@ -177,7 +177,7 @@ const zh: AppLocale = {
       searchPlaceholder: '按用户或房间搜索…',
       unassigned: '未分配',
       assignUser: '分配用户',
-      reassignUser: '重新分配用户',
+      userAssigned: '已分配用户',
       assignUserHint: '通过姓名、电子邮件或文件夹代码搜索用户。',
       searchByNameEmail: '姓名或电子邮件',
       searchByFolderCode: '文件夹代码',

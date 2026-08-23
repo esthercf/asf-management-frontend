@@ -174,7 +174,7 @@ const en = {
             searchPlaceholder: 'Search by user or room…',
             unassigned: 'Unassigned',
             assignUser: 'Assign user',
-            reassignUser: 'Reassign user',
+            userAssigned: 'User assigned',
             assignUserHint: 'Search for a user by name, email, or folder code.',
             searchByNameEmail: 'Name or email',
             searchByFolderCode: 'Folder code',

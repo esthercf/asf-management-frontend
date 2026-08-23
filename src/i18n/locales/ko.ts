@@ -178,7 +178,7 @@ const ko: AppLocale = {
       searchPlaceholder: '사용자 또는 방으로 검색…',
       unassigned: '미할당',
       assignUser: '사용자 할당',
-      reassignUser: '사용자 재할당',
+      userAssigned: '사용자 배정됨',
       assignUserHint: '이름, 이메일 또는 폴더 코드로 사용자를 검색하세요.',
       searchByNameEmail: '이름 또는 이메일',
       searchByFolderCode: '폴더 코드',

@@ -53,7 +53,8 @@
                             :placeholder="t('staff.bookings.folderCodePlaceholder')"
                             @keydown.enter="searchByFolderCode" />
                         <button class="btn btn-secondary" :disabled="folderLoading" @click="searchByFolderCode">
-                            {{ folderLoading ? t('common.loading') : t('common.search') }}
+                            <InlineSpinner v-if="folderLoading" />
+                            <span v-else>{{ t('common.search') }}</span>
                         </button>
                     </div>
                     <div v-if="folderSearched && !folderLoading" class="folder-result">
@@ -87,7 +88,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @click="close">{{ t('common.cancel') }}</button>
                     <button class="btn btn-primary" :disabled="!picked || saving" @click="confirm">
-                        {{ saving ? t('common.loading') : t('staff.bookings.assign') }} →
+                        <InlineSpinner v-if="saving" />
+                        <span v-else>{{ t('staff.bookings.assign') }} →</span>
                     </button>
                 </div>
             </div>
@@ -102,6 +104,7 @@ import { useBookingApi } from '../composables/useBookingApi';
 import { extractErrorMessage } from '../utiles/error.utiles';
 import type { UserDto } from '../types/user.types';
 import { useUserApi } from '../composables/useUserApi';
+import InlineSpinner from './InlineSpinner.vue';
 
 const props = defineProps<{
     modelValue: boolean
@@ -207,21 +210,14 @@ function close() {
 }
 
 async function confirm() {
-    console.log('DEBUG confirm() called. picked:', picked.value, 'bookingId:', props.bookingId)
-    if (!picked.value || !props.bookingId) {
-        console.log('DEBUG confirm() returning early - picked or bookingId is falsy')
-        return
-    }
+    if (!picked.value || !props.bookingId) return
     saving.value = true
     error.value = ''
     try {
-        console.log('DEBUG calling assignBookingUser with', props.bookingId, picked.value.id)
         await api.assignBookingUser(props.bookingId, picked.value.id)
-        console.log('DEBUG assignBookingUser succeeded')
         emit('assigned', picked.value)
         close()
     } catch (e) {
-        console.log('DEBUG assignBookingUser threw:', e)
         error.value = extractErrorMessage(e)
     } finally {
         saving.value = false

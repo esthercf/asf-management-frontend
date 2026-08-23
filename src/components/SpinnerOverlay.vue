@@ -1,11 +1,14 @@
 <template>
   <div class="spinner-overlay">
     <div class="spinner"></div>
-    <p class="spinner-text">{{ message }}</p>
+    <p class="spinner-text">{{ t(message ?? 'common.loading') }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 defineProps<{
   message?: string
 }>()
@@ -26,8 +29,8 @@ defineProps<{
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid #ccc;
-  border-top-color: #007bff;
+  border: 4px solid var(--border);
+  border-top-color: var(--navy);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -35,7 +38,7 @@ defineProps<{
 .spinner-text {
   margin-top: 1rem;
   font-size: 1rem;
-  color: #333;
+  color: var(--ink);
 }
 
 @keyframes spin {

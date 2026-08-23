@@ -259,8 +259,9 @@
                   <td @click.stop>
                     <div style="display:flex; flex-direction:column; gap:.4rem;">
                       <button class="btn btn-sm" :class="u.active ? 'btn-danger' : 'btn-primary'"
-                        @click="toggleUserActive(u)">
-                        {{ u.active ? t('staff.users.deactivate') : t('staff.users.activate') }}
+                        :disabled="togglingUserId === u.id" @click="toggleUserActive(u)">
+                        <InlineSpinner v-if="togglingUserId === u.id" />
+                        <span v-else>{{ u.active ? t('staff.users.deactivate') : t('staff.users.activate') }}</span>
                       </button>
                     </div>
                   </td>
@@ -344,13 +345,14 @@
                   <div style="display:flex; flex-direction:column; gap:.4rem;">
                     <button :disabled="!!booking.userId"
                       :title="booking.user ? t('staff.bookings.alreadyAssigned') : t('staff.bookings.assignUserTooltip')"
-                      class="btn btn-secondary btn-sm" @click="openAssignUserModal(booking)">
-                      {{ booking.user ? t('staff.bookings.reassignUser') : t('staff.bookings.assignUser') }}
+                      class="btn btn-secondary btn-sm assign-btn" @click="openAssignUserModal(booking)">
+                      {{ booking.user ? t('staff.bookings.userAssigned') : t('staff.bookings.assignUser') }}
                     </button>
-                    <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
+                    <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking) || removingBookingId === booking.id"
                       :title="isPastBooking(booking) ? t('staff.bookings.cannotCancelPast') : ''"
                       @click="removeBooking(booking.id)">
-                      {{ t('common.cancel') }}
+                      <InlineSpinner v-if="removingBookingId === booking.id" />
+                      <span v-else>{{ t('common.cancel') }}</span>
                     </button>
                   </div>
                 </td>
@@ -511,7 +513,8 @@
           <div class="modal-footer" style="justify-content:flex-start; margin-top:1.5rem; padding:0;">
             <button class="btn btn-secondary" @click="view = 'overview'">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="nbConfirming" @click="nbConfirm">
-              {{ nbConfirming ? t('common.loading') : t('staff.newBooking.createBooking') }}
+              <InlineSpinner v-if="nbConfirming" />
+              <span v-else>{{ t('staff.newBooking.createBooking') }}</span>
             </button>
           </div>
         </div>
@@ -613,8 +616,9 @@
           <div v-if="roomFormError" class="error-banner">⚠️ {{ roomFormError }}</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="roomModal = false">{{ t('common.cancel') }}</button>
-            <button class="btn btn-primary" @click="saveRoom">
-              {{ editingRoom ? t('common.save') : t('room.create') }} →
+            <button class="btn btn-primary" :disabled="savingRoom" @click="saveRoom">
+              <InlineSpinner v-if="savingRoom" />
+              <span v-else>{{ editingRoom ? t('common.save') : t('room.create') }} →</span>
             </button>
           </div>
         </div>
@@ -640,7 +644,10 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="bookingTypeModal = false">{{ t('common.cancel') }}</button>
-            <button class="btn btn-primary" @click="saveBookingType">{{ t('common.save') }} →</button>
+            <button class="btn btn-primary" :disabled="savingBookingType" @click="saveBookingType">
+              <InlineSpinner v-if="savingBookingType" />
+              <span v-else>{{ t('common.save') }} →</span>
+            </button>
           </div>
         </div>
       </div>
@@ -762,6 +769,7 @@ import { useBookingLabels } from '../composables/useBookingLabels'
 import { useBookingAvailability } from '../composables/useBookingAvailability'
 import { roomFormSchema } from '../validation/room.schema'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import InlineSpinner from '../components/InlineSpinner.vue'
 
 
 // ── i18n ──────────────────────────────────────────────────────────────────
@@ -978,6 +986,8 @@ function toApiPayload(form: RoomFormState) {
   }
 }
 
+const savingRoom = ref(false)
+
 async function saveRoom() {
   roomFormError.value = ''
   roomFormFieldErrors.value = {}
@@ -988,6 +998,7 @@ async function saveRoom() {
     return
   }
 
+  savingRoom.value = true
   try {
     const payload = toApiPayload(roomForm.value)
     if (editingRoom.value) {
@@ -999,6 +1010,8 @@ async function saveRoom() {
     await loadRooms()
   } catch (e) {
     roomFormError.value = extractErrorMessage(e)
+  } finally {
+    savingRoom.value = false
   }
 }
 
@@ -1063,24 +1076,34 @@ function formatSlotTime(minutes: number): string {
   return formatMinutes(minutes)
 }
 
+const removingBookingId = ref<string | null>(null)
+
 async function removeBooking(id: string) {
   if (!confirm(t('staff.bookings.cancelConfirm'))) return
+  removingBookingId.value = id
   try {
     await bookingApi.deleteBooking(id)
     await loadBookings()
   } catch (e) {
     pageError.value = extractErrorMessage(e)
+  } finally {
+    removingBookingId.value = null
   }
 }
 
 // ── User management ───────────────────────────────────────────────────────
+const togglingUserId = ref<string | null>(null)
+
 async function toggleUserActive(u: UserDto) {
   const nextActive = !u.active
+  togglingUserId.value = u.id
   try {
     await userApi.updateUserActiveByEmail(u.email, nextActive)
     u.active = nextActive
   } catch (e) {
     pageError.value = extractErrorMessage(e)
+  } finally {
+    togglingUserId.value = null
   }
 }
 
@@ -1104,8 +1127,11 @@ function openBookingTypeModal(u: UserDto) {
   bookingTypeModal.value = true
 }
 
+const savingBookingType = ref(false)
+
 async function saveBookingType() {
   if (!editingUser.value) return
+  savingBookingType.value = true
   try {
     const updated = await userApi.updateUser(editingUser.value.id, {
       bookingTypeEnum: bookingTypeForm.value,
@@ -1115,6 +1141,8 @@ async function saveBookingType() {
     bookingTypeModal.value = false
   } catch (e) {
     pageError.value = extractErrorMessage(e)
+  } finally {
+    savingBookingType.value = false
   }
 }
 
@@ -1232,6 +1260,14 @@ function formatPhone(u: UserDto): string {
 </script>
 
 <style scoped>
+.assign-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  background: var(--border);
+  color: var(--muted);
+  border-color: var(--border);
+}
+
 .clickable-row {
   cursor: pointer;
   transition: var(--transition);

@@ -177,7 +177,7 @@ const pt: AppLocale = {
       searchPlaceholder: 'Pesquisar por usuário ou sala…',
       unassigned: 'Não atribuído',
       assignUser: 'Atribuir usuário',
-      reassignUser: 'Reatribuir usuário',
+      userAssigned: 'Usuário atribuído',
       assignUserHint: 'Pesquise um usuário por nome, e-mail ou código de pasta.',
       searchByNameEmail: 'Nome ou e-mail',
       searchByFolderCode: 'Código de pasta',

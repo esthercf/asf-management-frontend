@@ -76,8 +76,9 @@
                 </div>
                 <span class="badge badge-sky" style="margin-top:.5rem;">{{ nextBooking.usage }}</span>
               </div>
-              <button class="btn btn-danger btn-sm next-booking-cancel" @click="cancelBooking(nextBooking.id)">
-                {{ t('common.cancel') }}
+              <button class="btn btn-danger btn-sm next-booking-cancel" :disabled="cancellingBookingId === nextBooking.id" @click="cancelBooking(nextBooking.id)">
+                <InlineSpinner v-if="cancellingBookingId === nextBooking.id" />
+                <span v-else>{{ t('common.cancel') }}</span>
               </button>
             </div>
           </div>
@@ -120,10 +121,11 @@
                 </div>
               </div>
               <div class="booking-card-right">
-                <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking)"
+                <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking) || cancellingBookingId === booking.id"
                   :title="isPastBooking(booking) ? t('staff.bookings.cannotCancelPast') : ''"
                   @click="cancelBooking(booking.id)">
-                  {{ t('common.cancel') }}
+                  <InlineSpinner v-if="cancellingBookingId === booking.id" />
+                  <span v-else>{{ t('common.cancel') }}</span>
                 </button>
               </div>
             </div>
@@ -196,7 +198,9 @@
               <div class="slot-time">{{ formatMinutes(slot.startTime) }}</div>
               <div class="slot-dash">–</div>
               <div class="slot-time">{{ formatMinutes(slot.endTime) }}</div>
-              <div class="slot-rooms-count">{{ lockingSlot === slot.startTime ? '⏳' : '' }}</div>
+              <div class="slot-rooms-count">
+                <InlineSpinner v-if="lockingSlot === slot.startTime" />
+              </div>
             </button>
           </div>
           <div v-if="nbSlotsForDay.length === 0" class="empty-state">
@@ -242,7 +246,8 @@
           <div class="modal-footer" style="justify-content:flex-start; margin-top:1.5rem; padding:0;">
             <button class="btn btn-secondary" @click="cancelBookingFlow">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="nbConfirming" @click="nbConfirm">
-              {{ nbConfirming ? t('common.loading') : t('user.book.confirm') }}
+              <InlineSpinner v-if="nbConfirming" />
+              <span v-else>{{ t('user.book.confirm') }}</span>
             </button>
           </div>
         </div>
@@ -332,7 +337,8 @@
               <div class="booking-card-right">
                 <button class="btn btn-primary btn-sm" :disabled="pickingId === booking.id"
                   @click="pickSpecialBooking(booking)">
-                  {{ pickingId === booking.id ? t('common.loading') : t('user.special.pick') }}
+                  <InlineSpinner v-if="pickingId === booking.id" />
+                  <span v-else>{{ t('user.special.pick') }}</span>
                 </button>
               </div>
             </div>
@@ -413,6 +419,7 @@ import { extractErrorMessage } from '../utiles/error.utiles';
 import { formatMinutes, isPastBooking } from '../utiles/booking.format.utiles';
 import { useBookingLabels } from '../composables/useBookingLabels';
 import { useBookingAvailability } from '../composables/useBookingAvailability';
+import InlineSpinner from '../components/InlineSpinner.vue';
 
 // ── Setup ─────────────────────────────────────────────────────────────────
 const { t } = useI18n();
@@ -503,13 +510,18 @@ const nextBooking = computed<BookingDto | null>(() => {
 })
 
 // ── Booking actions ───────────────────────────────────────────────────────
+const cancellingBookingId = ref<string | null>(null)
+
 async function cancelBooking(id: string) {
   if (!confirm(t('staff.bookings.cancelConfirm'))) return
+  cancellingBookingId.value = id
   try {
     await bookingApi.deleteBooking(id)
     await loadMyBookings()
   } catch (e) {
     console.error(extractErrorMessage(e))
+  } finally {
+    cancellingBookingId.value = null
   }
 }
 

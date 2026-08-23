@@ -176,7 +176,7 @@ const ca: AppLocale = {
       searchPlaceholder: 'Cerca per usuari o sala…',
       unassigned: 'No assignat',
       assignUser: 'Assignar usuari',
-      reassignUser: 'Reassignar usuari',
+      userAssigned: 'Usuari assignat',
       assignUserHint: 'Cerca un usuari per nom, correu electrònic o codi de carpeta.',
       searchByNameEmail: 'Nom o correu electrònic',
       searchByFolderCode: 'Codi de carpeta',

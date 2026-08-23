@@ -179,7 +179,7 @@ const ja: AppLocale = {
       searchPlaceholder: 'ユーザーまたは部屋で検索…',
       unassigned: '未割り当て',
       assignUser: 'ユーザーを割り当て',
-      reassignUser: 'ユーザーを再割り当て',
+      userAssigned: 'ユーザー割り当て済み',
       assignUserHint: '名前、メール、またはフォルダーコードでユーザーを検索してください。',
       searchByNameEmail: '名前またはメール',
       searchByFolderCode: 'フォルダーコード',

@@ -177,7 +177,7 @@ const fr: AppLocale = {
       searchPlaceholder: 'Rechercher par utilisateur ou salle…',
       unassigned: 'Non assigné',
       assignUser: 'Assigner un utilisateur',
-      reassignUser: 'Réassigner un utilisateur',
+      userAssigned: 'Utilisateur attribué',
       assignUserHint: 'Recherchez un utilisateur par nom, e-mail ou code dossier.',
       searchByNameEmail: 'Nom ou e-mail',
       searchByFolderCode: 'Code dossier',

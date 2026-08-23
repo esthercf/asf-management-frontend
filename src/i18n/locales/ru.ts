@@ -178,7 +178,7 @@ const ru: AppLocale = {
       searchPlaceholder: 'Поиск по пользователю или комнате…',
       unassigned: 'Не назначено',
       assignUser: 'Назначить пользователя',
-      reassignUser: 'Переназначить пользователя',
+      userAssigned: 'Пользователь назначен',
       assignUserHint: 'Найдите пользователя по имени, электронной почте или коду папки.',
       searchByNameEmail: 'Имя или электронная почта',
       searchByFolderCode: 'Код папки',
