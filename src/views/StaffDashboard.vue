@@ -166,9 +166,6 @@
                     <button class="btn btn-secondary btn-sm" @click="openRoomStatusModal(room)">
                       {{ t('staff.rooms.viewStatus') }}
                     </button>
-                    <button class="btn btn-danger btn-sm" @click="removeRoom(room.id)">
-                      {{ t('common.delete') }}
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -400,7 +397,11 @@
         <div v-if="nbStep === 1" class="step-panel">
           <button class="back-btn" @click="view = 'overview'">← {{ t('common.cancel') }}</button>
           <h2 class="section-title">{{ t('staff.newBooking.selectDay') }}</h2>
-          <div class="day-grid">
+          <div v-if="loadingAvailability" class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>{{ t('common.loading') }}</p>
+          </div>
+          <div v-else class="day-grid">
             <button v-for="d in availableDays" :key="d.iso" class="day-card"
               :class="{ selected: nbDay?.iso === d.iso, disabled: d.slotsCount === 0 }" :disabled="d.slotsCount === 0"
               @click="nbSelectDay(d)">
