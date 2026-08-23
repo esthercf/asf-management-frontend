@@ -112,7 +112,7 @@ const promoSlides = [
     text: 'Capions and subtitles in 25 languages',
   },
   {
-    image: 'https://adlibitumclass.com/storage/teachers/JSWEKn6ipARhXyP9wzyr2Np3xfmDPZLaJ4knNyQj.jpg"',
+    image: 'https://adlibitumclass.com/storage/teachers/JSWEKn6ipARhXyP9wzyr2Np3xfmDPZLaJ4knNyQj.jpg',
     text: 'Listen our podcasts',
   },
   {
