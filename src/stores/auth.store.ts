@@ -1,8 +1,6 @@
-
 import { defineStore } from 'pinia'
-import { useBookingApi } from '../composables/useBookingApi'
 import { AuthState } from '../types/session.types';
-import { RoleType, STAFF_ROLES } from '../enums/roles.enum';
+import { RoleType, ALLOWED_MANAGER_ROLES } from '../enums/roles.enum';
 import { useSessionApi } from '../composables/useSessionApi';
 
 export const useAuthStore = defineStore('auth', {
@@ -15,7 +13,13 @@ export const useAuthStore = defineStore('auth', {
 
     getters: {
         isAuthenticated: (s) => !!s.accessToken,
-        isStaff: (s) => s.roles.some(r => STAFF_ROLES.includes(r)),
+        isStaff: (s) => s.roles.some(r => ALLOWED_MANAGER_ROLES.includes(r)),
+        // Root and Manager both get access to the Management dashboard
+        // (user CRUD, and future masterclass/festival/role management
+        // sections) — separate from isStaff, which is Booking's own
+        // staff-dashboard access check and unrelated to this frontend's
+        // actual purpose.
+        isManager: (s) => s.roles.some(r => ALLOWED_MANAGER_ROLES.includes(r)),
     },
 
     actions: {

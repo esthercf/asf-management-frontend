@@ -1,13 +1,14 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <div class="login-logo">
-        <div class="logo-icon">📚</div>
+      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="login-logo"
+        :title="t('common.visitOfficialSite')">
+        <img :src="logoUrl" alt="Andorra Sax Fest" class="logo-image" />
         <div>
-          <div class="logo-name">Room Booking</div>
-          <div class="logo-tagline">Andorra Sax Fest Room Booking System</div>
+          <div class="logo-name">{{ t('manager.panel') }}</div>
+          <div class="logo-tagline">{{ t('manager.loginTagline') }}</div>
         </div>
-      </div>
+      </a>
 
       <h1 class="login-heading">Welcome back<span class="accent">.</span></h1>
       <p class="login-sub">Sign in to your account.</p>
@@ -48,22 +49,16 @@
     </div>
 
     <div class="login-art">
-      <div class="art-blob blob1"></div>
-      <div class="art-blob blob2"></div>
-      <div class="art-blob blob3"></div>
-      <a :href="promoHref" target="_blank" rel="noopener sponsored" class="promo-card">
+      <a :href="promoHref" target="_blank" rel="noopener" class="promo-card">
         <div class="promo-slides">
           <div v-for="(slide, i) in promoSlides" :key="i" class="promo-slide" :class="{ active: i === activeSlide }"
-            :style="{ backgroundImage: `url(${slide.image})` }" />
+            :style="{ background: slide.tint }" />
           <div class="promo-scrim"></div>
         </div>
 
         <div class="promo-content">
-          <span class="promo-eyebrow">Sponsored</span>
-          <div class="promo-brand">
-            <img :src="promoLogo" alt="" class="promo-logo" />
-            <span class="promo-wordmark">{{ promoTitle }}</span>
-          </div>
+          <img :src="logoWordmarkUrl" alt="Andorra Sax Fest XIV" class="promo-watermark" />
+          <span class="promo-eyebrow">{{ t('common.officialWebsite') }}</span>
           <p class="promo-text">{{ promoSlides[activeSlide].text }}</p>
           <span class="promo-link">{{ promoLinkText }}</span>
 
@@ -75,8 +70,8 @@
       </a>
       <div class="art-text">
         <p class="art-quote">
-          "Prepare with focus, perform with brilliance."</p>
-        <p class="art-rooms">Book your study room in seconds</p>
+          "The most beautiful amalgam of sounds that I know of."</p>
+        <p class="art-rooms">— Gioachino Rossini, on the saxophone</p>
       </div>
     </div>
   </div>
@@ -85,6 +80,8 @@
 
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import logoUrl from '../assets/logo.jpg';
+import logoWordmarkUrl from '../assets/logo-wordmark-black.png';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth.store';
 import { useUserProfileStore } from '../stores/user-profile.store';
@@ -94,38 +91,20 @@ import { useSessionApi } from '../composables/useSessionApi';
 import InlineSpinner from '../components/InlineSpinner.vue';
 
 const { t } = useI18n()
+// Real sections from the official site, confirmed directly against
+// andorrasaxfest.com. Each slide gets a different color tint from the
+// theme palette instead of a photo for now — no external image
+// dependency. Swap to real photos later by adding an `image` field
+// back to each slide and updating the template's promo-slide style.
 const promoSlides = [
-  {
-    image: 'https://adlibitumclass.com/storage/homepage_images/home-en-1201.jpg',
-    text: 'Video masterclasses from the world\'s top saxophonists.',
-  },
-  {
-    image: 'https://adlibitumclass.com/storage/teachers_middle/kbSUTyLxuja3JCO8KG99qmekyrRlhwyaxd8xEncX.jpg',
-    text: 'Featuring David Salleras — and more names you already know.',
-  },
-  {
-    image: 'https://adlibitumclass.com/storage/teachers/ZMQJBagJezIfZ9BjLsGLzlrrWvg4yatSrKc5TfW7.jpg',
-    text: 'Watch, learn, and revisit lessons anytime.',
-  },
-  {
-    image: 'https://adlibitumclass.com/storage/teachers/tRaLZMruycGBnKsxxOLpLiyGBNytB5ez3Jxjh1Sf.jpg',
-    text: 'Capions and subtitles in 25 languages',
-  },
-  {
-    image: 'https://adlibitumclass.com/storage/teachers/JSWEKn6ipARhXyP9wzyr2Np3xfmDPZLaJ4knNyQj.jpg',
-    text: 'Listen our podcasts',
-  },
-  {
-    image: 'https://adlibitumclass.com/storage/homepage_teachers/X8UL29maJAf4xPoj9grSlCHjgmrLs2XTaw7qQvpL.jpg',
-    text: 'Choose your membership from 18€',
-  },
+  { text: 'International masterclasses with world-class saxophonists — Vincent David, Arno Bornkamp, and more.', tint: 'var(--navy)' },
+  { text: 'The Solo and Youth competitions — video round, live finals, and the Sax Awards.', tint: 'var(--primary)' },
+  { text: 'Walking Street Music — live performances filling the streets of Andorra la Vella.', tint: 'var(--amber)' },
+  { text: 'Congress concerts featuring ONCA and guest soloists.', tint: 'var(--gold)' },
 ]
 
-
-const promoTitle = 'AdlibitumClass'
-const promoLinkText = 'Explore AdlibitumClass →'
-const promoHref = 'https://adlibitumclass.com/'
-const promoLogo = 'https://adlibitumclass.com/img/AD-logo-letters-200.png'
+const promoLinkText = 'Visit the official website →'
+const promoHref = 'https://www.andorrasaxfest.com/'
 
 const activeSlide = ref(0)
 let promoTimer: ReturnType<typeof setInterval> | undefined
@@ -169,10 +148,21 @@ async function login() {
     const session = await api.login(email.value, password.value)
     auth.setSession(session)
 
+    // This frontend is Management-only — Staff, Contestants, and any
+    // other role have nothing to do here at all (both /staff and
+    // /manager require the same Root/Manager access). Reject clearly
+    // rather than sending them to a dashboard they can't actually use.
+    if (!auth.isManager) {
+      await api.logout().catch(() => { })
+      auth.clear()
+      error.value = t('auth.login.error.noAccess')
+      return
+    }
+
     // Fetch full user profile so we know bookingTypeEnum, etc.
     await userProfile.fetch(session.userId)
 
-    router.push(auth.isStaff ? '/staff' : '/user')
+    router.push('/manager')
   } catch (e: any) {
     const code = e?.response?.data?.code
     // Use i18n error code if available, otherwise fall back
@@ -207,17 +197,26 @@ async function login() {
   align-items: center;
   gap: .9rem;
   margin-bottom: 3rem;
+  transition: var(--transition);
+}
+.promo-watermark {
+  display: block;
+  max-height: 350px;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto 1.1rem;
+  margin-top: 2rem;
+}
+.login-logo:hover {
+  opacity: .85;
 }
 
-.login-logo .logo-icon {
-  width: 46px;
-  height: 46px;
-  background: var(--gold-100);
+.login-logo .logo-image {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
   border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
+  flex-shrink: 0;
 }
 
 .logo-name {
@@ -357,24 +356,16 @@ async function login() {
   margin-bottom: .9rem;
 }
 
-.promo-brand {
+.promo-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 2.2rem 2.4rem;
   display: flex;
-  align-items: center;
-  gap: .7rem;
-  margin-bottom: .8rem;
-}
-
-.promo-logo {
-  height: 30px;
-  width: auto;
-  flex-shrink: 0;
-  filter: brightness(0) invert(1);
-}
-
-.promo-wordmark {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--white);
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .promo-text {

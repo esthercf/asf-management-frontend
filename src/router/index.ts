@@ -1,13 +1,18 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import UserDashboard from '@/views/UserDashboard.vue'
 import StaffDashboard from '@/views/StaffDashboard.vue'
+import ManagerDashboard from '@/views/ManagerDashboard.vue'
 import LoginPage from '@/views/LoginPage.vue'
-import { STAFF_ROLES } from '../enums/roles.enum'
+import { ALLOWED_MANAGER_ROLES } from '../enums/roles.enum'
 import { useAuthStore } from '../stores/auth.store'
 import ForgotPasswordPage from '@/views/ForgotPasswordPage.vue'
 import ResetPasswordPage from '@/views/ResetPasswordPage.vue'
 
+// This frontend is Management-only. Both dashboards below require the
+// exact same access level (Root or Manager) — Staff cannot log in
+// here at all, and neither can Contestants; both belong on the actual
+// Booking frontend instead. No /user route exists here (removed
+// entirely, see LoginPage.vue for the explicit rejection message).
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/login' },
   {
@@ -26,14 +31,14 @@ const routes: RouteRecordRaw[] = [
     meta: { public: true },
   },
   {
-    path: '/user',
-    component: UserDashboard,
-    meta: { requiresAuth: true, roles: [] }, // any authenticated user
-  },
-  {
     path: '/staff',
     component: StaffDashboard,
-    meta: { requiresAuth: true, roles: STAFF_ROLES },
+    meta: { requiresAuth: true, roles: ALLOWED_MANAGER_ROLES },
+  },
+  {
+    path: '/manager',
+    component: ManagerDashboard,
+    meta: { requiresAuth: true, roles: ALLOWED_MANAGER_ROLES },
   },
 ]
 
@@ -54,13 +59,14 @@ router.beforeEach((to) => {
     return { path: '/login' }
   }
 
-  // Route requires specific roles — check them
+  // Both protected routes require the same access level here, so
+  // there's no "send them to their OTHER dashboard" case to handle —
+  // either they have it, or this app has nothing for them at all.
   const requiredRoles = to.meta.roles as string[] | undefined
   if (requiredRoles && requiredRoles.length > 0) {
     const hasRole = auth.roles.some(r => requiredRoles.includes(r))
     if (!hasRole) {
-      // Authenticated but wrong role — send to their correct dashboard
-      return auth.isStaff ? { path: '/staff' } : { path: '/user' }
+      return { path: '/login' }
     }
   }
 

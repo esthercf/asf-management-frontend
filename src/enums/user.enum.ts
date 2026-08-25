@@ -247,7 +247,8 @@ export enum CountryCode {
   YT = "YT",
   ZA = "ZA",
   ZM = "ZM",
-  ZW = "ZW"
+  ZW = "ZW", 
+  XX = "XX",//ISO-reserved placeholder for unknown
 }
 export enum GenderEnum {
   MALE = 'MALE',

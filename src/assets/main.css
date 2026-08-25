@@ -1,25 +1,33 @@
 /* ── Design Tokens ─────────────────────────────────── */
 :root {
-  /* Brand palette – extracted from Fondos_Color.jpg */
-  --navy:        #0d3349;
-  --navy-deep:   #091f2e;
-  --navy-mid:    #164560;
-  --navy-light:  #1e5a7a;
+  /* Brand palette — these are FALLBACK defaults only, matching this
+     year's colors from src/constants/colors.ts. The actual values get
+     overridden at app startup by src/utiles/theme.ts, which reads
+     from that one file. To reskin for a new year, edit
+     colors.ts — never edit the hex values below directly, since
+     they'll be overridden anyway and will just drift out of sync. */
+  --navy:        #022e40;
+  --navy-deep:   #01121a;
+  --navy-mid:    #244f61;
+  --navy-light:  #3f6f83;
 
-  --gold:        #e8b84b;
-  --gold-light:  #f5e4a8;
-  --gold-50:     #fdf6e3;
-  --gold-100:    #faedc2;
+  --gold:        #f2a649;
+  --gold-light:  #f8cd97;
+  --gold-50:     #fdf1e3;
+  --gold-100:    #fbe3c6;
 
-  --amber:       #e88a1a;
-  --amber-light: #fde8c3;
+  --amber:       #bf5b04;
+  --amber-light: #f3d9bd;
 
-  --red:         #d94040;
-  --red-light:   #fde2e2;
+  --red:         #d92929;
+  --red-light:   #f7cece;
+
+  --primary:       #bf212e;
+  --primary-light: #f7cccf;
 
   /* Aliases used throughout the CSS */
   --cream:       var(--gold-50);
-  --warm-50:     #fdf8ef;
+  --warm-50:     #f5efe1;
   --warm-100:    var(--gold-100);
   --warm-200:    var(--gold-light);
 
@@ -163,6 +171,13 @@ input, textarea, select {
   display: flex; align-items: center; justify-content: center;
   font-size: 1.2rem;
 }
+.sidebar-logo-image {
+  width: 38px; height: 38px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.sidebar-logo:hover { opacity: .85; }
 .sidebar-logo .logo-text {
   font-family: var(--font-display);
   font-size: 1.3rem;

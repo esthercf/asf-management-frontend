@@ -1,14 +1,8 @@
-
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { RoleType } from '../enums/roles.enum'
 import { CountryCode, FilterActiveEnum, LanguageEnum, SortEnum, TshirtEnum } from '../enums/user.enum'
+import type { ManagerUserDto } from './manager-user.types'
 
-interface UserBaseDto {
-  id: string
-  email: string
-  firstnames: string
-  surnames: string
-}
 
 export interface UserDto {
   id: string,
@@ -57,6 +51,6 @@ export interface GetUsersParams {
 }
 
 export interface UserProfileState {
-  profile: UserDto | null
+  profile: ManagerUserDto | null
   loading: boolean
 }

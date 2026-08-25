@@ -2,13 +2,13 @@
   <div class="page">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-icon">📚</div>
+      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="sidebar-logo" :title="t('common.visitOfficialSite')">
+        <img :src="logoUrl" alt="Andorra Sax Fest" class="sidebar-logo-image" />
         <div>
-          <div class="logo-text">StudySpace</div>
+          <div class="logo-text">SaxFest</div>
           <div class="logo-sub">{{ t('staff.panel') }}</div>
         </div>
-      </div>
+      </a>
 
       <span class="nav-section-label">{{ t('staff.manage') }}</span>
       <div class="nav-item" :class="{ active: view === 'overview' }" @click="view = 'overview'">
@@ -743,6 +743,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import logoUrl from '../assets/logo.jpg'
 import { useI18n } from 'vue-i18n'
 import { useBookingApi } from '../composables/useBookingApi'
 import { extractErrorMessage } from '../utiles/error.utiles'

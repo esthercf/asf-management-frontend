@@ -43,13 +43,16 @@ export const useUserProfileStore = defineStore('userProfile', {
       this.loading = true
       try {
         // Import here to avoid circular dependency between stores and composables
-        const { useUserApi } = await import('../composables/useUserApi')
-        const userApi = useUserApi()
-        // getMe(), not getUser(userId) — this store is always used for the
-        // CURRENT user's own profile (see LoginPage.vue / UserDashboard.vue),
-        // and getUser(id) is staff-only, which would reject a regular user
-        // fetching their own record.
-        this.profile = await userApi.getMe()
+        const { useManagerUserApi } = await import('../composables/useManagerUserApi')
+        const userApi = useManagerUserApi()
+        // getUser(id), NOT getMe() — Management's backend has no
+        // /users/me endpoint at all (confirmed directly from
+        // user.controller.ts). Unlike Booking, Management's GET
+        // /users/:id has no permission restriction (the
+        // @RequirePermission line is commented out in the real
+        // controller), so any authenticated user can fetch their own
+        // record this way without needing a separate "me" endpoint.
+        this.profile = await userApi.getUser(userId)
       } catch {
         this.profile = null
       } finally {
