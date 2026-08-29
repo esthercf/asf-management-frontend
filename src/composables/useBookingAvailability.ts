@@ -1,6 +1,6 @@
 import { computed, Ref } from 'vue'
 import { AvailableRoomDto, BookingDayOption, BookingSlotOption } from '../types/booking.types'
-
+import { useI18n } from 'vue-i18n'
 /**
  * Groups a flat list of per-room availability slots into:
  *  - one entry per day, with a running count of total slots that day
@@ -18,6 +18,8 @@ export function useBookingAvailability(
   availability: Ref<AvailableRoomDto[]>,
   selectedDay: Ref<BookingDayOption | null>,
 ) {
+  const { locale } = useI18n()
+
   const availableDays = computed<BookingDayOption[]>(() => {
     const dayMap = new Map<string, BookingDayOption>()
     for (const room of availability.value) {
@@ -26,9 +28,9 @@ export function useBookingAvailability(
           const d = new Date(slot.date + 'T00:00:00')
           dayMap.set(slot.date, {
             iso: slot.date,
-            weekday: d.toLocaleDateString('en', { weekday: 'short' }),
+            weekday: d.toLocaleDateString(locale.value, { weekday: 'short' }),
             dayNum: slot.day,
-            month: d.toLocaleDateString('en', { month: 'short' }),
+            month: d.toLocaleDateString(locale.value, { month: 'short' }),
             slotsCount: 0,
           })
         }

@@ -1,6 +1,7 @@
 // ── Rooms ──────────────────────────────────────────────────────────────────
 
 import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from "../enums/booking.enum"
+import { SortEnum } from "../enums/user.enum"
 
 export interface RoomDto {
   id: string,        // ObjectId serialized as string
@@ -86,8 +87,8 @@ export interface GetBookingsParams {
   textFilter?: string,
   bookingTypeEnum?: BookingTypeEnum,
   noUserId?: boolean,
-  toCome?:boolean
-
+  toCome?: boolean
+  sortByDate?: SortEnum
 }
 
 
@@ -126,9 +127,9 @@ export interface LockSlotDto {
 }
 
 export interface LockAutoResult {
-  roomId:           string
-  roomName:         string
-  roomNumber:       number
+  roomId: string
+  roomName: string
+  roomNumber: number
   expiresInSeconds: number
 }
 

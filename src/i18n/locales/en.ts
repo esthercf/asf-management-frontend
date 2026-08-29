@@ -41,13 +41,15 @@ const en = {
     },
     auth: {
         login: {
+            artQuote: 'The most beautiful amalgam of sounds that I know of.',
+            artAttribution: '— Gioachino Rossini, on the saxophone',
             heading: 'Welcome back.',
             sub: 'Sign in to your account.',
             email: 'Email',
             password: 'Password',
             emailPlaceholder: 'you@university.edu',
             passwordPlaceholder: '••••••••',
-            submit: 'Sign in →',
+            submit: 'Sign in',
             submitting: 'Signing in…',
             forgot: 'Forgot password?',
             error: {
@@ -63,7 +65,7 @@ const en = {
             heading: 'Forgot your password?',
             sub: "Enter your email and we'll send you a reset link.",
             email: 'Email',
-            submit: 'Send reset link →',
+            submit: 'Send reset link',
             submitting: 'Sending…',
             error: {
                 empty: 'Please enter your email.',
@@ -80,17 +82,17 @@ const en = {
             newPassword: 'New password',
             confirmPassword: 'Confirm new password',
             generate: 'Generate strong password',
-            submit: 'Reset password →',
+            submit: 'Reset password',
             submitting: 'Resetting…',
             success: {
                 heading: 'Password updated',
                 message: 'Your password has been reset. You can now sign in.',
             },
-            goToLogin: 'Go to sign in →',
+            goToLogin: 'Go to sign in',
             invalidLink: {
                 heading: 'This link is invalid',
                 message: 'This password reset link is missing information or has already expired. Please request a new one.',
-                cta: 'Request a new link →',
+                cta: 'Request a new link',
             },
         },
     },
@@ -140,6 +142,10 @@ const en = {
             adminLabel: 'Admin',
         },
         overview: {
+            floor: 'Floor',
+            windows: 'Windows',
+            hasSlots: 'Has slots',
+            full: 'Full',
             greeting: 'Good morning ☀️',
             subtitle: "Here's what's happening today.",
             totalRooms: 'Total rooms',
@@ -148,6 +154,11 @@ const en = {
             availabilityTitle: 'Room Availability',
         },
         rooms: {
+            sort: {
+                byNumber: 'Sort: by room number',
+                byNameAZ: 'Sort: name A–Z',
+                byNameZA: 'Sort: name Z–A',
+            },
             viewStatus: 'View status',
             selectDay: 'Select a day',
             slot: 'Time slot',
@@ -174,6 +185,10 @@ const en = {
             },
         },
         bookings: {
+            sort: {
+                soonestFirst: 'Date: soonest first',
+                latestFirst: 'Date: latest first',
+            },
             title: 'All Bookings',
             subtitle: 'View and manage every reservation.',
             searchPlaceholder: 'Search by user or room…',
@@ -187,7 +202,7 @@ const en = {
             folderCodePlaceholder: 'Enter exact folder code…',
             assign: 'Assign',
             cancelConfirm: 'Cancel this booking?',
-            cannotCancelPast: 'Past bookings cannot be cancelled.',
+            cannotCancelPast: 'This booking can no longer be cancelled.',
             filters: {
                 allBookingTypes: 'All booking types',
             },
@@ -208,7 +223,7 @@ const en = {
             title: 'Create a Booking',
             subtitle: 'Pick a day, a slot, then a room.',
             assignUser: 'Assign to user (optional)',
-            createBooking: 'Create booking →',
+            createBooking: 'Create booking',
             successTitle: 'Booking created!',
             anotherBooking: 'Another booking',
             viewAllBookings: 'View all bookings',
@@ -227,6 +242,10 @@ const en = {
             },
         },
         users: {
+            sort: {
+                nameAZ: 'Name: A–Z',
+                nameZA: 'Name: Z–A',
+            },
             teacherName: 'Teacher',
             folderCode: 'Folder code',
             title: 'Manage Users',
@@ -295,7 +314,7 @@ const en = {
             title: 'Book a Room',
             subtitle: 'Pick a day and a time slot.',
             slotHint: 'Click a slot to reserve it. You will have 60 seconds to confirm.',
-            confirm: 'Confirm booking →',
+            confirm: 'Confirm booking',
             successTitle: 'Booking confirmed!',
             noAvailability: 'No slots available right now.',
             noRoomsAvailable: 'No rooms available for this slot. Please try another.',

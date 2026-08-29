@@ -95,7 +95,7 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
+    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)"></button>
   </div>
 
   <!-- Create/Edit User Modal -->
@@ -225,7 +225,7 @@
           <button class="btn btn-secondary" @click="userModal = false">{{ t('common.cancel') }}</button>
           <button class="btn btn-primary" :disabled="saving" @click="saveUser">
             <InlineSpinner v-if="saving" />
-            <span v-else>{{ editingUser ? t('common.save') : t('manager.users.create') }} →</span>
+            <span v-else>{{ editingUser ? t('common.save') : t('manager.users.create') }}</span>
           </button>
         </div>
       </div>

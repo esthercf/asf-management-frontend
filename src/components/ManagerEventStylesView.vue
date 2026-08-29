@@ -113,7 +113,7 @@
           <button class="btn btn-secondary" @click="modalOpen = false">{{ t('common.cancel') }}</button>
           <button class="btn btn-primary" :disabled="saving" @click="save">
             <InlineSpinner v-if="saving" />
-            <span v-else>{{ editingStyle ? t('common.save') : t('manager.eventStyles.create') }} →</span>
+            <span v-else>{{ editingStyle ? t('common.save') : t('manager.eventStyles.create') }}</span>
           </button>
         </div>
       </div>

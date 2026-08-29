@@ -19,13 +19,13 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config
 })
 
-// On 401 (or 403 InvalidTokenException) → try refresh once, queue concurrent requests, redirect on failure
+// On 401 (or 403 InvalidTokenException) try refresh once, queue concurrent requests, redirect on failure
 let isRefreshing = false
 let queue: Array<() => void> = []
 
 client.interceptors.response.use(
-  (res) => res,// request succeeded → just pass it through, do nothing
-  async (error) => {// request failed → run this
+  (res) => res,// request succeeded just pass it through, do nothing
+  async (error) => {// request failed run this
     const auth = useAuthStore();
     const toast = useToastStore();
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }// the original request that failed

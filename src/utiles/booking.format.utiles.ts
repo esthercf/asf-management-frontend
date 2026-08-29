@@ -20,6 +20,21 @@ export function isPastBooking(booking: BookingDto): boolean {
   return d < new Date()
 }
 
+/**
+ * Matches BookingService.deleteBooking()'s exact server-side rule: a
+ * booking can't be canceled once it's already passed, OR once it's
+ * within 15 minutes of starting. Deliberately separate from
+ * isPastBooking() — that one means "has this ended" (used for the
+ * "Past" badge), this one means "is cancellation still allowed", a
+ * stricter and earlier cutoff.
+ */
+export function canCancelBooking(booking: BookingDto, cutoffMinutes = 15): boolean {
+  const bookingStart = new Date(booking.date + 'T00:00:00')
+  bookingStart.setMinutes(booking.startTime)
+  const cutoff = new Date(bookingStart.getTime() - cutoffMinutes * 60 * 1000)
+  return new Date() < cutoff
+}
+
 const SIZE_EMOJIS: Record<RoomSizeEnum, string> = {
   [RoomSizeEnum.SMALL]: '🟢',
   [RoomSizeEnum.MEDIUM]: '🔵',

@@ -2,7 +2,8 @@
   <div class="page">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="sidebar-logo" :title="t('common.visitOfficialSite')">
+      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="sidebar-logo"
+        :title="t('common.visitOfficialSite')">
         <img :src="logoUrl" alt="Andorra Sax Fest" class="sidebar-logo-image" />
         <div>
           <div class="logo-text">SaxFest</div>
@@ -96,20 +97,21 @@
               <div>
                 <div class="room-name">{{ room.name }}</div>
                 <div class="room-floor">
-                  Room #{{ room.roomNumber }}{{ room.floor != null ? ' · Floor ' + room.floor : '' }}
+                  Room #{{ room.roomNumber }}{{ room.floor != null ? ' · ' + t('staff.overview.floor') + ' ' +
+                    room.floor : '' }}
                 </div>
               </div>
               <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
             </div>
             <div class="room-details">
               <span class="room-detail">{{ (room.available ?? []).length }} {{ t('staff.overview.freeSlots') }}</span>
-              <span v-if="room.windows" class="room-detail">· 🪟 Windows</span>
+              <span v-if="room.windows" class="room-detail">· 🪟 {{ t('staff.overview.windows') }}</span>
             </div>
             <div class="room-card-footer">
               <span class="badge" :class="(room.available ?? []).length > 0 ? 'badge-green' : 'badge-coral'">
-                {{ (room.available ?? []).length > 0 ? '✓ Has slots' : '✗ Full' }}
+                {{ (room.available ?? []).length > 0 ? '✓ ' + t('staff.overview.hasSlots') : '✗ ' +
+                  t('staff.overview.full') }}
               </span>
-              <span class="badge badge-sky">{{ room.size ?? 'N/A' }}</span>
             </div>
           </div>
         </div>
@@ -122,11 +124,16 @@
           <p class="subtitle">{{ t('staff.rooms.subtitle') }}</p>
         </div>
 
-        <div class="section-row">
+        <div class="section-row">userBookingTypeFilter
           <div class="search-bar">
             <span class="search-icon">🔍</span>
             <input :placeholder="t('common.search') + ' ' + t('room.title').toLowerCase() + '…'" v-model="roomSearch" />
           </div>
+          <select class="form-input filter-select" v-model="roomSortOrder" @change="loadRooms">
+            <option :value="undefined">{{ t('staff.rooms.sort.byNumber') }}</option>
+            <option :value="SortEnum.Ascending">{{ t('staff.rooms.sort.byNameAZ') }}</option>
+            <option :value="SortEnum.Descending">{{ t('staff.rooms.sort.byNameZA') }}</option>
+          </select>
           <button class="btn btn-primary" @click="openAddRoom">+ {{ t('room.create') }}</button>
         </div>
 
@@ -207,6 +214,10 @@
             <option :value="undefined">{{ t('staff.users.filters.allBookingTypes') }}</option>
             <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
           </select>
+          <select class="form-input filter-select" v-model="userSortOrder" @change="loadUsers">
+            <option :value="SortEnum.Ascending">{{ t('staff.users.sort.nameAZ') }}</option>
+            <option :value="SortEnum.Descending">{{ t('staff.users.sort.nameZA') }}</option>
+          </select>
         </div>
 
         <div v-if="loadingUsers" class="empty-state">
@@ -280,7 +291,7 @@
             @click="goToUserPage(userPage - 1)">←</button>
           <span class="pagination-label">{{ userPage }} / {{ userTotalPages }}</span>
           <button class="btn btn-secondary btn-sm" :disabled="userPage >= userTotalPages"
-            @click="goToUserPage(userPage + 1)">→</button>
+            @click="goToUserPage(userPage + 1)"></button>
         </div>
       </div>
 
@@ -299,6 +310,10 @@
           <select class="form-input filter-select" v-model="bookingTypeFilterForList" @change="loadBookings">
             <option :value="undefined">{{ t('staff.bookings.filters.allBookingTypes') }}</option>
             <option v-for="bt in bookingTypeOptions" :key="bt" :value="bt">{{ bookingTypeLabel(bt) }}</option>
+          </select>
+          <select class="form-input filter-select" v-model="bookingSortOrder" @change="loadBookings">
+            <option :value="SortEnum.Ascending">{{ t('staff.bookings.sort.soonestFirst') }}</option>
+            <option :value="SortEnum.Descending">{{ t('staff.bookings.sort.latestFirst') }}</option>
           </select>
           <button class="btn btn-primary" @click="startNewBooking">+ {{ t('staff.nav.newBooking') }}</button>
         </div>
@@ -348,8 +363,9 @@
                       class="btn btn-secondary btn-sm assign-btn" @click="openAssignUserModal(booking)">
                       {{ booking.user ? t('staff.bookings.userAssigned') : t('staff.bookings.assignUser') }}
                     </button>
-                    <button class="btn btn-danger btn-sm" :disabled="isPastBooking(booking) || removingBookingId === booking.id"
-                      :title="isPastBooking(booking) ? t('staff.bookings.cannotCancelPast') : ''"
+                    <button class="btn btn-danger btn-sm"
+                      :disabled="!canCancelBooking(booking) || removingBookingId === booking.id"
+                      :title="!canCancelBooking(booking) ? t('staff.bookings.cannotCancelPast') : ''"
                       @click="removeBooking(booking.id)">
                       <InlineSpinner v-if="removingBookingId === booking.id" />
                       <span v-else>{{ t('common.cancel') }}</span>
@@ -575,7 +591,7 @@
               <input class="form-input" :class="{ 'has-error': roomFormFieldErrors.roomNumber }" type="number"
                 v-model.number="roomForm.roomNumber" placeholder="101" />
               <span v-if="roomFormFieldErrors.roomNumber" class="field-error">{{ roomFormFieldErrors.roomNumber
-                }}</span>
+              }}</span>
             </div>
           </div>
           <div class="form-row">
@@ -618,7 +634,7 @@
             <button class="btn btn-secondary" @click="roomModal = false">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="savingRoom" @click="saveRoom">
               <InlineSpinner v-if="savingRoom" />
-              <span v-else>{{ editingRoom ? t('common.save') : t('room.create') }} →</span>
+              <span v-else>{{ editingRoom ? t('common.save') : t('room.create') }}</span>
             </button>
           </div>
         </div>
@@ -646,7 +662,7 @@
             <button class="btn btn-secondary" @click="bookingTypeModal = false">{{ t('common.cancel') }}</button>
             <button class="btn btn-primary" :disabled="savingBookingType" @click="saveBookingType">
               <InlineSpinner v-if="savingBookingType" />
-              <span v-else>{{ t('common.save') }} →</span>
+              <span v-else>{{ t('common.save') }}</span>
             </button>
           </div>
         </div>
@@ -661,17 +677,25 @@
             {{ viewingUser?.firstnames }} {{ viewingUser?.surnames }}
           </h2>
           <div class="details-grid" v-if="viewingUser">
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.email') }}</span><span>{{ viewingUser.email }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.teacherName') }}</span><span>{{ viewingUser.teacherName ?? '—' }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.folderCode') }}</span><span>{{ viewingUser.folderCode ?? '—' }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.country') }}</span><span>{{ viewingUser.countryCode }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.language') }}</span><span>{{ viewingUser.language }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.phone') }}</span><span>{{ formatPhone(viewingUser) }}</span></div>
-            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.tshirt') }}</span><span>{{ viewingUser.tshirtEnum ?? '—' }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.email') }}</span><span>{{
+              viewingUser.email }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.teacherName') }}</span><span>{{
+              viewingUser.teacherName ?? '—' }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.folderCode') }}</span><span>{{
+              viewingUser.folderCode ?? '—' }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.country') }}</span><span>{{
+              viewingUser.countryCode }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.language') }}</span><span>{{
+              viewingUser.language }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.phone') }}</span><span>{{
+              formatPhone(viewingUser) }}</span></div>
+            <div class="detail-row"><span class="detail-label">{{ t('staff.users.columns.tshirt') }}</span><span>{{
+              viewingUser.tshirtEnum ?? '—' }}</span></div>
             <div class="detail-row">
               <span class="detail-label">{{ t('staff.users.columns.bookingType') }}</span>
               <span>
-                <span v-for="bt in viewingUser.bookingTypeEnum" :key="bt" class="badge badge-lav bt-tag">{{ bookingTypeLabel(bt) }}</span>
+                <span v-for="bt in viewingUser.bookingTypeEnum" :key="bt" class="badge badge-lav bt-tag">{{
+                  bookingTypeLabel(bt) }}</span>
                 <span v-if="!viewingUser.bookingTypeEnum?.length">—</span>
               </span>
             </div>
@@ -749,7 +773,6 @@ import { useBookingApi } from '../composables/useBookingApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
 import { RoleType } from '../enums/roles.enum'
-import { FilterActiveEnum } from '../enums/user.enum'
 import type { UserDto } from '../types/user.types'
 import type {
   RoomDto,
@@ -765,16 +788,16 @@ import UserSelector from '@/components/UserSelector.vue'
 import { useRoomApi } from '../composables/useRoomApi'
 import { useUserApi } from '../composables/useUserApi'
 import { RoomFormState } from '../types/room.types'
-import { formatMinutes, isPastBooking, sizeEmoji } from '../utiles/booking.format.utiles'
+import { canCancelBooking, formatMinutes, sizeEmoji } from '../utiles/booking.format.utiles'
 import { useBookingLabels } from '../composables/useBookingLabels'
 import { useBookingAvailability } from '../composables/useBookingAvailability'
 import { roomFormSchema } from '../validation/room.schema'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import InlineSpinner from '../components/InlineSpinner.vue'
-
+import { FilterActiveEnum, SortEnum } from '../enums/user.enum'
 
 // ── i18n ──────────────────────────────────────────────────────────────────
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // ── API ───────────────────────────────────────────────────────────────────
 
@@ -807,8 +830,10 @@ const loadingUsers = ref(false)
 
 // ── Filter state ──────────────────────────────────────────────────────────
 const roomSearch = ref('')
+const roomSortOrder = ref<SortEnum | undefined>(undefined)
 const bookingSearch = ref('')
 const bookingTypeFilterForList = ref<BookingTypeEnum | undefined>(undefined)
+const bookingSortOrder = ref<SortEnum>(SortEnum.Ascending)
 
 const userPage = ref(1)
 const userLimit = 20
@@ -817,6 +842,7 @@ const userTextFilter = ref('')
 const userActiveFilter = ref<FilterActiveEnum | undefined>(undefined)
 const userRoleFilter = ref<RoleType | undefined>(undefined)
 const userBookingTypeFilter = ref<BookingTypeEnum | undefined>(undefined)
+const userSortOrder = ref<SortEnum>(SortEnum.Ascending)
 
 // ── Error state ───────────────────────────────────────────────────────────
 // pageError: shown in the persistent banner at the top of the page, for any
@@ -852,7 +878,7 @@ async function loadAvailability() {
 async function loadRooms() {
   loadingRooms.value = true
   try {
-    const data = await roomApi.getRooms({ limit: 200 })
+    const data = await roomApi.getRooms({ limit: 200, sortByName: roomSortOrder.value })
     rooms.value = data?.data ?? []
   } catch (e) {
     pageError.value = extractErrorMessage(e)
@@ -864,11 +890,12 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-    const data = await bookingApi.getBookings({
+  const data = await bookingApi.getBookings({
       page: 1,
       limit: 200,
       textFilter: bookingSearch.value || undefined,
       bookingTypeEnum: bookingTypeFilterForList.value,
+      sortByDate: bookingSortOrder.value,
     })
     bookings.value = data?.data ?? []
   } catch (e) {
@@ -881,6 +908,7 @@ async function loadBookings() {
 async function loadUsers() {
   loadingUsers.value = true
   try {
+
     const data = await userApi.getUsers({
       page: userPage.value,
       limit: userLimit,
@@ -888,6 +916,7 @@ async function loadUsers() {
       active: userActiveFilter.value,
       roleType: userRoleFilter.value,
       bookingTypeEnum: userBookingTypeFilter.value,
+      sortByName: userSortOrder.value,
     })
     users.value = data?.data ?? []
     userTotalPages.value = data?.metadata?.totalPages ?? 1
@@ -1251,7 +1280,7 @@ async function nbConfirm() {
 
 // ── Helper functions (view-specific; shared ones are imported above) ──────
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(dateStr).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatPhone(u: UserDto): string {
@@ -1274,7 +1303,7 @@ function formatPhone(u: UserDto): string {
 }
 
 .clickable-row:hover {
-  background: var(--sage-light, rgba(0,0,0,0.03));
+  background: var(--sage-light, rgba(0, 0, 0, 0.03));
 }
 
 .details-grid {

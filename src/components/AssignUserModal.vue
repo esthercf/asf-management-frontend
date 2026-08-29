@@ -89,7 +89,7 @@
                     <button class="btn btn-secondary" @click="close">{{ t('common.cancel') }}</button>
                     <button class="btn btn-primary" :disabled="!picked || saving" @click="confirm">
                         <InlineSpinner v-if="saving" />
-                        <span v-else>{{ t('staff.bookings.assign') }} →</span>
+                        <span v-else>{{ t('staff.bookings.assign') }}</span>
                     </button>
                 </div>
             </div>

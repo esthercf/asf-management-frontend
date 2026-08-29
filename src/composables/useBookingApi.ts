@@ -45,9 +45,8 @@ export function useBookingApi() {
   function pickBooking(bookingId: string): Promise<BookingDto> {
     return client.patch<BookingDto>(`/bookings/pick/${bookingId}`).then(r => r.data)
   }
-
   function getBookings(params: GetBookingsParams = {}): Promise<DatatableResult<BookingDto>> {
-    const { page = 1, limit = 50, userId, roomId, day, month, textFilter, bookingTypeEnum, noUserId } = params
+    const { page = 1, limit = 50, userId, roomId, day, month, textFilter, bookingTypeEnum, noUserId, sortByDate } = params
     const q = new URLSearchParams({ page: String(page), limit: String(limit) })
     if (userId) q.set('userId', userId)
     if (roomId) q.set('roomId', roomId)
@@ -56,15 +55,10 @@ export function useBookingApi() {
     if (textFilter) q.set('textFilter', textFilter)
     if (bookingTypeEnum) q.set('bookingTypeEnum', bookingTypeEnum)
     if (noUserId !== undefined) q.set('noUserId', String(noUserId))
+    if (sortByDate) q.set('sortByDate', sortByDate)
     return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
   }
 
-  function getMyBookings(params: GetBookingsParams = {}): Promise<DatatableResult<BookingDto>> {
-    const { page = 1, limit = 50, userId, toCome = true } = params
-    const q = new URLSearchParams({ page: String(page), limit: String(limit) })
-    if (userId) q.set('userId', userId)
-    return client.get<DatatableResult<BookingDto>>(`/bookings?${q}`).then(r => r.data)
-  }
 
   function getBooking(id: string): Promise<BookingDto> {
     return client.get<BookingDto>(`/bookings/${id}`).then(r => r.data)
@@ -94,7 +88,7 @@ function lockAuto(date: string, startTime: number): Promise<LockAutoResult | nul
     // slots
     lockSlot, unlockSlot, lockAuto,
     // bookings
-    getBookings, getMyBookings, getBooking, createBooking, deleteBooking, assignBookingUser, getSpecialBookings, pickBooking,
+    getBookings, getBooking, createBooking, deleteBooking, assignBookingUser, getSpecialBookings, pickBooking,
 
   }
 }

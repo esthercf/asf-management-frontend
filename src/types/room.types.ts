@@ -1,6 +1,7 @@
 // src/types/room.types.ts
 
 import { BookingTypeEnum, RoomSizeEnum } from "../enums/booking.enum"
+import { SortEnum } from "../enums/user.enum"
 import { AvailableBookingDto, BookingDto } from "./booking.types"
 
 export interface RoomDto {
@@ -39,6 +40,7 @@ export interface GetRoomsParams {
   page?: number
   limit?: number
   textFilter?: string
+  sortByName?: SortEnum
 }
 
 export interface AvailableRoomDto {

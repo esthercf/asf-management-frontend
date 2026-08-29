@@ -29,9 +29,31 @@ export const SUPPORTED_LOCALES = [
 
 export type LocaleCode = typeof SUPPORTED_LOCALES[number]['code']
 
+/**
+ * Picks the best matching supported locale from the browser's language
+ * preferences. Checks navigator.languages (the full ordered preference
+ * list, not just navigator.language) so a browser set to e.g.
+ * ["ca-ES", "es-ES", "en-US"] correctly picks Catalan over Spanish.
+ * Matches on the base language code only (ignoring region — "ca-ES"
+ * matches our "ca"), since none of our locale files are region-specific.
+ */
+function detectInitialLocale(): LocaleCode {
+  const supportedCodes = SUPPORTED_LOCALES.map(l => l.code)
+  const browserLangs = navigator.languages ?? [navigator.language]
+
+  for (const lang of browserLangs) {
+    const baseCode = lang.split('-')[0].toLowerCase()
+    if (supportedCodes.includes(baseCode as LocaleCode)) {
+      return baseCode as LocaleCode
+    }
+  }
+
+  return 'en'
+}
+
 export const i18n = createI18n({
   legacy: false,
-  locale: 'en',
+  locale: detectInitialLocale(),
   fallbackLocale: 'en',
   messages: { en, ca, es, fr, it, de, pt, ru, zh, ja, ko }
 })

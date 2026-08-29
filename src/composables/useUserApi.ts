@@ -39,17 +39,9 @@ export function useUserApi() {
     return client.put<string>(`/users/active/byEmail/${encodeURIComponent(email)}`, dto).then(r => r.data)
   }
 
-  /**
-     * Returns the currently logged-in user's own record — a regular
-     * (non-staff) user calling getUser(id) for their own id would be
-     * rejected, since that endpoint is staff-only. This is the separate,
-     * any-authenticated-user endpoint for "my own info".
-     */
-  function getMe(): Promise<UserDto> {
-    return client.get<UserDto>('/users/me').then(r => r.data)
-  }
+
 
   return {
-    getUsers, getUser, updateUser, updateUserActiveByEmail, getUserSelectorOptions, getMe
+    getUsers, getUser, updateUser, updateUserActiveByEmail, getUserSelectorOptions
   }
 }
