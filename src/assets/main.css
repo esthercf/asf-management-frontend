@@ -382,6 +382,8 @@ input, textarea, select {
   border-radius: var(--radius-xl);
   padding: 2rem 2.25rem;
   width: 100%; max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: var(--shadow-lg);
   animation: slideUp .25s ease;
 }

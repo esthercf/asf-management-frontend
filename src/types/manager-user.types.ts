@@ -1,6 +1,7 @@
 import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { CountryCode, GenderEnum, LanguageEnum, TshirtEnum, SortEnum, FilterActiveEnum } from '../enums/user.enum'
+import { UserRehearsalInfo } from './user.types'
 
 /**
  * Matches Management's real AddressDto/NewAddressDto exactly — free-text
@@ -37,6 +38,7 @@ export interface ManagerUserDto {
   folderCode?: string
   roles: RoleType[]
   bookingTypeEnum: BookingTypeEnum[]
+  rehearsal?: UserRehearsalInfo
 }
 
 /**

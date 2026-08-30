@@ -706,6 +706,31 @@
               </span>
             </div>
           </div>
+                   <div v-if="viewingUser?.rehearsal" class="rehearsal-section">
+            <h3 class="rehearsal-heading">{{ t('staff.users.rehearsal.title') }}</h3>
+            <div class="details-grid">
+              <div class="detail-row">
+                <span class="detail-label">{{ t('staff.users.rehearsal.artist') }}</span>
+                <span>{{ viewingUser.rehearsal.artistFullName || viewingUser.rehearsal.artistEmail || '—' }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">{{ t('staff.users.rehearsal.room') }}</span>
+                <span>#{{ viewingUser.rehearsal.roomNumber }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">{{ t('staff.users.rehearsal.day') }}</span>
+                <span>{{ viewingUser.rehearsal.day }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">{{ t('staff.users.rehearsal.startHour') }}</span>
+                <span>{{ viewingUser.rehearsal.startHour }}:00</span>
+              </div>
+              <div v-if="viewingUser.rehearsal.comments" class="detail-row">
+                <span class="detail-label">{{ t('staff.users.rehearsal.comments') }}</span>
+                <span>{{ viewingUser.rehearsal.comments }}</span>
+              </div>
+            </div>
+          </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" @click="userDetailsModal = false">{{ t('common.close') }}</button>
           </div>
@@ -714,6 +739,7 @@
     </Teleport>
 
     <!-- Room Status Modal -->
+
     <Teleport to="body">
       <div v-if="roomStatusModal" class="modal-overlay" @click.self="roomStatusModal = false">
         <div class="modal">
@@ -785,7 +811,6 @@ import type {
 } from '../types/booking.types'
 import AssignUserModal from '@/components/AssignUserModal.vue'
 import UserSelector from '@/components/UserSelector.vue'
-import { useRoomApi } from '../composables/useRoomApi'
 import { useUserApi } from '../composables/useUserApi'
 import { RoomFormState } from '../types/room.types'
 import { canCancelBooking, formatMinutes, sizeEmoji } from '../utiles/booking.format.utiles'
@@ -795,7 +820,8 @@ import { roomFormSchema } from '../validation/room.schema'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import InlineSpinner from '../components/InlineSpinner.vue'
 import { FilterActiveEnum, SortEnum } from '../enums/user.enum'
-
+import { useRoomApi } from '../composables/useRoomApi'
+import { useUserRehearsalApi } from '../composables/useUserRehearsalApi'
 // ── i18n ──────────────────────────────────────────────────────────────────
 const { t, locale } = useI18n()
 
@@ -805,6 +831,7 @@ const { t, locale } = useI18n()
 const userApi = useUserApi();
 const roomApi = useRoomApi();
 const bookingApi = useBookingApi();
+const userRehearsalApi = useUserRehearsalApi();
 const { bookingTypeLabel, usageLabel, sizeLabel } = useBookingLabels();
 
 // ── Enum option arrays ────────────────────────────────────────────────────
@@ -890,7 +917,7 @@ async function loadRooms() {
 async function loadBookings() {
   loadingBookings.value = true
   try {
-  const data = await bookingApi.getBookings({
+    const data = await bookingApi.getBookings({
       page: 1,
       limit: 200,
       textFilter: bookingSearch.value || undefined,
@@ -1136,6 +1163,7 @@ async function toggleUserActive(u: UserDto) {
     togglingUserId.value = null
   }
 }
+
 
 // ── User details modal (read-only) ────────────────────────────────────────
 const userDetailsModal = ref(false)
@@ -1665,5 +1693,39 @@ function formatPhone(u: UserDto): string {
 
 .table-scroll {
   overflow-x: auto;
+}
+
+.rehearsal-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1.5px solid var(--border);
+}
+
+.rehearsal-heading {
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .75rem;
+}
+
+.rehearsal-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+}
+
+.rehearsal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rehearsal-form-actions {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
 }
 </style>

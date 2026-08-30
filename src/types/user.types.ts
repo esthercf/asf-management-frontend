@@ -4,6 +4,15 @@ import { CountryCode, FilterActiveEnum, LanguageEnum, SortEnum, TshirtEnum } fro
 import type { ManagerUserDto } from './manager-user.types'
 
 
+export interface UserRehearsalInfo {
+  artistEmail: string;
+  artistFullName: string;
+  roomNumber: number;
+  day: number;
+  startHour: number;
+  comments?: string;
+}
+
 export interface UserDto {
   id: string,
   firstnames: string,
@@ -19,6 +28,7 @@ export interface UserDto {
   tshirtEnum?: TshirtEnum,
   roles: RoleType[],
   bookingTypeEnum: BookingTypeEnum[],
+  rehearsal?: UserRehearsalInfo,
 }
 
 /**Esther: This is not in use 23-08-2027. We keep the code just in case business logic changes necessities. */

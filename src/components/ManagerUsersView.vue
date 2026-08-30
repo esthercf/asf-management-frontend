@@ -219,8 +219,51 @@
           </label>
         </div>
 
-        <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
+        <div v-if="editingUser" class="rehearsal-section">
+          <h3 class="section-title" style="font-size:.9rem;">{{ t('manager.users.rehearsal.title') }}</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.artistEmail') }}</label>
+              <input class="form-input" v-model="rehearsalForm.artistEmail" type="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.artistFullName') }}</label>
+              <input class="form-input" v-model="rehearsalForm.artistFullName" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.room') }}</label>
+              <input class="form-input" type="number" v-model.number="rehearsalForm.roomNumber" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.day') }}</label>
+              <input class="form-input" type="number" v-model.number="rehearsalForm.day" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.startHour') }}</label>
+              <input class="form-input" type="number" v-model.number="rehearsalForm.startHour" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.users.rehearsal.comments') }}</label>
+            <input class="form-input" v-model="rehearsalForm.comments" />
+          </div>
+          <div v-if="rehearsalFormError" class="error-banner">⚠️ {{ rehearsalFormError }}</div>
+          <div class="rehearsal-form-actions">
+            <button v-if="hasExistingRehearsal" class="btn btn-danger btn-sm" :disabled="savingRehearsal"
+              @click="removeRehearsal">
+              {{ t('common.delete') }}
+            </button>
+            <div style="flex:1"></div>
+            <button class="btn btn-secondary btn-sm" :disabled="savingRehearsal" @click="saveRehearsal">
+              <InlineSpinner v-if="savingRehearsal" />
+              <span v-else>{{ t('manager.users.rehearsal.save') }}</span>
+            </button>
+          </div>
+        </div>
 
+        <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="userModal = false">{{ t('common.cancel') }}</button>
           <button class="btn btn-primary" :disabled="saving" @click="saveUser">
@@ -243,10 +286,10 @@ import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { CountryCode, GenderEnum, LanguageEnum, TshirtEnum, FilterActiveEnum } from '../enums/user.enum'
 import type { ManagerUserDto } from '../types/manager-user.types'
-
+import { useUserRehearsalApi } from '../composables/useUserRehearsalApi'
 const { t } = useI18n()
 const userApi = useManagerUserApi()
-
+const userRehearsalApi = useUserRehearsalApi()
 const roleOptions = Object.values(RoleType)
 const bookingTypeOptions = Object.values(BookingTypeEnum)
 const countryOptions = Object.values(CountryCode)
@@ -391,7 +434,69 @@ function openEditModal(u: ManagerUserDto) {
     gdpr: u.gdpr ?? false,
   }
   formError.value = ''
+  hasExistingRehearsal.value = !!u.rehearsal
+  rehearsalForm.value = {
+    artistEmail: u.rehearsal?.artistEmail ?? '',
+    artistFullName: u.rehearsal?.artistFullName ?? '',
+    roomNumber: u.rehearsal?.roomNumber,
+    day: u.rehearsal?.day,
+    startHour: u.rehearsal?.startHour,
+    comments: u.rehearsal?.comments ?? '',
+  }
+  rehearsalFormError.value = ''
   userModal.value = true
+}
+
+// ── Rehearsal edit ──────────────────────────────────────────────────────
+const hasExistingRehearsal = ref(false)
+const savingRehearsal = ref(false)
+const rehearsalFormError = ref('')
+const rehearsalForm = ref({
+  artistEmail: '',
+  artistFullName: '',
+  roomNumber: undefined as number | undefined,
+  day: undefined as number | undefined,
+  startHour: undefined as number | undefined,
+  comments: '',
+})
+
+async function saveRehearsal() {
+  if (!editingUser.value) return
+  if (rehearsalForm.value.roomNumber === undefined || rehearsalForm.value.day === undefined || rehearsalForm.value.startHour === undefined) {
+    rehearsalFormError.value = t('manager.users.rehearsal.validation.required')
+    return
+  }
+  rehearsalFormError.value = ''
+  savingRehearsal.value = true
+  try {
+    await userRehearsalApi.saveRehearsal(editingUser.value.id, {
+      artistEmail: rehearsalForm.value.artistEmail || undefined,
+      artistFullName: rehearsalForm.value.artistFullName || undefined,
+      roomNumber: rehearsalForm.value.roomNumber,
+      day: rehearsalForm.value.day,
+      startHour: rehearsalForm.value.startHour,
+      comments: rehearsalForm.value.comments || undefined,
+    })
+    hasExistingRehearsal.value = true
+  } catch (e) {
+    rehearsalFormError.value = extractErrorMessage(e)
+  } finally {
+    savingRehearsal.value = false
+  }
+}
+
+async function removeRehearsal() {
+  if (!editingUser.value || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
+  savingRehearsal.value = true
+  try {
+    await userRehearsalApi.deleteRehearsal(editingUser.value.id)
+    hasExistingRehearsal.value = false
+    rehearsalForm.value = { artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startHour: undefined, comments: '' }
+  } catch (e) {
+    rehearsalFormError.value = extractErrorMessage(e)
+  } finally {
+    savingRehearsal.value = false
+  }
 }
 
 async function saveUser() {
@@ -400,11 +505,11 @@ async function saveUser() {
   try {
     const addressPayload = (form.value.addressLine || form.value.locality || form.value.addressCountry || form.value.zipCode)
       ? {
-          address: form.value.addressLine || null,
-          locality: form.value.locality || null,
-          country: form.value.addressCountry || null,
-          zipCode: form.value.zipCode || null,
-        }
+        address: form.value.addressLine || null,
+        locality: form.value.locality || null,
+        country: form.value.addressCountry || null,
+        zipCode: form.value.zipCode || null,
+      }
       : undefined
 
     if (editingUser.value) {
@@ -517,5 +622,17 @@ async function saveUser() {
 
 .checkbox-row input {
   width: auto;
+}
+.rehearsal-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1.5px solid var(--border);
+}
+
+.rehearsal-form-actions {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-top: .5rem;
 }
 </style>

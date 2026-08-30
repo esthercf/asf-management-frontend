@@ -242,6 +242,22 @@ const en = {
             },
         },
         users: {
+            rehearsal: {
+                title: 'Rehearsal',
+                artist: 'Pianist',
+                room: 'Room',
+                day: 'Day',
+                startHour: 'Start time',
+                comments: 'Comments',
+                add: 'Add rehearsal',
+                none: 'No rehearsal on file.',
+                artistEmail: 'Pianist email',
+                artistFullName: 'Pianist name',
+                deleteConfirm: 'Remove this rehearsal record?',
+                validation: {
+                    required: 'Room, day, and start time are required.',
+                },
+            },
             sort: {
                 nameAZ: 'Name: A–Z',
                 nameZA: 'Name: Z–A',
@@ -435,6 +451,21 @@ const en = {
                 inactive: 'Inactive',
                 allRoles: 'All roles',
                 allCountries: 'All countries',
+            },
+            rehearsal: {
+                title: 'Rehearsal',
+                artistEmail: 'Pianist email',
+                artistFullName: 'Pianist name',
+                room: 'Room',
+                day: 'Day',
+                startHour: 'Start time',
+                comments: 'Comments',
+                save: 'Save rehearsal',
+                deleteConfirm: 'Remove this rehearsal record?',
+            },
+
+            validation: {
+                required: 'Room, day, and start time are required.',
             },
         },
         festivalEvents: {
