@@ -9,7 +9,8 @@ export interface UserRehearsalInfo {
   artistFullName: string;
   roomNumber: number;
   day: number;
-  startHour: number;
+  startTime: string;
+  endTime: string;
   comments?: string;
 }
 

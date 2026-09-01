@@ -1,7 +1,8 @@
 <template>
   <div class="page">
     <aside class="sidebar">
-      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="sidebar-logo" :title="t('common.visitOfficialSite')">
+      <a href="https://www.andorrasaxfest.com/" target="_blank" rel="noopener" class="sidebar-logo"
+        :title="t('common.visitOfficialSite')">
         <img :src="logoUrl" alt="Andorra Sax Fest" class="sidebar-logo-image" />
         <div>
           <div class="logo-text">SaxFest</div>
@@ -22,10 +23,15 @@
       <div class="nav-item" :class="{ active: view === 'activities' }" @click="view = 'activities'">
         <span class="nav-icon">🎓</span> {{ t('manager.nav.activities') }}
       </div>
+      <div class="nav-item" :class="{ active: view === 'purchases' }" @click="view = 'purchases'">
+        <span class="nav-icon">🎫</span> {{ t('manager.nav.purchases') }}
+      </div>
       <div class="nav-item" :class="{ active: view === 'scheduleGen' }" @click="view = 'scheduleGen'">
         <span class="nav-icon">📄</span> {{ t('manager.nav.scheduleGen') }}
       </div>
-
+      <div class="nav-item" :class="{ active: view === 'bookingLimits' }" @click="view = 'bookingLimits'">
+        <span class="nav-icon">⚖️</span> {{ t('manager.nav.bookingLimits') }}
+      </div>
       <span class="nav-section-label">{{ t('manager.nav.bookingSection') }}</span>
       <div class="nav-item" @click="router.push('/staff')">
         <span class="nav-icon">🏠</span> {{ t('manager.nav.bookingOversight') }}
@@ -47,7 +53,9 @@
       <ManagerFestivalEventsView v-if="view === 'festivalEvents'" />
       <ManagerEventStylesView v-if="view === 'eventStyles'" />
       <ManagerActivitiesView v-if="view === 'activities'" />
+      <ManagerMasterclassPurchasesView v-if="view === 'purchases'" />
       <ManagerScheduleGenerationView v-if="view === 'scheduleGen'" />
+      <ManagerBookingLimitsView v-if="view === 'bookingLimits'" />
     </main>
   </div>
 </template>
@@ -62,7 +70,9 @@ import ManagerUsersView from '../components/ManagerUsersView.vue'
 import ManagerFestivalEventsView from '../components/ManagerFestivalEventsView.vue'
 import ManagerEventStylesView from '../components/ManagerEventStylesView.vue'
 import ManagerActivitiesView from '../components/ManagerActivitiesView.vue'
+import ManagerMasterclassPurchasesView from '../components/ManagerMasterclassPurchasesView.vue'
 import ManagerScheduleGenerationView from '../components/ManagerScheduleGenerationView.vue'
+import ManagerBookingLimitsView from '../components/ManagerBookingLimitsView.vue'
 import logoUrl from '../assets/logo.jpg'
 
 const { t } = useI18n()
@@ -70,7 +80,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const sessionApi = useSessionApi()
 
-type ViewName = 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen'
+type ViewName = 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen' | 'bookingLimits' | 'purchases'
 const view = ref<ViewName>('users')
 
 async function logout() {

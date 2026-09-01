@@ -17,7 +17,7 @@
     </div>
     <select class="form-input filter-select" v-model="typeFilter" @change="reload">
       <option :value="undefined">{{ t('manager.festivalEvents.filters.allTypes') }}</option>
-      <option v-for="ty in eventTypeOptions" :key="ty" :value="ty">{{ ty }}</option>
+      <option v-for="ty in eventTypeOptions" :key="ty" :value="ty">{{ eventTypeLabel(ty) }}</option>
     </select>
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.festivalEvents.create') }}</button>
     <button class="btn btn-secondary" :disabled="importing" @click="fileInput?.click()">
@@ -59,7 +59,7 @@
       <tbody>
         <tr v-for="ev in events" :key="ev._id">
           <td><strong>{{ ev.label }}</strong></td>
-          <td><span class="badge badge-sky">{{ ev.eventType }}</span></td>
+          <td><span class="badge badge-sky">{{ eventTypeLabel(ev.eventType) }}</span></td>
           <td>{{ ev.date }}</td>
           <td>{{ formatHM(ev.hour, ev.minutes) }} – {{ formatMinutes(ev.endTime) }}</td>
           <td>{{ ev.location ?? '—' }}</td>
@@ -89,7 +89,8 @@
   <Teleport to="body">
     <div v-if="modalOpen" class="modal-overlay" @click.self="modalOpen = false">
       <div class="modal modal-wide">
-        <h2 class="modal-title">{{ editingEvent ? t('manager.festivalEvents.editTitle') : t('manager.festivalEvents.createTitle') }}</h2>
+        <h2 class="modal-title">{{ editingEvent ? t('manager.festivalEvents.editTitle') :
+          t('manager.festivalEvents.createTitle') }}</h2>
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.festivalEvents.columns.label') }}</label>
@@ -170,6 +171,10 @@ const api = useManagerFestivalEventApi()
 const styleApi = useManagerEventStyleApi()
 
 const eventTypeOptions = Object.values(FestivalEventTypeEnum)
+
+function eventTypeLabel(type: FestivalEventTypeEnum): string {
+  return t(`manager.festivalEvents.types.${type}`)
+}
 
 const events = ref<FestivalEventDto[]>([])
 const eventStyles = ref<EventStyleDto[]>([])

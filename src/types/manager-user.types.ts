@@ -115,4 +115,5 @@ export interface ManagerUserBaseDto {
   email: string
   firstnames: string
   surnames: string
+  folderCode?: string
 }

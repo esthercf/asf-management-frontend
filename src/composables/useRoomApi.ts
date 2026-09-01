@@ -2,6 +2,14 @@ import { GetRoomsParams, RoomDto } from '../types/room.types'
 import { DatatableResult } from '../types/common.types'
 import { client } from '../services/http.client'
 
+export interface ImportRoomsResult {
+  message: string
+  total: number
+  succeeded: number
+  failed: number
+  errors: { row: number; reason: string }[]
+}
+
 export function useRoomApi() {
 
    function getRooms(params: GetRoomsParams = {}): Promise<DatatableResult<RoomDto>> {
@@ -24,9 +32,15 @@ export function useRoomApi() {
     return client.delete(`/rooms/${id}`).then(r => r.data)
   }
 
+  function importFromExcel(file: File): Promise<ImportRoomsResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return client.post<ImportRoomsResult>('/rooms/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
 
   return {
-    getRooms, createRoom, updateRoom, deleteRoom,
-
+    getRooms, createRoom, updateRoom, deleteRoom, importFromExcel,
   }
 }

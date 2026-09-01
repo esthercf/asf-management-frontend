@@ -33,6 +33,47 @@
     </select>
 
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.users.create') }}</button>
+    <button class="btn btn-secondary" :disabled="importingRehearsals" @click="rehearsalFileInput?.click()">
+      <InlineSpinner v-if="importingRehearsals" />
+      <span v-else>📥 {{ t('manager.users.rehearsal.import') }}</span>
+    </button>
+    <input ref="rehearsalFileInput" type="file" accept=".xlsx" style="display:none;"
+      @change="onRehearsalFileSelected" />
+    <button class="btn btn-secondary" @click="showBookingTypeFilters = !showBookingTypeFilters">
+      {{ showBookingTypeFilters ? t('manager.users.filters.hideBookingTypeFilters') :
+        t('manager.users.filters.moreFilters') }}
+    </button>
+  </div>
+
+  <div v-if="showBookingTypeFilters" class="filter-panels-row">
+    <div class="filter-panel">
+      <span class="filter-panel-label">{{ t('manager.users.filters.bookingTypeAny') }}</span>
+      <div class="checkbox-grid">
+        <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
+          <input type="checkbox" :value="bt" v-model="bookingTypeFilter" @change="reload" />
+          {{ bt }}
+        </label>
+      </div>
+    </div>
+    <div class="filter-panel">
+      <span class="filter-panel-label">{{ t('manager.users.filters.bookingTypeExact') }}</span>
+      <div class="checkbox-grid">
+        <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
+          <input type="checkbox" :value="bt" v-model="bookingTypeExactFilter" @change="reload" />
+          {{ bt }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="rehearsalImportResult" class="card import-result-card">
+    <p><strong>{{ rehearsalImportResult.message }}</strong></p>
+    <ul v-if="rehearsalImportResult.errors.length > 0" class="import-errors">
+      <li v-for="err in rehearsalImportResult.errors" :key="err.row">
+        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+      </li>
+    </ul>
+    <button class="btn btn-secondary btn-sm" @click="rehearsalImportResult = null">{{ t('common.close') }}</button>
   </div>
 
   <div v-if="loading" class="empty-state">
@@ -190,7 +231,8 @@
           </div>
         </div>
 
-        <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{ t('manager.users.addressSection') }}</h3>
+        <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{ t('manager.users.addressSection') }}
+        </h3>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.address') }}</label>
@@ -241,8 +283,12 @@
               <input class="form-input" type="number" v-model.number="rehearsalForm.day" />
             </div>
             <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.startHour') }}</label>
-              <input class="form-input" type="number" v-model.number="rehearsalForm.startHour" />
+              <label class="form-label">{{ t('manager.users.rehearsal.startTime') }}</label>
+              <input class="form-input" type="time" v-model="rehearsalForm.startTime" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.endTime') }}</label>
+              <input class="form-input" type="time" v-model="rehearsalForm.endTime" />
             </div>
           </div>
           <div class="form-group">
@@ -286,10 +332,33 @@ import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { CountryCode, GenderEnum, LanguageEnum, TshirtEnum, FilterActiveEnum } from '../enums/user.enum'
 import type { ManagerUserDto } from '../types/manager-user.types'
-import { useUserRehearsalApi } from '../composables/useUserRehearsalApi'
+import { useUserRehearsalApi, type ImportUserRehearsalsResult } from '../composables/useUserRehearsalApi'
 const { t } = useI18n()
 const userApi = useManagerUserApi()
 const userRehearsalApi = useUserRehearsalApi()
+
+// ── Rehearsal import ──────────────────────────────────────────────────
+const rehearsalFileInput = ref<HTMLInputElement | null>(null)
+const importingRehearsals = ref(false)
+const rehearsalImportResult = ref<ImportUserRehearsalsResult | null>(null)
+
+async function onRehearsalFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importingRehearsals.value = true
+  rehearsalImportResult.value = null
+  pageError.value = ''
+  try {
+    rehearsalImportResult.value = await userRehearsalApi.importFromExcel(file)
+    await reload()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    importingRehearsals.value = false
+    input.value = ''
+  }
+}
 const roleOptions = Object.values(RoleType)
 const bookingTypeOptions = Object.values(BookingTypeEnum)
 const countryOptions = Object.values(CountryCode)
@@ -308,7 +377,9 @@ const textFilter = ref('')
 const activeFilter = ref<FilterActiveEnum | undefined>(undefined)
 const roleFilter = ref<RoleType | undefined>(undefined)
 const countryFilter = ref<CountryCode | undefined>(undefined)
-
+const bookingTypeFilter = ref<BookingTypeEnum[]>([])
+const bookingTypeExactFilter = ref<BookingTypeEnum[]>([])
+const showBookingTypeFilters = ref(false)
 onMounted(() => {
   reload()
 })
@@ -323,6 +394,8 @@ async function reload() {
       active: activeFilter.value,
       roleType: roleFilter.value ? [roleFilter.value] : undefined,
       countryCode: countryFilter.value ? [countryFilter.value] : undefined,
+      bookingTypeEnum: bookingTypeFilter.value.length > 0 ? bookingTypeFilter.value : undefined,
+      bookingTypeEnumExact: bookingTypeExactFilter.value.length > 0 ? bookingTypeExactFilter.value : undefined,
     })
     users.value = data?.data ?? []
     totalPages.value = data?.metadata?.totalPages ?? 1
@@ -440,7 +513,8 @@ function openEditModal(u: ManagerUserDto) {
     artistFullName: u.rehearsal?.artistFullName ?? '',
     roomNumber: u.rehearsal?.roomNumber,
     day: u.rehearsal?.day,
-    startHour: u.rehearsal?.startHour,
+    startTime: u.rehearsal?.startTime ?? '',
+    endTime: u.rehearsal?.endTime ?? '',
     comments: u.rehearsal?.comments ?? '',
   }
   rehearsalFormError.value = ''
@@ -456,28 +530,38 @@ const rehearsalForm = ref({
   artistFullName: '',
   roomNumber: undefined as number | undefined,
   day: undefined as number | undefined,
-  startHour: undefined as number | undefined,
+  startTime: '',
+  endTime: '',
   comments: '',
 })
 
 async function saveRehearsal() {
-  if (!editingUser.value) return
-  if (rehearsalForm.value.roomNumber === undefined || rehearsalForm.value.day === undefined || rehearsalForm.value.startHour === undefined) {
+  const user = editingUser.value
+  if (!user) return
+  if (rehearsalForm.value.roomNumber === undefined || rehearsalForm.value.day === undefined || !rehearsalForm.value.startTime || !rehearsalForm.value.endTime) {
     rehearsalFormError.value = t('manager.users.rehearsal.validation.required')
     return
   }
   rehearsalFormError.value = ''
   savingRehearsal.value = true
   try {
-    await userRehearsalApi.saveRehearsal(editingUser.value.id, {
-      artistEmail: rehearsalForm.value.artistEmail || undefined,
-      artistFullName: rehearsalForm.value.artistFullName || undefined,
+    const savedRehearsal = {
+      artistEmail: rehearsalForm.value.artistEmail || '',
+      artistFullName: rehearsalForm.value.artistFullName || '',
       roomNumber: rehearsalForm.value.roomNumber,
       day: rehearsalForm.value.day,
-      startHour: rehearsalForm.value.startHour,
+      startTime: rehearsalForm.value.startTime,
+      endTime: rehearsalForm.value.endTime,
       comments: rehearsalForm.value.comments || undefined,
-    })
+    }
+    await userRehearsalApi.saveRehearsal(user.id, savedRehearsal)
     hasExistingRehearsal.value = true
+    // Keep the local list in sync — same reasoning as saveUser()'s
+    // users.value[idx] = updated below, otherwise closing and
+    // reopening this same row's modal shows stale (pre-save) data
+    // until a full page reload, even though the save itself succeeded.
+    const idx = users.value.findIndex(u => u.id === user.id)
+    if (idx !== -1) users.value[idx].rehearsal = savedRehearsal
   } catch (e) {
     rehearsalFormError.value = extractErrorMessage(e)
   } finally {
@@ -486,12 +570,15 @@ async function saveRehearsal() {
 }
 
 async function removeRehearsal() {
-  if (!editingUser.value || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
+  const user = editingUser.value
+  if (!user || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
   savingRehearsal.value = true
   try {
-    await userRehearsalApi.deleteRehearsal(editingUser.value.id)
+    await userRehearsalApi.deleteRehearsal(user.id)
     hasExistingRehearsal.value = false
-    rehearsalForm.value = { artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startHour: undefined, comments: '' }
+    rehearsalForm.value = { artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startTime: '', endTime: '', comments: '' }
+    const idx = users.value.findIndex(u => u.id === user.id)
+    if (idx !== -1) users.value[idx].rehearsal = undefined
   } catch (e) {
     rehearsalFormError.value = extractErrorMessage(e)
   } finally {
@@ -528,7 +615,13 @@ async function saveUser() {
         address: addressPayload,
       })
       const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
-      if (idx !== -1) users.value[idx] = updated
+      // PATCH /users/:id has no concept of rehearsal at all (separate
+      // collection/endpoint) — its response never includes that field,
+      // so a plain overwrite here would silently wipe out whatever
+      // rehearsal data the earlier PUT /user-rehearsals call (or the
+      // original page load) had already set locally.
+      if (idx !== -1) users.value[idx] = { ...updated, rehearsal: users.value[idx].rehearsal }
+
     } else {
       await userApi.createUser({
         firstnames: form.value.firstnames,
@@ -623,6 +716,7 @@ async function saveUser() {
 .checkbox-row input {
   width: auto;
 }
+
 .rehearsal-section {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
@@ -634,5 +728,38 @@ async function saveUser() {
   align-items: center;
   gap: .6rem;
   margin-top: .5rem;
+}
+
+.import-result-card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.import-errors {
+  margin: .75rem 0;
+  padding-left: 1.25rem;
+  font-size: .85rem;
+  color: var(--red, #c00);
+}
+
+.filter-panels-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.filter-panel {
+  min-width: 220px;
+}
+
+.filter-panel-label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .5rem;
 }
 </style>

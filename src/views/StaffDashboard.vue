@@ -40,8 +40,12 @@
           </div>
         </div>
         <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:.75rem; justify-content:center;"
-          @click="$router.push('/login')">
-          ← {{ t('staff.nav.switchRole') }}
+          @click="router.push('/manager')">
+          ← {{ t('staff.nav.backToManager') }}
+        </button>
+        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:.5rem; justify-content:center;"
+          @click="logout">
+          {{ t('auth.logout') }}
         </button>
       </div>
     </aside>
@@ -124,7 +128,7 @@
           <p class="subtitle">{{ t('staff.rooms.subtitle') }}</p>
         </div>
 
-        <div class="section-row">userBookingTypeFilter
+        <div class="section-row">
           <div class="search-bar">
             <span class="search-icon">🔍</span>
             <input :placeholder="t('common.search') + ' ' + t('room.title').toLowerCase() + '…'" v-model="roomSearch" />
@@ -135,6 +139,21 @@
             <option :value="SortEnum.Descending">{{ t('staff.rooms.sort.byNameZA') }}</option>
           </select>
           <button class="btn btn-primary" @click="openAddRoom">+ {{ t('room.create') }}</button>
+          <button class="btn btn-secondary" :disabled="importingRooms" @click="roomFileInput?.click()">
+            <InlineSpinner v-if="importingRooms" />
+            <span v-else>📥 {{ t('staff.rooms.import') }}</span>
+          </button>
+          <input ref="roomFileInput" type="file" accept=".xlsx" style="display:none;" @change="onRoomFileSelected" />
+        </div>
+
+        <div v-if="roomImportResult" class="card import-result-card">
+          <p><strong>{{ roomImportResult.message }}</strong></p>
+          <ul v-if="roomImportResult.errors.length > 0" class="import-errors">
+            <li v-for="err in roomImportResult.errors" :key="err.row">
+              {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+            </li>
+          </ul>
+          <button class="btn btn-secondary btn-sm" @click="roomImportResult = null">{{ t('common.close') }}</button>
         </div>
 
         <div v-if="loadingRooms" class="empty-state">
@@ -169,9 +188,20 @@
                   </span>
                 </td>
                 <td>
-                  <div style="display:flex; gap:.5rem;">
+                  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
                     <button class="btn btn-secondary btn-sm" @click="openRoomStatusModal(room)">
                       {{ t('staff.rooms.viewStatus') }}
+                    </button>
+                    <button class="btn btn-secondary btn-sm" @click="openEditRoom(room)">
+                      {{ t('common.edit') }}
+                    </button>
+                    <button class="btn btn-sm" :class="room.active ? 'btn-danger' : 'btn-primary'"
+                      :disabled="togglingRoomId === room.id" @click="toggleRoomActive(room)">
+                      <InlineSpinner v-if="togglingRoomId === room.id" />
+                      <span v-else>{{ room.active ? t('staff.users.deactivate') : t('staff.users.activate') }}</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm" @click="removeRoom(room.id)">
+                      {{ t('common.delete') }}
                     </button>
                   </div>
                 </td>
@@ -706,7 +736,7 @@
               </span>
             </div>
           </div>
-                   <div v-if="viewingUser?.rehearsal" class="rehearsal-section">
+          <div v-if="viewingUser?.rehearsal" class="rehearsal-section">
             <h3 class="rehearsal-heading">{{ t('staff.users.rehearsal.title') }}</h3>
             <div class="details-grid">
               <div class="detail-row">
@@ -722,8 +752,8 @@
                 <span>{{ viewingUser.rehearsal.day }}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">{{ t('staff.users.rehearsal.startHour') }}</span>
-                <span>{{ viewingUser.rehearsal.startHour }}:00</span>
+                <span class="detail-label">{{ t('staff.users.rehearsal.time') }}</span>
+                <span>{{ viewingUser.rehearsal.startTime }} – {{ viewingUser.rehearsal.endTime }}</span>
               </div>
               <div v-if="viewingUser.rehearsal.comments" class="detail-row">
                 <span class="detail-label">{{ t('staff.users.rehearsal.comments') }}</span>
@@ -739,7 +769,6 @@
     </Teleport>
 
     <!-- Room Status Modal -->
-
     <Teleport to="body">
       <div v-if="roomStatusModal" class="modal-overlay" @click.self="roomStatusModal = false">
         <div class="modal">
@@ -793,8 +822,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import logoUrl from '../assets/logo.jpg'
 import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '../stores/auth.store'
+import { useSessionApi } from '../composables/useSessionApi'
 import { useBookingApi } from '../composables/useBookingApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { BookingTypeEnum, RoomSizeEnum, UsageEnum } from '../enums/booking.enum'
@@ -820,14 +852,23 @@ import { roomFormSchema } from '../validation/room.schema'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import InlineSpinner from '../components/InlineSpinner.vue'
 import { FilterActiveEnum, SortEnum } from '../enums/user.enum'
-import { useRoomApi } from '../composables/useRoomApi'
+import { useRoomApi, type ImportRoomsResult } from '../composables/useRoomApi'
 import { useUserRehearsalApi } from '../composables/useUserRehearsalApi'
+
 // ── i18n ──────────────────────────────────────────────────────────────────
 const { t, locale } = useI18n()
+const router = useRouter()
+const auth = useAuthStore()
+const sessionApi = useSessionApi()
+
+async function logout() {
+  try { await sessionApi.logout() } finally {
+    auth.clear()
+    router.push('/login')
+  }
+}
 
 // ── API ───────────────────────────────────────────────────────────────────
-
-
 const userApi = useUserApi();
 const roomApi = useRoomApi();
 const bookingApi = useBookingApi();
@@ -1082,6 +1123,44 @@ async function removeRoom(id: string) {
   }
 }
 
+const togglingRoomId = ref<string | null>(null)
+
+async function toggleRoomActive(room: RoomDto) {
+  const nextActive = !room.active
+  togglingRoomId.value = room.id
+  try {
+    await roomApi.updateRoom(room.id, { active: nextActive })
+    room.active = nextActive
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    togglingRoomId.value = null
+  }
+}
+
+// ── Room import ───────────────────────────────────────────────────────────
+const roomFileInput = ref<HTMLInputElement | null>(null)
+const importingRooms = ref(false)
+const roomImportResult = ref<ImportRoomsResult | null>(null)
+
+async function onRoomFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importingRooms.value = true
+  roomImportResult.value = null
+  pageError.value = ''
+  try {
+    roomImportResult.value = await roomApi.importFromExcel(file)
+    await loadRooms()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    importingRooms.value = false
+    input.value = ''
+  }
+}
+
 // ── Room status modal ─────────────────────────────────────────────────────
 const roomStatusModal = ref(false)
 const viewingRoom = ref<RoomDto | null>(null)
@@ -1163,7 +1242,6 @@ async function toggleUserActive(u: UserDto) {
     togglingUserId.value = null
   }
 }
-
 
 // ── User details modal (read-only) ────────────────────────────────────────
 const userDetailsModal = ref(false)
@@ -1710,22 +1788,15 @@ function formatPhone(u: UserDto): string {
   margin-bottom: .75rem;
 }
 
-.rehearsal-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: .75rem;
+.import-result-card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
-.rehearsal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.rehearsal-form-actions {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
+.import-errors {
+  margin: .75rem 0;
+  padding-left: 1.25rem;
+  font-size: .85rem;
+  color: var(--red, #c00);
 }
 </style>

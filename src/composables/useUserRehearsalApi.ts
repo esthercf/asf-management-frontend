@@ -5,8 +5,17 @@ export interface UserRehearsalPayload {
   artistFullName?: string
   roomNumber: number
   day: number
-  startHour: number
+  startTime: string
+  endTime: string
   comments?: string
+}
+
+export interface ImportUserRehearsalsResult {
+  total: number
+  succeeded: number
+  failed: number
+  errors: { row: number; reason: string }[]
+  message: string
 }
 
 export function useUserRehearsalApi() {
@@ -18,5 +27,13 @@ export function useUserRehearsalApi() {
     return client.delete(`/user-rehearsals/${studentId}`).then(r => r.data)
   }
 
-  return { saveRehearsal, deleteRehearsal }
+  function importFromExcel(file: File): Promise<ImportUserRehearsalsResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return client.post('/user-rehearsals/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
+
+  return { saveRehearsal, deleteRehearsal, importFromExcel }
 }
