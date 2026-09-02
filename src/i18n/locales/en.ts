@@ -620,6 +620,11 @@ const en = {
             currency: 'Currency',
             orderReference: 'Order reference',
             schedulingSection: 'Scheduling',
+            import: 'Import purchases',
+            purchasedAt: 'Purchase date',
+            tshirt: 'T-shirt (this purchase)',
+            noTshirt: 'Not specified',
+            createOnImport: 'Create scheduling records (uncheck to only tag students as masterclass participants)',
             columns: {
                 student: 'Student',
                 status: 'Status',

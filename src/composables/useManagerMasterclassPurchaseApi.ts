@@ -7,7 +7,24 @@ import type {
   GetMasterclassPurchasesFilterDto,
 } from '../types/manager-masterclass-purchase.types'
 
+export interface ImportPurchasesResult {
+  message: string
+  total: number
+  succeeded: number
+  failed: number
+  errors: { row: number; reason: string }[]
+}
 export function useManagerMasterclassPurchaseApi() {
+
+  function importFromExcel(file: File, createMasterclassPurchase: boolean = true): Promise<ImportPurchasesResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const q = createMasterclassPurchase ? '' : '?createMasterclassPurchase=false'
+    return client.post<ImportPurchasesResult>(`/masterclass-purchases/import${q}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
+
   function getFiltered(filters: GetMasterclassPurchasesFilterDto = {}): Promise<DatatableResult<MasterclassPurchaseDto>> {
     const q = new URLSearchParams()
     if (filters.studentId) q.set('studentId', filters.studentId)
@@ -31,5 +48,5 @@ export function useManagerMasterclassPurchaseApi() {
     return client.delete(`/masterclass-purchases/${id}`).then(r => r.data)
   }
 
-  return { getFiltered, create, update, remove }
+  return { getFiltered, create, update, remove, importFromExcel }
 }

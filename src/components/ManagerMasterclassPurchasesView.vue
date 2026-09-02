@@ -20,6 +20,26 @@
       {{ t('manager.purchases.filters.unassignedOnly') }}
     </label>
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.purchases.create') }}</button>
+    <button class="btn btn-secondary" :disabled="importing" @click="fileInput?.click()">
+      <InlineSpinner v-if="importing" />
+      <span v-else>📥 {{ t('manager.purchases.import') }}</span>
+    </button>
+    <input ref="fileInput" type="file" accept=".xlsx" style="display:none;" @change="onFileSelected" />
+  </div>
+
+  <label class="checkbox-row" style="margin-bottom:1rem;">
+    <input type="checkbox" v-model="createPurchaseOnImport" />
+    {{ t('manager.purchases.createOnImport') }}
+  </label>
+
+  <div v-if="importResult" class="card import-result-card">
+    <p><strong>{{ importResult.message }}</strong></p>
+    <ul v-if="importResult.errors.length > 0" class="import-errors">
+      <li v-for="err in importResult.errors" :key="err.row">
+        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+      </li>
+    </ul>
+    <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
   </div>
 
   <div v-if="loading" class="empty-state">
@@ -130,7 +150,7 @@
           <div class="detail-row">
             <span class="detail-label">{{ t('manager.purchases.purchasedAt') }}</span>
             <span>{{ editingPurchase.purchasedAt ? new Date(editingPurchase.purchasedAt).toLocaleDateString() : '—'
-              }}</span>
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">{{ t('manager.purchases.tshirt') }}</span>
@@ -234,7 +254,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useManagerMasterclassPurchaseApi } from '../composables/useManagerMasterclassPurchaseApi'
+import { useManagerMasterclassPurchaseApi, type ImportPurchasesResult } from '../composables/useManagerMasterclassPurchaseApi'
 import { useManagerActivityApi } from '../composables/useManagerActivityApi'
 import { useManagerUserApi } from '../composables/useManagerUserApi'
 import { useRoomApi } from '../composables/useRoomApi'
@@ -278,6 +298,30 @@ const limit = 20
 const totalPages = ref(1)
 const statusFilter = ref<PurchaseStatusEnum | undefined>(undefined)
 const unassignedOnly = ref(false)
+
+// ── Import ────────────────────────────────────────────────────────────
+const fileInput = ref<HTMLInputElement | null>(null)
+const importing = ref(false)
+const importResult = ref<ImportPurchasesResult | null>(null)
+const createPurchaseOnImport = ref(true)
+
+async function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importing.value = true
+  importResult.value = null
+  pageError.value = ''
+  try {
+    importResult.value = await api.importFromExcel(file, createPurchaseOnImport.value)
+    await reload()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    importing.value = false
+    input.value = ''
+  }
+}
 
 onMounted(async () => {
   await loadRooms()
@@ -449,7 +493,7 @@ async function save() {
         folderCode: pickedStudent.value!.folderCode,
       })
 
-            await api.create({
+      await api.create({
         studentRawName: `${pickedStudent.value!.firstnames} ${pickedStudent.value!.surnames}`,
         studentEmail: pickedStudent.value!.email,
         activityId: activity._id,
@@ -609,5 +653,17 @@ async function save() {
 .detail-label {
   font-weight: 700;
   color: var(--muted);
+}
+
+.import-result-card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.import-errors {
+  margin: .75rem 0;
+  padding-left: 1.25rem;
+  font-size: .85rem;
+  color: var(--red, #c00);
 }
 </style>
