@@ -620,14 +620,14 @@ const en = {
             currency: 'Currency',
             orderReference: 'Order reference',
             schedulingSection: 'Scheduling',
-            schedulingHint: 'Optional — leave unscheduled if the teaching slot isn\'t decided yet.',
-            scheduleNow: 'Schedule this masterclass now',
             columns: {
                 student: 'Student',
                 status: 'Status',
                 price: 'Price',
                 purchasedAt: 'Purchased',
                 comments: 'Comments',
+                teacher: 'Teacher',
+                slot: 'Slot'
             },
             filters: {
                 allStatus: 'All statuses',

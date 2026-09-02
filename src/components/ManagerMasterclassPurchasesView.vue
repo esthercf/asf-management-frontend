@@ -32,6 +32,8 @@
       <thead>
         <tr>
           <th>{{ t('manager.purchases.columns.student') }}</th>
+          <th>{{ t('manager.purchases.columns.teacher') }}</th>
+          <th>{{ t('manager.purchases.columns.slot') }}</th>
           <th>{{ t('manager.purchases.columns.status') }}</th>
           <th>{{ t('manager.purchases.columns.price') }}</th>
           <th>{{ t('manager.purchases.columns.purchasedAt') }}</th>
@@ -44,6 +46,14 @@
           <td>
             <strong>{{ p.studentRawName }}</strong>
             <div class="muted-text">{{ p.studentEmail }}</div>
+          </td>
+          <td>
+            <span v-if="p.teacherRawName">{{ p.teacherRawName }}</span>
+            <span v-else class="muted-text">—</span>
+          </td>
+          <td>
+            <span v-if="p.date">{{ p.date }} — {{ formatSlotTime(p.hour, p.minutes) }}</span>
+            <span v-else class="muted-text">—</span>
           </td>
           <td>
             <span class="badge" :class="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span>
@@ -76,7 +86,8 @@
   <Teleport to="body">
     <div v-if="modalOpen" class="modal-overlay" @click.self="modalOpen = false">
       <div class="modal modal-wide">
-        <h2 class="modal-title">{{ editingPurchase ? t('manager.purchases.editTitle') : t('manager.purchases.createTitle') }}</h2>
+        <h2 class="modal-title">{{ editingPurchase ? t('manager.purchases.editTitle') :
+          t('manager.purchases.createTitle') }}</h2>
 
         <!-- Student search — create only; editing a purchase never changes who the student is -->
         <div v-if="!editingPurchase" class="form-group">
@@ -87,7 +98,8 @@
             <div v-if="showStudentResults && studentResults.length > 0" class="results-dropdown">
               <button v-for="u in studentResults" :key="u.id" type="button" class="result-row"
                 @mousedown.prevent="pickStudent(u)">
-                {{ u.firstnames }} {{ u.surnames }} — {{ u.email }} <span v-if="u.folderCode">({{ u.folderCode }})</span>
+                {{ u.firstnames }} {{ u.surnames }} — {{ u.email }} <span v-if="u.folderCode">({{ u.folderCode
+                }})</span>
               </button>
             </div>
           </div>
@@ -99,6 +111,31 @@
         <div v-else class="form-group">
           <label class="form-label">{{ t('manager.purchases.student') }}</label>
           <div class="static-value">{{ editingPurchase.studentRawName }} — {{ editingPurchase.studentEmail }}</div>
+        </div>
+
+        <div v-if="editingPurchase" class="details-grid">
+          <div class="detail-row">
+            <span class="detail-label">{{ t('manager.purchases.columns.teacher') }}</span>
+            <span>{{ editingPurchase.teacherRawName || '—' }}<span v-if="editingPurchase.teacherEmail"> ({{
+              editingPurchase.teacherEmail }})</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ t('manager.purchases.columns.slot') }}</span>
+            <span>
+              <template v-if="editingPurchase.date">{{ editingPurchase.date }} — {{ formatSlotTime(editingPurchase.hour,
+                editingPurchase.minutes) }}</template>
+              <template v-else>—</template>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ t('manager.purchases.purchasedAt') }}</span>
+            <span>{{ editingPurchase.purchasedAt ? new Date(editingPurchase.purchasedAt).toLocaleDateString() : '—'
+              }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ t('manager.purchases.tshirt') }}</span>
+            <span>{{ editingPurchase.tshirtEnum || '—' }}</span>
+          </div>
         </div>
 
         <div class="form-row">
@@ -115,6 +152,19 @@
             <input class="form-input" v-model="form.orderReference" :disabled="!!editingPurchase" />
           </div>
         </div>
+        <div class="form-row" v-if="!editingPurchase">
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.purchases.purchasedAt') }}</label>
+            <input class="form-input" type="date" v-model="form.purchasedAt" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.purchases.tshirt') }}</label>
+            <select class="form-input" v-model="form.tshirtEnum">
+              <option :value="undefined">{{ t('manager.purchases.noTshirt') }}</option>
+              <option v-for="s in tshirtOptions" :key="s" :value="s">{{ s }}</option>
+            </select>
+          </div>
+        </div>
 
         <div v-if="editingPurchase" class="form-group">
           <label class="form-label">{{ t('manager.purchases.columns.status') }}</label>
@@ -128,52 +178,43 @@
           <input class="form-input" v-model="form.comments" />
         </div>
 
-        <!-- Scheduling: only ever shown when creating — matches the real
-             buying flow (student + slot chosen together). Editing a
-             purchase never touches the Activity's own fields; reassigning
-             to a *different* existing activity is a separate feature,
-             not built here yet. -->
+        <!-- Every purchase always has a teaching slot behind it — matches
+             the real buying flow (student + slot chosen together, never
+             "pay now, figure out the teacher later"). -->
         <template v-if="!editingPurchase">
-          <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{ t('manager.purchases.schedulingSection') }}</h3>
-          <p class="field-hint">{{ t('manager.purchases.schedulingHint') }}</p>
-          <label class="checkbox-row" style="margin-bottom:.75rem;">
-            <input type="checkbox" v-model="scheduleNow" />
-            {{ t('manager.purchases.scheduleNow') }}
-          </label>
-
-          <template v-if="scheduleNow">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.activities.teacherName') }}</label>
-                <input class="form-input" v-model="activityForm.teacherRawName" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.activities.teacherEmail') }}</label>
-                <input class="form-input" v-model="activityForm.teacherEmail" />
-              </div>
+          <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{
+            t('manager.purchases.schedulingSection') }}</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.activities.teacherName') }}</label>
+              <input class="form-input" v-model="activityForm.teacherRawName" />
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.activities.columns.room') }}</label>
-                <select class="form-input" v-model="activityForm.roomId">
-                  <option :value="undefined">{{ t('manager.activities.noRoom') }}</option>
-                  <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }} (#{{ r.roomNumber }})</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.activities.columns.date') }}</label>
-                <input class="form-input" type="date" v-model="activityForm.date" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
-                <input class="form-input" type="time" v-model="activityForm.startTimeStr" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.festivalEvents.durationMinutes') }}</label>
-                <input class="form-input" type="number" min="1" v-model.number="activityForm.durationMinutes" />
-              </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.activities.teacherEmail') }}</label>
+              <input class="form-input" v-model="activityForm.teacherEmail" />
             </div>
-          </template>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.activities.columns.room') }}</label>
+              <select class="form-input" v-model="activityForm.roomId">
+                <option :value="undefined">{{ t('manager.activities.noRoom') }}</option>
+                <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }} (#{{ r.roomNumber }})</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.activities.columns.date') }}</label>
+              <input class="form-input" type="date" v-model="activityForm.date" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
+              <input class="form-input" type="time" v-model="activityForm.startTimeStr" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.festivalEvents.durationMinutes') }}</label>
+              <input class="form-input" type="number" min="1" v-model.number="activityForm.durationMinutes" />
+            </div>
+          </div>
         </template>
 
         <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
@@ -204,7 +245,7 @@ import type { MasterclassPurchaseDto } from '../types/manager-masterclass-purcha
 import { ActivityTypeEnum } from '../types/manager-activity.types'
 import type { RoomDto } from '../types/room.types'
 import type { ManagerUserBaseDto } from '../types/manager-user.types'
-
+import { TshirtEnum } from '../enums/user.enum'
 const { t } = useI18n()
 const api = useManagerMasterclassPurchaseApi()
 const activityApi = useManagerActivityApi()
@@ -212,6 +253,7 @@ const userApi = useManagerUserApi()
 const roomApi = useRoomApi()
 
 const statusOptions = Object.values(PurchaseStatusEnum)
+const tshirtOptions = Object.values(TshirtEnum)
 function statusLabel(s: PurchaseStatusEnum): string {
   return t(`manager.purchases.status.${s}`)
 }
@@ -219,6 +261,11 @@ function statusBadgeClass(s: PurchaseStatusEnum): string {
   if (s === PurchaseStatusEnum.SCHEDULED) return 'badge-green'
   if (s === PurchaseStatusEnum.CANCELLED) return 'badge-coral'
   return 'badge-lav'
+}
+
+function formatSlotTime(hour: number | undefined, minutes: number | undefined): string {
+  if (hour === undefined || minutes === undefined) return ''
+  return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 }
 
 const purchases = ref<MasterclassPurchaseDto[]>([])
@@ -312,7 +359,7 @@ const modalOpen = ref(false)
 const editingPurchase = ref<MasterclassPurchaseDto | null>(null)
 const saving = ref(false)
 const formError = ref('')
-const scheduleNow = ref(false)
+
 
 interface FormState {
   price: number | undefined
@@ -320,9 +367,11 @@ interface FormState {
   orderReference: string
   status: PurchaseStatusEnum
   comments: string
+  purchasedAt: string
+  tshirtEnum: TshirtEnum | undefined
 }
 function blankForm(): FormState {
-  return { price: undefined, currency: '', orderReference: '', status: PurchaseStatusEnum.PENDING, comments: '' }
+  return { price: undefined, currency: '', orderReference: '', status: PurchaseStatusEnum.PENDING, comments: '', purchasedAt: '', tshirtEnum: undefined }
 }
 const form = ref<FormState>(blankForm())
 
@@ -345,7 +394,6 @@ function openCreateModal() {
   studentQuery.value = ''
   form.value = blankForm()
   activityForm.value = blankActivityForm()
-  scheduleNow.value = false
   formError.value = ''
   modalOpen.value = true
 }
@@ -358,6 +406,8 @@ function openEditModal(p: MasterclassPurchaseDto) {
     orderReference: p.orderReference ?? '',
     status: p.status,
     comments: p.comments ?? '',
+    purchasedAt: '',
+    tshirtEnum: p.tshirtEnum,
   }
   formError.value = ''
   modalOpen.value = true
@@ -370,7 +420,7 @@ async function save() {
     formError.value = t('manager.purchases.validation.studentRequired')
     return
   }
-  if (scheduleNow.value && (!activityForm.value.teacherRawName || !activityForm.value.date)) {
+  if (!editingPurchase.value && (!activityForm.value.teacherRawName || !activityForm.value.teacherEmail || !activityForm.value.date)) {
     formError.value = t('manager.purchases.validation.schedulingRequired')
     return
   }
@@ -385,32 +435,40 @@ async function save() {
         comments: form.value.comments || undefined,
       })
     } else {
-      let activityId: string | undefined
-      if (scheduleNow.value) {
-        const [hourStr, minuteStr] = activityForm.value.startTimeStr.split(':')
-        const activity = await activityApi.create({
-          type: ActivityTypeEnum.MASTERCLASS,
-          teacherRawName: activityForm.value.teacherRawName,
-          teacherEmail: activityForm.value.teacherEmail || undefined,
-          date: activityForm.value.date,
-          hour: Number(hourStr),
-          minutes: Number(minuteStr),
-          durationMinutes: activityForm.value.durationMinutes,
-          roomId: activityForm.value.roomId,
-          studentEmail: pickedStudent.value!.email,
-          folderCode: pickedStudent.value!.folderCode,
-        })
-        activityId = activity._id
-      }
+      const [hourStr, minuteStr] = activityForm.value.startTimeStr.split(':')
+      const activity = await activityApi.create({
+        type: ActivityTypeEnum.MASTERCLASS,
+        teacherRawName: activityForm.value.teacherRawName,
+        teacherEmail: activityForm.value.teacherEmail || undefined,
+        date: activityForm.value.date,
+        hour: Number(hourStr),
+        minutes: Number(minuteStr),
+        durationMinutes: activityForm.value.durationMinutes,
+        roomId: activityForm.value.roomId,
+        studentEmail: pickedStudent.value!.email,
+        folderCode: pickedStudent.value!.folderCode,
+      })
 
-      await api.create({
+            await api.create({
         studentRawName: `${pickedStudent.value!.firstnames} ${pickedStudent.value!.surnames}`,
         studentEmail: pickedStudent.value!.email,
-        activityId,
+        activityId: activity._id,
+        // Sent explicitly rather than left to the backend's activityId
+        // fallback resolution — using the just-created Activity's own
+        // returned value (not activityForm directly), since findOrCreate()
+        // may have matched an already-existing Activity with its own
+        // stored teacherEmail rather than creating a fresh one.
+        teacherRawName: activity.teacherRawName,
+        teacherEmail: activity.teacherEmail!,
+        date: activity.date,
+        hour: activity.hour,
+        minutes: activity.minutes,
         price: form.value.price,
         currency: form.value.currency || undefined,
         orderReference: form.value.orderReference || undefined,
         comments: form.value.comments || undefined,
+        purchasedAt: form.value.purchasedAt || undefined,
+        tshirtEnum: form.value.tshirtEnum,
       })
     }
     modalOpen.value = false
@@ -529,5 +587,27 @@ async function save() {
   border-radius: 8px;
   font-size: .88rem;
   color: var(--ink);
+}
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin: 1rem 0;
+  padding: .85rem 1rem;
+  background: var(--gray-50, #f5f5f5);
+  border-radius: 8px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .85rem;
+}
+
+.detail-label {
+  font-weight: 700;
+  color: var(--muted);
 }
 </style>
