@@ -67,7 +67,8 @@
   <Teleport to="body">
     <div v-if="modalOpen" class="modal-overlay" @click.self="modalOpen = false">
       <div class="modal">
-        <h2 class="modal-title">{{ editingStyle ? t('manager.eventStyles.editTitle') : t('manager.eventStyles.createTitle') }}</h2>
+        <h2 class="modal-title">{{ editingStyle ? t('manager.eventStyles.editTitle') :
+          t('manager.eventStyles.createTitle') }}</h2>
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.eventStyles.columns.name') }}</label>
@@ -96,6 +97,13 @@
             <input type="checkbox" v-model="form.bold" style="width:auto;" />
             {{ t('manager.eventStyles.columns.bold') }}
           </label>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:flex; align-items:center; gap:.5rem;">
+            <input type="checkbox" v-model="form.isDefaultForActivities" style="width:auto;" />
+            {{ t('manager.eventStyles.defaultForActivities') }}
+          </label>
+          <span class="field-hint">{{ t('manager.eventStyles.defaultForActivitiesHint') }}</span>
         </div>
 
         <div class="form-group">
@@ -185,9 +193,10 @@ interface FormState {
   fillColorHex: string
   fontColorHex: string
   bold: boolean
+  isDefaultForActivities: boolean
 }
 
-const form = ref<FormState>({ name: '', fillColorHex: 'DADADA', fontColorHex: '', bold: false })
+const form = ref<FormState>({ name: '', fillColorHex: 'DADADA', fontColorHex: '', bold: false, isDefaultForActivities:false })
 
 const fillColorPicker = computed({
   get: () => '#' + (form.value.fillColorHex || 'FFFFFF'),
@@ -200,7 +209,7 @@ const fontColorPicker = computed({
 
 function openCreateModal() {
   editingStyle.value = null
-  form.value = { name: '', fillColorHex: 'DADADA', fontColorHex: '', bold: false }
+  form.value = { name: '', fillColorHex: 'DADADA', fontColorHex: '', bold: false, isDefaultForActivities: false }
   formError.value = ''
   modalOpen.value = true
 }
@@ -212,6 +221,7 @@ function openEditModal(s: EventStyleDto) {
     fillColorHex: s.fillColorHex,
     fontColorHex: s.fontColorHex ?? '',
     bold: s.bold,
+    isDefaultForActivities: s.isDefaultForActivities ?? false,
   }
   formError.value = ''
   modalOpen.value = true
@@ -226,6 +236,7 @@ async function save() {
       fillColorHex: form.value.fillColorHex.toUpperCase(),
       fontColorHex: form.value.fontColorHex ? form.value.fontColorHex.toUpperCase() : undefined,
       bold: form.value.bold,
+      isDefaultForActivities: form.value.isDefaultForActivities,
     }
     if (editingStyle.value) {
       await api.update(editingStyle.value._id, payload)

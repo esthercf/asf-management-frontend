@@ -115,9 +115,9 @@
             <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
             <input class="form-input" type="time" v-model="form.startTimeStr" />
           </div>
-          <div class="form-group">
-            <label class="form-label">{{ t('manager.festivalEvents.durationMinutes') }}</label>
-            <input class="form-input" type="number" min="1" v-model.number="form.durationMinutes" />
+           <div class="form-group">
+            <label class="form-label">{{ t('manager.festivalEvents.endTime') }}</label>
+            <input class="form-input" type="time" v-model="form.endTimeStr" />
           </div>
         </div>
 
@@ -267,7 +267,7 @@ interface FormState {
   eventType: FestivalEventTypeEnum
   date: string
   startTimeStr: string // 'HH:mm', bridges to hour/minutes for the API
-  durationMinutes: number
+  endTimeStr: string 
   location: string
   styleId: string | undefined
 }
@@ -275,7 +275,7 @@ interface FormState {
 function blankForm(): FormState {
   return {
     label: '', eventType: FestivalEventTypeEnum.OTHER, date: '',
-    startTimeStr: '09:00', durationMinutes: 60, location: '', styleId: undefined,
+    startTimeStr: '09:00',endTimeStr: '09:45', location: '', styleId: undefined,
   }
 }
 
@@ -296,7 +296,7 @@ function openEditModal(ev: FestivalEventDto) {
     eventType: ev.eventType,
     date: ev.date,
     startTimeStr: formatHM(ev.hour, ev.minutes),
-    durationMinutes: ev.endTime - ev.startTime,
+    endTimeStr: formatHM(Math.floor(ev.endTime / 60), ev.endTime % 60),
     location: ev.location ?? '',
     styleId: ev.styleId,
   }
@@ -307,9 +307,15 @@ function openEditModal(ev: FestivalEventDto) {
 
 async function save() {
   formError.value = ''
+  const [hourStr, minuteStr] = form.value.startTimeStr.split(':')
+  const [endHourStr, endMinuteStr] = form.value.endTimeStr.split(':')
+  if (Number(endHourStr) * 60 + Number(endMinuteStr) <= Number(hourStr) * 60 + Number(minuteStr)) {
+    formError.value = t('manager.festivalEvents.validation.endAfterStart')
+    return
+  }
+
   saving.value = true
   try {
-    const [hourStr, minuteStr] = form.value.startTimeStr.split(':')
     const appliesTo = appliesToText.value.split(',').map(s => s.trim()).filter(Boolean)
 
     if (editingEvent.value) {
@@ -319,7 +325,8 @@ async function save() {
         date: form.value.date,
         hour: Number(hourStr),
         minutes: Number(minuteStr),
-        durationMinutes: form.value.durationMinutes,
+        endHour: Number(endHourStr),
+        endMinutes: Number(endMinuteStr),
         location: form.value.location || undefined,
         appliesTo,
         styleId: form.value.styleId,
@@ -331,7 +338,8 @@ async function save() {
         date: form.value.date,
         hour: Number(hourStr),
         minutes: Number(minuteStr),
-        durationMinutes: form.value.durationMinutes,
+        endHour: Number(endHourStr),
+        endMinutes: Number(endMinuteStr),
         location: form.value.location || undefined,
         appliesTo,
         styleId: form.value.styleId,

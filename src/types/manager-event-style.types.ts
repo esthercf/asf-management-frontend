@@ -9,6 +9,7 @@ export interface EventStyleDto {
   bold: boolean
   _createdAt: string
   _updatedAt?: string | null
+  isDefaultForActivities?: boolean
 }
 
 export interface CreateEventStyleDto {

@@ -36,7 +36,8 @@ export interface CreateFestivalEventDto {
   date: string
   hour: number
   minutes: number
-  durationMinutes: number
+  endHour: number
+  endMinutes: number
   location?: string
   appliesTo: string[]
   styleId?: string
@@ -48,7 +49,8 @@ export interface UpdateFestivalEventDto {
   date?: string
   hour?: number
   minutes?: number
-  durationMinutes?: number
+  endHour?: number
+  endMinutes?: number
   location?: string
   appliesTo?: string[]
   styleId?: string

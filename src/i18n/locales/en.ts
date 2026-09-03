@@ -490,6 +490,7 @@ const en = {
             deleteConfirm: 'Delete this festival event?',
             time: 'Time',
             durationMinutes: 'Duration (minutes)',
+            startTime: 'Start time',
             style: 'Style',
             noStyle: 'No style',
             appliesToHint: 'Applies to (comma-separated, e.g. ALL, YOUTH_A, YOUTH_B)',
