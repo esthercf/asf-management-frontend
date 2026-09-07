@@ -100,10 +100,19 @@ const pageError = ref('')
  * fetch-like blob request instead.
  */
 async function downloadFile(url: string, options: RequestInit, fallbackFilename: string) {
+  // options.body is passed in already JSON.stringify()'d by callers —
+  // axios only auto-sets Content-Type: application/json when handed a
+  // plain object as `data`, not a pre-stringified string, so without
+  // this explicit header the backend's body parser was silently
+  // receiving an unparsed/empty body on every POST here. This never
+  // surfaced as a visible bug before now since GenerateBatchDto (the
+  // schedule generator's own batch endpoint) has no class-validator
+  // decorators to reject an empty body outright.
   const response = await client.request({
     url,
     method: options.method as any,
     data: options.body,
+    headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
     responseType: 'blob',
   })
   const blob = response.data as Blob

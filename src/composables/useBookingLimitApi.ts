@@ -8,11 +8,14 @@ export interface BookingLimitFlag {
 }
 
 export interface BookingLimitFlags {
-    youthCheckinDone: BookingLimitFlag
-    soloCheckinDone: BookingLimitFlag
-    firstRoundDone: BookingLimitFlag
-    secondRoundDone: BookingLimitFlag
-    youthDone: BookingLimitFlag
+  youthCheckinDone: BookingLimitFlag
+  soloCheckinDone: BookingLimitFlag
+  firstRoundDone: BookingLimitFlag
+  secondRoundDone: BookingLimitFlag
+  youthDone_A: BookingLimitFlag
+  youthDone_B: BookingLimitFlag
+  youthDone_C: BookingLimitFlag
+  youthDone_D: BookingLimitFlag
 }
 
 export interface BookingLimitRule {

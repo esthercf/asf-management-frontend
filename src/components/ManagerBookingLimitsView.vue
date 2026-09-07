@@ -193,8 +193,7 @@ const { t } = useI18n()
 const api = useBookingLimitApi()
 
 const bookingTypeOptions = Object.values(BookingTypeEnum)
-const flagNames: (keyof BookingLimitFlags)[] = ['youthCheckinDone', 'soloCheckinDone', 'firstRoundDone', 'secondRoundDone', 'youthDone']
-
+const flagNames: (keyof BookingLimitFlags)[] = ['youthCheckinDone', 'soloCheckinDone', 'firstRoundDone', 'secondRoundDone', 'youthDone_A', 'youthDone_B', 'youthDone_C', 'youthDone_D']
 const config = ref<BookingLimitConfiguration | null>(null)
 const loading = ref(false)
 const pageError = ref('')

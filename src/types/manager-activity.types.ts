@@ -30,7 +30,9 @@ export interface ActivityDto {
   _updatedAt?: string | null
   studentEmail?: string
   studentId?: string
-  folderCode?: string
+  folderCode?: string,
+  diplomaText?: string,
+  studentFullName?: string | null
 }
 
 export interface CreateActivityDto {
@@ -46,7 +48,8 @@ export interface CreateActivityDto {
   internalComments?: string
   studentEmail?: string
   studentId?: string
-  folderCode?: string
+  folderCode?: string,
+  diplomaText?: string
 }
 
 export interface UpdateActivityDto {
@@ -59,7 +62,8 @@ export interface UpdateActivityDto {
   internalComments?: string
   studentEmail?: string
   studentId?: string
-  folderCode?: string
+  folderCode?: string,
+  diplomaText?: string
 }
 
 export interface GetActivitiesFilterDto {

@@ -74,7 +74,7 @@ import { zodErrorsToFieldMap } from '../utiles/zod.utiles';
 import { useSessionApi } from '../composables/useSessionApi';
 import InlineSpinner from '../components/InlineSpinner.vue';
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const router = useRouter()
 const api = useSessionApi()
@@ -118,10 +118,14 @@ async function login() {
     await userProfile.fetch(session.userId)
 
     router.push('/manager')
-  } catch (e: any) {
+   } catch (e: any) {
     const code = e?.response?.data?.code
-    // Use i18n error code if available, otherwise fall back
-    error.value = code && t(`errors.${code}`)
+    // te() genuinely checks whether the key exists — t() alone can't be
+    // used for this, since it returns the raw key string itself (e.g.
+    // "errors.SomeCode") on a miss rather than undefined/empty, which
+    // would make this always look "truthy" even when the translation
+    // doesn't actually exist.
+    error.value = code && te(`errors.${code}`)
       ? t(`errors.${code}`)
       : t('auth.login.error.failed')
   } finally {

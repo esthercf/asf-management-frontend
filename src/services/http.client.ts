@@ -30,14 +30,23 @@ client.interceptors.response.use(
     const toast = useToastStore();
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }// the original request that failed
 
+    // A 401/403 on the login endpoint itself is never "session expired"
+    // — there was no session yet. It's a genuine wrong-credentials
+    // failure and must reject normally so LoginPage.vue's own catch
+    // block actually receives it, instead of being silently swallowed
+    // into a doomed refresh attempt that ends in a hard redirect before
+    // the real error ever surfaces.
+    const isLoginRequest = original?.url?.endsWith('/sessions') && original?.method?.toLowerCase() === 'post'
+
     // Backend signals an expired/invalid token two different ways depending on the endpoint:
     // a plain 401, or a 403 with code 'InvalidTokenException'. Both should trigger the same
     // silent refresh-and-retry flow.
     const isExpiredToken =
-      error.response?.status === 401 ||
-      (error.response?.status === 403 && error.response?.data?.code === 'InvalidTokenException')
-
-    if (isExpiredToken && !original._retry) {// token expired && we haven't already tried once (prevents infinite loops)
+      !isLoginRequest &&
+      (error.response?.status === 401 ||
+        (error.response?.status === 403 && error.response?.data?.code === 'InvalidTokenException'))
+   
+        if (isExpiredToken && !original._retry) {// token expired && we haven't already tried once (prevents infinite loops)
       original._retry = true
 
       if (isRefreshing) {
@@ -59,7 +68,10 @@ client.interceptors.response.use(
         isRefreshing = false // always reset the flag, success or failure
       }
     }
-    if (!isExpiredToken) {
+      // LoginPage.vue already shows its own, correct local error message
+    // for a failed login — the global toast here would otherwise show
+    // a misleading "session expired" message instead.
+    if (!isExpiredToken && !isLoginRequest) {
       toast.show(extractErrorMessage(error))
     }
     return Promise.reject(error)

@@ -45,8 +45,8 @@
       <div class="art-blob blob3"></div>
       <div class="art-text">
         <p class="art-quote">
-          "Prepare with focus, perform with brilliance."</p>
-        <p class="art-rooms">Book your study room in seconds</p>
+          "{{ t('auth.login.artQuote') }}"</p>
+        <p class="art-rooms">{{ t('auth.login.artAttribution') }}</p>
       </div>
     </div>
   </div>
@@ -84,9 +84,11 @@ async function submit() {
     // real errors like rate limiting; we don't want to leak account existence here.
     sent.value = true
   } catch (e: any) {
-    // Global axios interceptor already toasts backend error messages.
-    // Fall back to a generic message in case that didn't fire.
-    error.value = e?.message ?? t('common.error')
+    // Global axios interceptor already toasts the real backend error
+    // message for this — no local banner needed here, since setting one
+    // unconditionally would just duplicate that toast every time rather
+    // than serve as a genuine fallback.
+
   } finally {
     loading.value = false
   }
