@@ -33,12 +33,18 @@
     </select>
 
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.users.create') }}</button>
-    <button class="btn btn-secondary" :disabled="importingRehearsals" @click="rehearsalFileInput?.click()">
-      <InlineSpinner v-if="importingRehearsals" />
-      <span v-else>📥 {{ t('manager.users.rehearsal.import') }}</span>
+
+    <button class="btn btn-secondary" :disabled="importingUsers" @click="userFileInput?.click()">
+      <InlineSpinner v-if="importingUsers" />
+      <span v-else>📥 {{ t('manager.users.importUsers') }}</span>
     </button>
-    <input ref="rehearsalFileInput" type="file" accept=".xlsx" style="display:none;"
-      @change="onRehearsalFileSelected" />
+    <input ref="userFileInput" type="file" accept=".xlsx" style="display:none;" @change="onUserFileSelected" />
+    <label class="checkbox-row" style="white-space:nowrap;">
+      <input type="checkbox" v-model="sendWelcomeEmail" style="width:auto;" />
+      {{ t('manager.users.sendWelcomeEmail') }}
+    </label>
+
+
     <button class="btn btn-secondary" @click="showBookingTypeFilters = !showBookingTypeFilters">
       {{ showBookingTypeFilters ? t('manager.users.filters.hideBookingTypeFilters') :
         t('manager.users.filters.moreFilters') }}
@@ -66,16 +72,15 @@
     </div>
   </div>
 
-  <div v-if="rehearsalImportResult" class="card import-result-card">
-    <p><strong>{{ rehearsalImportResult.message }}</strong></p>
-    <ul v-if="rehearsalImportResult.errors.length > 0" class="import-errors">
-      <li v-for="err in rehearsalImportResult.errors" :key="err.row">
-        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+  <div v-if="userImportResult" class="card import-result-card">
+    <p><strong>{{ userImportResult.message }}</strong></p>
+    <ul v-if="userImportResult.errors.length > 0" class="import-errors">
+      <li v-for="err in userImportResult.errors" :key="err.rowNumber">
+        {{ t('manager.festivalEvents.importRowError', { row: err.rowNumber }) }}: {{ err.message }}
       </li>
     </ul>
-    <button class="btn btn-secondary btn-sm" @click="rehearsalImportResult = null">{{ t('common.close') }}</button>
+    <button class="btn btn-secondary btn-sm" @click="userImportResult = null">{{ t('common.close') }}</button>
   </div>
-
   <div v-if="loading" class="empty-state">
     <div class="empty-icon">⏳</div>
     <p>{{ t('common.loading') }}</p>
@@ -263,49 +268,79 @@
 
         <div v-if="editingUser" class="rehearsal-section">
           <h3 class="section-title" style="font-size:.9rem;">{{ t('manager.users.rehearsal.title') }}</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.artistEmail') }}</label>
-              <input class="form-input" v-model="rehearsalForm.artistEmail" type="email" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.artistFullName') }}</label>
-              <input class="form-input" v-model="rehearsalForm.artistFullName" />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.room') }}</label>
-              <input class="form-input" type="number" v-model.number="rehearsalForm.roomNumber" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.day') }}</label>
-              <input class="form-input" type="number" v-model.number="rehearsalForm.day" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.startTime') }}</label>
-              <input class="form-input" type="time" v-model="rehearsalForm.startTime" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.endTime') }}</label>
-              <input class="form-input" type="time" v-model="rehearsalForm.endTime" />
+
+          <div v-if="editingUser.rehearsals.length > 0" class="rehearsal-list">
+            <div v-for="r in editingUser.rehearsals" :key="r.category" class="rehearsal-list-row">
+              <div>
+                <strong>{{ r.category }}</strong>
+                — {{ r.artistFullName || '—' }} · #{{ r.roomNumber }} · {{ t('manager.rehearsals.columns.day') }}
+                {{ r.day }} · {{ r.startTime }}–{{ r.endTime }}
+              </div>
+              <div style="display:flex; gap:.4rem;">
+                <button class="btn btn-secondary btn-sm" @click="startEditRehearsal(r)">{{ t('common.edit') }}</button>
+                <button class="btn btn-danger btn-sm" :disabled="savingRehearsal" @click="removeRehearsal(r.category)">
+                  {{ t('common.delete') }}
+                </button>
+              </div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">{{ t('manager.users.rehearsal.comments') }}</label>
-            <input class="form-input" v-model="rehearsalForm.comments" />
-          </div>
-          <div v-if="rehearsalFormError" class="error-banner">⚠️ {{ rehearsalFormError }}</div>
-          <div class="rehearsal-form-actions">
-            <button v-if="hasExistingRehearsal" class="btn btn-danger btn-sm" :disabled="savingRehearsal"
-              @click="removeRehearsal">
-              {{ t('common.delete') }}
-            </button>
-            <div style="flex:1"></div>
-            <button class="btn btn-secondary btn-sm" :disabled="savingRehearsal" @click="saveRehearsal">
-              <InlineSpinner v-if="savingRehearsal" />
-              <span v-else>{{ t('manager.users.rehearsal.save') }}</span>
-            </button>
+          <p v-else class="muted-text" style="margin-bottom:.75rem;">{{ t('manager.rehearsals.empty') }}</p>
+
+          <button v-if="!rehearsalFormOpen" class="btn btn-secondary btn-sm" @click="startAddRehearsal">
+            + {{ t('manager.rehearsals.create') }}
+          </button>
+
+          <div v-if="rehearsalFormOpen" class="rehearsal-form">
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.diplomas.bookingType') }}</label>
+              <select class="form-input" v-model="rehearsalForm.category" :disabled="!!editingRehearsalCategory">
+                <option value="" disabled>{{ t('manager.diplomas.bookingTypePlaceholder') }}</option>
+                <option v-for="bt in availableRehearsalCategories" :key="bt" :value="bt">{{ bt }}</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.artistEmail') }}</label>
+                <input class="form-input" v-model="rehearsalForm.artistEmail" type="email" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.artistFullName') }}</label>
+                <input class="form-input" v-model="rehearsalForm.artistFullName" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.room') }}</label>
+                <input class="form-input" type="number" v-model.number="rehearsalForm.roomNumber" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.day') }}</label>
+                <input class="form-input" type="number" v-model.number="rehearsalForm.day" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.startTime') }}</label>
+                <input class="form-input" type="time" v-model="rehearsalForm.startTime" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">{{ t('manager.users.rehearsal.endTime') }}</label>
+                <input class="form-input" type="time" v-model="rehearsalForm.endTime" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('manager.users.rehearsal.comments') }}</label>
+              <input class="form-input" v-model="rehearsalForm.comments" />
+            </div>
+            <div v-if="rehearsalFormError" class="error-banner">⚠️ {{ rehearsalFormError }}</div>
+            <div class="rehearsal-form-actions">
+              <button class="btn btn-secondary btn-sm" :disabled="savingRehearsal" @click="rehearsalFormOpen = false">
+                {{ t('common.cancel') }}
+              </button>
+              <div style="flex:1"></div>
+              <button class="btn btn-primary btn-sm" :disabled="savingRehearsal" @click="saveRehearsal">
+                <InlineSpinner v-if="savingRehearsal" />
+                <span v-else>{{ t('manager.users.rehearsal.save') }}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -325,7 +360,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useManagerUserApi } from '../composables/useManagerUserApi'
+import { ImportUsersResult, useManagerUserApi } from '../composables/useManagerUserApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
@@ -337,28 +372,30 @@ const { t } = useI18n()
 const userApi = useManagerUserApi()
 const userRehearsalApi = useUserRehearsalApi()
 
-// ── Rehearsal import ──────────────────────────────────────────────────
-const rehearsalFileInput = ref<HTMLInputElement | null>(null)
-const importingRehearsals = ref(false)
-const rehearsalImportResult = ref<ImportUserRehearsalsResult | null>(null)
+// ── User import ────────────────────────────────────────────────────────
+const userFileInput = ref<HTMLInputElement | null>(null)
+const importingUsers = ref(false)
+const userImportResult = ref<ImportUsersResult | null>(null)
+const sendWelcomeEmail = ref(false)
 
-async function onRehearsalFileSelected(event: Event) {
+async function onUserFileSelected(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
-  importingRehearsals.value = true
-  rehearsalImportResult.value = null
+  importingUsers.value = true
+  userImportResult.value = null
   pageError.value = ''
   try {
-    rehearsalImportResult.value = await userRehearsalApi.importFromExcel(file)
+    userImportResult.value = await userApi.importFromExcel(file, sendWelcomeEmail.value)
     await reload()
   } catch (e) {
     pageError.value = extractErrorMessage(e)
   } finally {
-    importingRehearsals.value = false
+    importingUsers.value = false
     input.value = ''
   }
 }
+
 const roleOptions = Object.values(RoleType)
 const bookingTypeOptions = Object.values(BookingTypeEnum)
 const countryOptions = Object.values(CountryCode)
@@ -507,37 +544,76 @@ function openEditModal(u: ManagerUserDto) {
     gdpr: u.gdpr ?? false,
   }
   formError.value = ''
-  hasExistingRehearsal.value = !!u.rehearsal
-  rehearsalForm.value = {
-    artistEmail: u.rehearsal?.artistEmail ?? '',
-    artistFullName: u.rehearsal?.artistFullName ?? '',
-    roomNumber: u.rehearsal?.roomNumber,
-    day: u.rehearsal?.day,
-    startTime: u.rehearsal?.startTime ?? '',
-    endTime: u.rehearsal?.endTime ?? '',
-    comments: u.rehearsal?.comments ?? '',
-  }
+  rehearsalFormOpen.value = false
+  editingRehearsalCategory.value = null
   rehearsalFormError.value = ''
   userModal.value = true
-}
 
-// ── Rehearsal edit ──────────────────────────────────────────────────────
-const hasExistingRehearsal = ref(false)
+}
+// ── Rehearsal edit (a student can now have several — one per category) ──
+import { computed } from 'vue'
+import { UserRehearsalInfo } from '../types/user.types'
+
 const savingRehearsal = ref(false)
 const rehearsalFormError = ref('')
-const rehearsalForm = ref({
-  artistEmail: '',
-  artistFullName: '',
-  roomNumber: undefined as number | undefined,
-  day: undefined as number | undefined,
-  startTime: '',
-  endTime: '',
-  comments: '',
+const rehearsalFormOpen = ref(false)
+// null while adding a new one; set to the category being edited when
+// editing an existing row (locks the category dropdown, since category
+// is part of the record's identity and can't be changed in place).
+const editingRehearsalCategory = ref<BookingTypeEnum | null>(null)
+
+function blankRehearsalForm() {
+  return {
+    category: '' as BookingTypeEnum | '',
+    artistEmail: '',
+    artistFullName: '',
+    roomNumber: undefined as number | undefined,
+    day: undefined as number | undefined,
+    startTime: '',
+    endTime: '',
+    comments: '',
+  }
+}
+const rehearsalForm = ref(blankRehearsalForm())
+
+// Only categories the user actually holds, and that don't already have
+// a rehearsal — a rehearsal's category isn't a free choice, it has to
+// correspond to one of this student's own BookingTypeEnum tags.
+const availableRehearsalCategories = computed(() => {
+  const existing = new Set((editingUser.value?.rehearsals ?? []).map(r => r.category))
+  return (editingUser.value?.bookingTypeEnum ?? []).filter(bt => !existing.has(bt))
 })
+
+function startAddRehearsal() {
+  editingRehearsalCategory.value = null
+  rehearsalForm.value = blankRehearsalForm()
+  rehearsalFormError.value = ''
+  rehearsalFormOpen.value = true
+}
+
+function startEditRehearsal(r: UserRehearsalInfo) {
+  editingRehearsalCategory.value = r.category
+  rehearsalForm.value = {
+    category: r.category,
+    artistEmail: r.artistEmail ?? '',
+    artistFullName: r.artistFullName ?? '',
+    roomNumber: r.roomNumber,
+    day: r.day,
+    startTime: r.startTime,
+    endTime: r.endTime,
+    comments: r.comments ?? '',
+  }
+  rehearsalFormError.value = ''
+  rehearsalFormOpen.value = true
+}
 
 async function saveRehearsal() {
   const user = editingUser.value
   if (!user) return
+  if (!rehearsalForm.value.category) {
+    rehearsalFormError.value = t('manager.rehearsals.validation.studentRequired')
+    return
+  }
   if (rehearsalForm.value.roomNumber === undefined || rehearsalForm.value.day === undefined || !rehearsalForm.value.startTime || !rehearsalForm.value.endTime) {
     rehearsalFormError.value = t('manager.users.rehearsal.validation.required')
     return
@@ -545,23 +621,32 @@ async function saveRehearsal() {
   rehearsalFormError.value = ''
   savingRehearsal.value = true
   try {
-    const savedRehearsal = {
-      artistEmail: rehearsalForm.value.artistEmail || '',
-      artistFullName: rehearsalForm.value.artistFullName || '',
+    const payload = {
+      artistEmail: rehearsalForm.value.artistEmail || undefined,
+      artistFullName: rehearsalForm.value.artistFullName || undefined,
       roomNumber: rehearsalForm.value.roomNumber,
       day: rehearsalForm.value.day,
       startTime: rehearsalForm.value.startTime,
       endTime: rehearsalForm.value.endTime,
       comments: rehearsalForm.value.comments || undefined,
     }
-    await userRehearsalApi.saveRehearsal(user.id, savedRehearsal)
-    hasExistingRehearsal.value = true
-    // Keep the local list in sync — same reasoning as saveUser()'s
-    // users.value[idx] = updated below, otherwise closing and
-    // reopening this same row's modal shows stale (pre-save) data
-    // until a full page reload, even though the save itself succeeded.
+    const category = rehearsalForm.value.category as BookingTypeEnum
+
+    if (editingRehearsalCategory.value) {
+      await userRehearsalApi.updateRehearsal(user.id, category, payload)
+    } else {
+      await userRehearsalApi.createRehearsal(user.id, category, payload)
+    }
+
+    // Keep the local list in sync so re-opening this modal shows the
+    // fresh data without a full page reload.
+    const savedInfo: UserRehearsalInfo = { category, ...payload, artistEmail: payload.artistEmail ?? '', artistFullName: payload.artistFullName ?? '' }
+    const others = user.rehearsals.filter(r => r.category !== category)
+    user.rehearsals = [...others, savedInfo]
     const idx = users.value.findIndex(u => u.id === user.id)
-    if (idx !== -1) users.value[idx].rehearsal = savedRehearsal
+    if (idx !== -1) users.value[idx].rehearsals = user.rehearsals
+
+    rehearsalFormOpen.value = false
   } catch (e) {
     rehearsalFormError.value = extractErrorMessage(e)
   } finally {
@@ -569,22 +654,23 @@ async function saveRehearsal() {
   }
 }
 
-async function removeRehearsal() {
+async function removeRehearsal(category: BookingTypeEnum) {
   const user = editingUser.value
-  if (!user || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
+  if (!user || !confirm(t('manager.rehearsals.deleteConfirm'))) return
   savingRehearsal.value = true
   try {
-    await userRehearsalApi.deleteRehearsal(user.id)
-    hasExistingRehearsal.value = false
-    rehearsalForm.value = { artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startTime: '', endTime: '', comments: '' }
+    await userRehearsalApi.deleteRehearsal(user.id, category)
+    user.rehearsals = user.rehearsals.filter(r => r.category !== category)
     const idx = users.value.findIndex(u => u.id === user.id)
-    if (idx !== -1) users.value[idx].rehearsal = undefined
+    if (idx !== -1) users.value[idx].rehearsals = user.rehearsals
   } catch (e) {
-    rehearsalFormError.value = extractErrorMessage(e)
+    pageError.value = extractErrorMessage(e)
   } finally {
     savingRehearsal.value = false
   }
 }
+
+
 
 async function saveUser() {
   formError.value = ''
@@ -615,12 +701,12 @@ async function saveUser() {
         address: addressPayload,
       })
       const idx = users.value.findIndex(u => u.id === editingUser.value!.id)
-      // PATCH /users/:id has no concept of rehearsal at all (separate
-      // collection/endpoint) — its response never includes that field,
+      // PATCH /users/:id has no concept of rehearsals at all (separate
+      // collection/endpoints) — its response never includes that field,
       // so a plain overwrite here would silently wipe out whatever
-      // rehearsal data the earlier PUT /user-rehearsals call (or the
+      // rehearsal data the earlier create/update calls (or the
       // original page load) had already set locally.
-      if (idx !== -1) users.value[idx] = { ...updated, rehearsal: users.value[idx].rehearsal }
+      if (idx !== -1) users.value[idx] = { ...updated, rehearsals: users.value[idx].rehearsals }
 
     } else {
       await userApi.createUser({
@@ -728,6 +814,30 @@ async function saveUser() {
   align-items: center;
   gap: .6rem;
   margin-top: .5rem;
+}
+
+.rehearsal-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+.rehearsal-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .6rem .8rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .85rem;
+}
+
+.rehearsal-form {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1.5px dashed var(--border);
 }
 
 .import-result-card {

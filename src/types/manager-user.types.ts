@@ -20,6 +20,7 @@ export interface AddressDto {
  * fields without re-checking that file, since a mismatch here could
  * silently drop or mishandle real user data.
  */
+
 export interface ManagerUserDto {
   id: string
   email: string
@@ -38,7 +39,9 @@ export interface ManagerUserDto {
   folderCode?: string
   roles: RoleType[]
   bookingTypeEnum: BookingTypeEnum[]
-  rehearsal?: UserRehearsalInfo
+  // A student can hold several rehearsals now (one per category) —
+  // always an array, empty when they have none.
+  rehearsals: UserRehearsalInfo[]
 }
 
 /**

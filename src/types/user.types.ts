@@ -5,13 +5,14 @@ import type { ManagerUserDto } from './manager-user.types'
 
 
 export interface UserRehearsalInfo {
-  artistEmail: string;
-  artistFullName: string;
-  roomNumber: number;
-  day: number;
-  startTime: string;
-  endTime: string;
-  comments?: string;
+  category: BookingTypeEnum
+  artistEmail?: string
+  artistFullName: string
+  roomNumber: number
+  day: number
+  startTime: string
+  endTime: string
+  comments?: string
 }
 
 export interface UserDto {

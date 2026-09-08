@@ -272,9 +272,13 @@ export enum LanguageEnum {
   Spanish = 'Spanish',
   French = 'French',
   Catalan = 'Catalan',
+  German = 'German',
+  Italian = 'Italian',
+  Portuguese = 'Portuguese',
   Russian = 'Russian',
   Chinese = 'Chinese',
   Japanese = 'Japanese',
+  Korean = 'Korean',
 }
 
 export enum FilterActiveEnum {

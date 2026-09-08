@@ -15,6 +15,13 @@ import type {
  * different backend, different UserDto shape (this one carries address,
  * gdpr, phoneNumber, etc.), different auth token. Not interchangeable.
  */
+export interface ImportUsersResult {
+  message: string
+  total: number
+  succeeded: number
+  errors: { rowNumber: number; message: string }[]
+}
+
 export function useManagerUserApi() {
 
   function getUsers(params: GetManagerUsersParams = {}): Promise<DatatableResult<ManagerUserDto>> {
@@ -54,7 +61,17 @@ export function useManagerUserApi() {
     return client.put<string>(`/users/active/byEmail/${encodeURIComponent(email)}`, dto).then(r => r.data)
   }
 
+
+  function importFromExcel(file: File, sendEmail: boolean): Promise<ImportUsersResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const q = new URLSearchParams({ sendEmail: String(sendEmail) })
+    return client.post<ImportUsersResult>(`/users/import?${q}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
+
   return {
-    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail,
+    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel,
   }
 }
