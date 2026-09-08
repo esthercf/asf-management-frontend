@@ -1,5 +1,6 @@
 const en = {
     common: {
+        noResults: 'No results found.',
         close: 'Close',
         loading: 'Loading…',
         error: 'Something went wrong.',
@@ -533,6 +534,8 @@ const en = {
             },
         },
         activities: {
+            importedCount: '{succeeded}/{total} activities imported.',
+            import: 'Import',
             title: 'Activities',
             subtitle: 'Masterclasses and workshops — teacher slots, optionally linked to a student.',
             searchPlaceholder: 'Search by teacher name…',
@@ -549,6 +552,10 @@ const en = {
             studentSection: 'Student (if already assigned)',
             comments: 'Comments',
             internalComments: 'Internal comments (staff only)',
+            filterByArtistJury: 'Filter by artist/jury',
+            hideArtistJuryFilter: 'Hide artist/jury filter',
+            linkedUsers: 'Linked users',
+            linkedUsersHint: 'For a masterclass, the teacher is added automatically. Use this to link additional people (e.g. rehearsal participants).',
             columns: {
                 teacher: 'Teacher',
                 type: 'Type',
@@ -556,6 +563,7 @@ const en = {
                 time: 'Time',
                 room: 'Room',
                 student: 'Student',
+                users: 'Users',
             },
             filters: {
                 allTypes: 'All types',

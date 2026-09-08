@@ -2,6 +2,7 @@ export enum ActivityTypeEnum {
   MASTERCLASS = 'masterclass',
   WORKSHOP = 'workshop',
   OTHER = 'other',
+  REHEARSAL = 'rehearsal',
 }
 
 /**
@@ -33,6 +34,8 @@ export interface ActivityDto {
   folderCode?: string,
   diplomaText?: string,
   studentFullName?: string | null
+  userIds?: string[]
+  users?: { id: string; firstnames: string; surnames: string; email: string }[]
 }
 
 export interface CreateActivityDto {
@@ -48,8 +51,9 @@ export interface CreateActivityDto {
   internalComments?: string
   studentEmail?: string
   studentId?: string
-  folderCode?: string,
+  folderCode?: string
   diplomaText?: string
+  userIds?: string[]
 }
 
 export interface UpdateActivityDto {
@@ -63,7 +67,8 @@ export interface UpdateActivityDto {
   studentEmail?: string
   studentId?: string
   folderCode?: string,
-  diplomaText?: string
+  diplomaText?: string,
+  userIds?: string[]
 }
 
 export interface GetActivitiesFilterDto {
@@ -76,4 +81,5 @@ export interface GetActivitiesFilterDto {
   toDate?: string
   page?: number
   limit?: number
+  userIds?: string[]
 }

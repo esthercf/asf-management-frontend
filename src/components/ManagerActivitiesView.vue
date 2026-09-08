@@ -13,13 +13,38 @@
   <div class="section-row">
     <div class="search-bar">
       <span class="search-icon">🔍</span>
-      <input :placeholder="t('manager.activities.searchPlaceholder')" v-model="teacherNameFilter" @input="debouncedReload" />
+      <input :placeholder="t('manager.activities.searchPlaceholder')" v-model="teacherNameFilter"
+        @input="debouncedReload" />
     </div>
     <select class="form-input filter-select" v-model="typeFilter" @change="reload">
       <option :value="undefined">{{ t('manager.activities.filters.allTypes') }}</option>
       <option v-for="ty in activityTypeOptions" :key="ty" :value="ty">{{ ty }}</option>
     </select>
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.activities.create') }}</button>
+    <button class="btn btn-secondary" :disabled="importing" @click="activityFileInput?.click()">
+      <InlineSpinner v-if="importing" />
+      <span v-else>📥 {{ t('manager.activities.import') }}</span>
+    </button>
+    <input ref="activityFileInput" type="file" accept=".xlsx" style="display:none;" @change="onFileSelected" />
+    <button class="btn btn-secondary" @click="showUserFilter = !showUserFilter">
+      {{ showUserFilter ? t('manager.activities.hideArtistJuryFilter') : t('manager.activities.filterByArtistJury') }}
+    </button>
+  </div>
+
+  <div v-if="importResult" class="card import-result-card">
+    <p><strong>{{ t('manager.festivalEvents.importRowError', { row: 0 }).split(':')[0] ? '' : '' }}{{
+      importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount') }}</strong></p>
+    <ul v-if="importResult.errors.length > 0" class="import-errors">
+      <li v-for="err in importResult.errors" :key="err.rowNumber">
+        {{ t('manager.festivalEvents.importRowError', { row: err.rowNumber }) }}: {{ err.message }}
+      </li>
+    </ul>
+    <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
+  </div>
+
+  <div v-if="showUserFilter" class="form-group" style="max-width:340px; margin-bottom:1.25rem;">
+    <MultiUserSelector v-model="selectedUserIds" :options="artistJuryOptions"
+      :label="t('manager.activities.filterByArtistJury')" @update:modelValue="onUserFilterChange" />
   </div>
 
   <div v-if="loading" class="empty-state">
@@ -37,6 +62,7 @@
           <th>{{ t('manager.activities.columns.time') }}</th>
           <th>{{ t('manager.activities.columns.room') }}</th>
           <th>{{ t('manager.activities.columns.student') }}</th>
+          <th>{{ t('manager.activities.columns.users') }}</th>
           <th>{{ t('manager.users.columns.actions') }}</th>
         </tr>
       </thead>
@@ -51,6 +77,14 @@
           <td>{{ formatMinutes(a.startTime) }} – {{ formatMinutes(a.endTime) }}</td>
           <td>{{ a.roomNumber ? '#' + a.roomNumber : '—' }}</td>
           <td>{{ a.studentEmail ?? '—' }}</td>
+          <td>
+            <div v-if="a.users && a.users.length > 0" class="bt-tags">
+              <span v-for="u in a.users" :key="u.id" class="badge badge-lav bt-tag">
+                {{ u.firstnames }} {{ u.surnames }}
+              </span>
+            </div>
+            <span v-else class="muted-text">—</span>
+          </td>
           <td>
             <div style="display:flex; gap:.5rem;">
               <button class="btn btn-secondary btn-sm" @click="openEditModal(a)">{{ t('common.edit') }}</button>
@@ -76,7 +110,8 @@
   <Teleport to="body">
     <div v-if="modalOpen" class="modal-overlay" @click.self="modalOpen = false">
       <div class="modal modal-wide">
-        <h2 class="modal-title">{{ editingActivity ? t('manager.activities.editTitle') : t('manager.activities.createTitle') }}</h2>
+        <h2 class="modal-title">{{ editingActivity ? t('manager.activities.editTitle') :
+          t('manager.activities.createTitle') }}</h2>
 
         <div class="form-row">
           <div class="form-group">
@@ -122,7 +157,8 @@
           </div>
         </div>
 
-        <h3 class="section-title" style="font-size:.9rem; margin-top:.5rem;">{{ t('manager.activities.studentSection') }}</h3>
+        <h3 class="section-title" style="font-size:.9rem; margin-top:.5rem;">{{ t('manager.activities.studentSection')
+        }}</h3>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.activities.columns.student') }}</label>
@@ -132,6 +168,12 @@
             <label class="form-label">{{ t('manager.users.folderCode') }}</label>
             <input class="form-input" v-model="form.folderCode" />
           </div>
+        </div>
+
+        <div class="form-group">
+          <MultiUserSelector v-model="form.userIds" :options="artistJuryOptions"
+            :label="t('manager.activities.linkedUsers')" />
+          <span class="field-hint">{{ t('manager.activities.linkedUsersHint') }}</span>
         </div>
 
         <div class="form-group">
@@ -160,24 +202,52 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useManagerActivityApi } from '../composables/useManagerActivityApi'
 import { useRoomApi } from '../composables/useRoomApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
 import { ActivityTypeEnum } from '../types/manager-activity.types'
 import type { ActivityDto } from '../types/manager-activity.types'
 import type { RoomDto } from '../types/room.types'
+import { RoleType } from '../enums/roles.enum'
+import type { UserBaseDto } from '../types/booking.types'
+import { useManagerUserApi } from '../composables/useManagerUserApi'
+import MultiUserSelector from './MultiUserSelector.vue'
+import { useManagerActivityApi, type ImportActivitiesResult } from '../composables/useManagerActivityApi'
 
 const { t } = useI18n()
 const api = useManagerActivityApi()
 const roomApi = useRoomApi()
+const userApi = useManagerUserApi()
 
 const activityTypeOptions = Object.values(ActivityTypeEnum)
+const artistJuryOptions = ref<UserBaseDto[]>([])
 
 const activities = ref<ActivityDto[]>([])
 const rooms = ref<RoomDto[]>([])
 const loading = ref(false)
 const pageError = ref('')
+
+const activityFileInput = ref<HTMLInputElement | null>(null)
+const importing = ref(false)
+const importResult = ref<ImportActivitiesResult | null>(null)
+
+async function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importing.value = true
+  importResult.value = null
+  pageError.value = ''
+  try {
+    importResult.value = await api.importFromExcel(file)
+    await reload()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    importing.value = false
+    input.value = ''
+  }
+}
 
 const page = ref(1)
 const limit = 20
@@ -187,6 +257,7 @@ const typeFilter = ref<ActivityTypeEnum | undefined>(undefined)
 
 onMounted(async () => {
   await loadRooms()
+  await loadArtistJuryOptions()
   await reload()
 })
 
@@ -207,6 +278,7 @@ async function reload() {
       limit,
       teacherName: teacherNameFilter.value || undefined,
       type: typeFilter.value,
+      userIds: selectedUserIds.value.length > 0 ? selectedUserIds.value : undefined,
     })
     activities.value = data?.data ?? []
     totalPages.value = data?.metadata?.totalPages ?? 1
@@ -217,6 +289,20 @@ async function reload() {
   }
 }
 
+const selectedUserIds = ref<string[]>([])
+const showUserFilter = ref(false)
+
+function onUserFilterChange() {
+  page.value = 1
+  reload()
+}
+
+async function loadArtistJuryOptions() {
+  const data = await userApi.getUsers({ roleType: [RoleType.Artist, RoleType.Jury], limit: 200 })
+  artistJuryOptions.value = (data?.data ?? []).map(u => ({
+    id: u.id, email: u.email, firstnames: u.firstnames, surnames: u.surnames,
+  }))
+}
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
 function debouncedReload() {
   if (debounceTimer) clearTimeout(debounceTimer)
@@ -265,13 +351,14 @@ interface FormState {
   internalComments: string
   studentEmail: string
   folderCode: string
+  userIds: string[]
 }
 
 function blankForm(): FormState {
   return {
     type: ActivityTypeEnum.MASTERCLASS, teacherRawName: '', teacherEmail: '',
     date: '', startTimeStr: '09:00', durationMinutes: 45, roomId: undefined,
-    comments: '', internalComments: '', studentEmail: '', folderCode: '',
+    comments: '', internalComments: '', studentEmail: '', folderCode: '', userIds: [],
   }
 }
 
@@ -298,6 +385,7 @@ function openEditModal(a: ActivityDto) {
     internalComments: a.internalComments ?? '',
     studentEmail: a.studentEmail ?? '',
     folderCode: a.folderCode ?? '',
+    userIds: a.userIds ?? [],
   }
   formError.value = ''
   modalOpen.value = true
@@ -323,6 +411,7 @@ async function save() {
         internalComments: form.value.internalComments || undefined,
         studentEmail: form.value.studentEmail || undefined,
         folderCode: form.value.folderCode || undefined,
+        userIds: form.value.userIds.length > 0 ? form.value.userIds : undefined,
       })
     } else {
       await api.create({
@@ -338,6 +427,7 @@ async function save() {
         internalComments: form.value.internalComments || undefined,
         studentEmail: form.value.studentEmail || undefined,
         folderCode: form.value.folderCode || undefined,
+        userIds: form.value.userIds.length > 0 ? form.value.userIds : undefined,
       })
     }
     modalOpen.value = false

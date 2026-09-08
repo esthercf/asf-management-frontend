@@ -13,6 +13,12 @@ import type {
  * single DTO class) — page/limit default to '1'/'20' server-side if
  * omitted, confirmed directly from the controller.
  */
+export interface ImportActivitiesResult {
+  total: number
+  succeeded: number
+  errors: { rowNumber: number; message: string }[]
+}
+
 export function useManagerActivityApi() {
   function getFiltered(filters: GetActivitiesFilterDto = {}): Promise<DatatableResult<ActivityDto>> {
     const q = new URLSearchParams()
@@ -23,6 +29,7 @@ export function useManagerActivityApi() {
     if (filters.studentEmail) q.set('studentEmail', filters.studentEmail)
     if (filters.fromDate) q.set('fromDate', filters.fromDate)
     if (filters.toDate) q.set('toDate', filters.toDate)
+    filters.userIds?.forEach(id => q.append('userIds', id))
     q.set('page', String(filters.page ?? 1))
     q.set('limit', String(filters.limit ?? 20))
     return client.get<DatatableResult<ActivityDto>>(`/activities?${q}`).then(r => r.data)
@@ -40,5 +47,13 @@ export function useManagerActivityApi() {
     return client.delete(`/activities/${id}`).then(r => r.data)
   }
 
-  return { getFiltered, create, update, remove }
+  function importFromExcel(file: File): Promise<ImportActivitiesResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return client.post<ImportActivitiesResult>('/activities/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
+
+  return { getFiltered, create, update, remove, importFromExcel }
 }
