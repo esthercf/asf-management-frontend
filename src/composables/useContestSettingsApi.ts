@@ -8,6 +8,15 @@ export enum ContestTypeEnum {
 export interface ContestRoundDayDto {
   date: string   // 'YYYY-MM-DD'
   startTime: string  // 'HH:MM'
+  endTime?: string  // 'HH:MM'
+  morningAccompanistId?: string
+  afternoonAccompanistId?: string
+}
+
+export interface PianistDto {
+  _id: string
+  firstnames: string
+  surnames: string
 }
 
 export interface ContestRoundCategoryConfigDto {
@@ -55,6 +64,12 @@ export type UpdateCategoryConfigPayload = Partial<Omit<CreateCategoryConfigPaylo
  * sub-category's own config.
  */
 export function useContestSettingsApi() {
+  // Lives on performance-order's own endpoint (it's a people lookup,
+  // not a settings one) — called from here too since the day-editing
+  // form needs it for its pianist dropdowns.
+  function getPianists(): Promise<PianistDto[]> {
+    return client.get<PianistDto[]>('/performance-order/pianists').then(r => r.data)
+  }
   function categoryQuery(category?: string | null): string {
     return category ? `?category=${encodeURIComponent(category)}` : ''
   }
@@ -103,6 +118,6 @@ export function useContestSettingsApi() {
   return {
     getOrCreate, setContestName, addRound, removeRound,
     addCategoryConfig, removeCategoryConfig, updateCategoryConfig,
-    addDay, updateDay, removeDay,
+    addDay, updateDay, removeDay, getPianists
   }
 }

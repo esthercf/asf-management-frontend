@@ -41,7 +41,8 @@
 
     <div class="section-row">
       <h2 class="section-title">{{ t('manager.contestSettings.roundsTitle') }}</h2>
-      <button class="btn btn-primary" @click="openCreateRoundModal">+ {{ t('manager.contestSettings.addRound') }}</button>
+      <button class="btn btn-primary" @click="openCreateRoundModal">+ {{ t('manager.contestSettings.addRound')
+      }}</button>
     </div>
 
     <div v-if="settings.rounds.length === 0" class="empty-state">
@@ -70,8 +71,10 @@
           <strong v-if="config.category">{{ config.category }}</strong>
           <strong v-else>{{ t('manager.contestSettings.configuration') }}</strong>
           <div style="display:flex; gap:.4rem;">
-            <button class="btn btn-secondary btn-sm" @click="openEditConfigModal(round.name, config)">{{ t('common.edit') }}</button>
-            <button class="btn btn-danger btn-sm" @click="removeCategoryConfig(round.name, config.category)">{{ t('common.delete') }}</button>
+            <button class="btn btn-secondary btn-sm" @click="openEditConfigModal(round.name, config)">{{
+              t('common.edit') }}</button>
+            <button class="btn btn-danger btn-sm" @click="removeCategoryConfig(round.name, config.category)">{{
+              t('common.delete') }}</button>
           </div>
         </div>
 
@@ -98,10 +101,13 @@
           <div v-if="config.days.length === 0" class="muted-text">{{ t('manager.contestSettings.noDays') }}</div>
           <div v-else class="days-list">
             <div v-for="(day, idx) in config.days" :key="idx" class="day-row">
-              <span><strong>{{ t('manager.contestSettings.day') }} {{ idx + 1 }}</strong> — {{ day.date }} @ {{ day.startTime }}</span>
+              <span><strong>{{ t('manager.contestSettings.day') }} {{ idx + 1 }}</strong> — {{ day.date }} @ {{
+                day.startTime }}</span>
               <div style="display:flex; gap:.4rem;">
-                <button class="btn btn-secondary btn-sm" @click="openEditDayModal(round.name, config.category, idx, day)">{{ t('common.edit') }}</button>
-                <button class="btn btn-danger btn-sm" @click="removeDay(round.name, config.category, idx)">{{ t('common.delete') }}</button>
+                <button class="btn btn-secondary btn-sm"
+                  @click="openEditDayModal(round.name, config.category, idx, day)">{{ t('common.edit') }}</button>
+                <button class="btn btn-danger btn-sm" @click="removeDay(round.name, config.category, idx)">{{
+                  t('common.delete') }}</button>
               </div>
             </div>
           </div>
@@ -135,7 +141,9 @@
   <Teleport to="body">
     <div v-if="configModalOpen" class="modal-overlay" @click.self="configModalOpen = false">
       <div class="modal modal-wide">
-        <h2 class="modal-title">{{ editingConfigCategory !== undefined ? t('manager.contestSettings.editCategoryConfig') : t('manager.contestSettings.addCategoryConfig') }}</h2>
+        <h2 class="modal-title">{{ editingConfigCategory !== undefined ? t('manager.contestSettings.editCategoryConfig')
+          :
+          t('manager.contestSettings.addCategoryConfig') }}</h2>
 
         <div v-if="contestType === ContestTypeEnum.YOUTH" class="form-group">
           <label class="form-label">{{ t('manager.diplomas.bookingType') }}</label>
@@ -178,7 +186,8 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.pauseEvery') }}</label>
-            <input class="form-input" type="number" min="1" v-model.number="configForm.defaultPauseEveryNPerformances" />
+            <input class="form-input" type="number" min="1"
+              v-model.number="configForm.defaultPauseEveryNPerformances" />
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.pauseDuration') }}</label>
@@ -200,10 +209,12 @@
   </Teleport>
 
   <!-- Add/Edit Day Modal -->
+
   <Teleport to="body">
     <div v-if="dayModalOpen" class="modal-overlay" @click.self="dayModalOpen = false">
       <div class="modal">
-        <h2 class="modal-title">{{ editingDayIndex !== null ? t('manager.contestSettings.editDay') : t('manager.contestSettings.addDay') }}</h2>
+        <h2 class="modal-title">{{ editingDayIndex !== null ? t('manager.contestSettings.editDay') :
+          t('manager.contestSettings.addDay') }}</h2>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.date') }}</label>
@@ -213,7 +224,28 @@
             <label class="form-label">{{ t('manager.contestSettings.startTime') }}</label>
             <input class="form-input" type="time" v-model="dayForm.startTime" />
           </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.contestSettings.endTime') }}</label>
+            <input class="form-input" type="time" v-model="dayForm.endTime" />
+          </div>
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.contestSettings.morningAccompanist') }}</label>
+            <select class="form-input" v-model="dayForm.morningAccompanistId">
+              <option value="">{{ t('manager.contestSettings.noAccompanist') }}</option>
+              <option v-for="p in pianists" :key="p._id" :value="p._id">{{ p.firstnames }} {{ p.surnames }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.contestSettings.afternoonAccompanist') }}</label>
+            <select class="form-input" v-model="dayForm.afternoonAccompanistId">
+              <option value="">{{ t('manager.contestSettings.noAccompanist') }}</option>
+              <option v-for="p in pianists" :key="p._id" :value="p._id">{{ p.firstnames }} {{ p.surnames }}</option>
+            </select>
+          </div>
+        </div>
+        <p class="muted-text">{{ t('manager.contestSettings.accompanistHint') }}</p>
         <div v-if="dayFormError" class="error-banner">⚠️ {{ dayFormError }}</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="dayModalOpen = false">{{ t('common.cancel') }}</button>
@@ -238,9 +270,11 @@ import {
   type ContestRoundCategoryConfigDto,
   type ContestRoundDayDto,
   type CreateCategoryConfigPayload,
+  type PianistDto,
 } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 
 const { t } = useI18n()
 const api = useContestSettingsApi()
@@ -255,8 +289,16 @@ const pageError = ref('')
 const contestNameDraft = ref('')
 const savingName = ref(false)
 
-onMounted(() => {
-  reload()
+
+const pianists = ref<PianistDto[]>([])
+
+onMounted(async () => {
+  await reload()
+  try {
+    pianists.value = await api.getPianists()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  }
 })
 
 function switchContestType(type: ContestTypeEnum) {
@@ -436,13 +478,12 @@ const dayModalCategory = ref<string | null>(null)
 const editingDayIndex = ref<number | null>(null)
 const savingDay = ref(false)
 const dayFormError = ref('')
-const dayForm = ref<ContestRoundDayDto>({ date: '', startTime: '09:00' })
+const dayForm = ref<ContestRoundDayDto>({ date: '', startTime: '09:00', endTime: '', morningAccompanistId: '', afternoonAccompanistId: '' })
 
 function openAddDayModal(roundName: string, category: string | null) {
   dayModalRoundName.value = roundName
-  dayModalCategory.value = category
   editingDayIndex.value = null
-  dayForm.value = { date: '', startTime: '09:00' }
+  dayForm.value = { date: '', startTime: '09:00', endTime: '', morningAccompanistId: '', afternoonAccompanistId: '' }
   dayFormError.value = ''
   dayModalOpen.value = true
 }
@@ -451,23 +492,36 @@ function openEditDayModal(roundName: string, category: string | null, index: num
   dayModalRoundName.value = roundName
   dayModalCategory.value = category
   editingDayIndex.value = index
-  dayForm.value = { ...day }
+  dayForm.value = {
+    date: day.date,
+    startTime: day.startTime,
+    endTime: day.endTime ?? '',
+    morningAccompanistId: day.morningAccompanistId ?? '',
+    afternoonAccompanistId: day.afternoonAccompanistId ?? '',
+  }
   dayFormError.value = ''
   dayModalOpen.value = true
 }
-
 async function saveDay() {
   dayFormError.value = ''
   if (!dayForm.value.date || !dayForm.value.startTime) {
     dayFormError.value = t('manager.contestSettings.validation.dayRequired')
     return
   }
+
   savingDay.value = true
   try {
+    const payload: ContestRoundDayDto = {
+      date: dayForm.value.date,
+      startTime: dayForm.value.startTime,
+      endTime: dayForm.value.endTime || undefined,
+      morningAccompanistId: dayForm.value.morningAccompanistId || undefined,
+      afternoonAccompanistId: dayForm.value.afternoonAccompanistId || undefined,
+    }
     if (editingDayIndex.value !== null) {
-      settings.value = await api.updateDay(contestType.value, dayModalRoundName.value, dayModalCategory.value, editingDayIndex.value, dayForm.value)
+      settings.value = await api.updateDay(contestType.value, dayModalRoundName.value, dayModalCategory.value, editingDayIndex.value, payload)
     } else {
-      settings.value = await api.addDay(contestType.value, dayModalRoundName.value, dayModalCategory.value, dayForm.value)
+      settings.value = await api.addDay(contestType.value, dayModalRoundName.value, dayModalCategory.value, payload)
     }
     dayModalOpen.value = false
   } catch (e) {
@@ -485,6 +539,8 @@ async function removeDay(roundName: string, category: string | null, index: numb
     pageError.value = extractErrorMessage(e)
   }
 }
+
+useModalScrollLock(roundModalOpen, configModalOpen, dayModalOpen)
 </script>
 
 <style scoped>

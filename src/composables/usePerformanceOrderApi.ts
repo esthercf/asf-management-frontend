@@ -155,9 +155,13 @@ export function usePerformanceOrderApi() {
     URL.revokeObjectURL(link.href)
   }
 
+  async function recalculate(scope: OrderScope): Promise<void> {
+    return client.post('/performance-order/recalculate', { contestType: scope.contestType, round: scope.round, category: scope.category || undefined }).then(r => r.data)
+  }
+
   return {
     generate, getFiltered, moveEntry, updateDuration, removeEntry,
     validate, unvalidate, autoFillDays, searchMissingCandidates, addMissingStudent,
-    insertPause, exportDay,
+    insertPause, exportDay, recalculate
   }
 }

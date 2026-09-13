@@ -23,8 +23,8 @@
       <option v-for="r in rounds" :key="r.name" :value="r.name">{{ r.name }}</option>
     </select>
 
-    <select v-if="contestType === ContestTypeEnum.YOUTH" class="form-input filter-select"
-      v-model="selectedCategory" @change="onRoundOrCategoryChange">
+    <select v-if="contestType === ContestTypeEnum.YOUTH" class="form-input filter-select" v-model="selectedCategory"
+      @change="onRoundOrCategoryChange">
       <option value="" disabled>{{ t('manager.performanceOrder.selectCategory') }}</option>
       <option v-for="c in availableCategoriesForRound" :key="c" :value="c">{{ c }}</option>
     </select>
@@ -38,9 +38,12 @@
   <template v-else>
     <div class="section-row" style="margin-bottom:1rem;">
       <div class="legend-row">
-        <span class="legend-item"><span class="legend-dot legend-dot-active"></span>{{ t('manager.performanceOrder.checkedIn') }}</span>
-        <span class="legend-item"><span class="legend-dot legend-dot-inactive"></span>{{ t('manager.performanceOrder.notCheckedIn') }}</span>
-        <span class="legend-item"><span class="legend-swatch legend-swatch-overtime"></span>{{ t('manager.performanceOrder.pastEndTime') }}</span>
+        <span class="legend-item"><span class="legend-dot legend-dot-active"></span>{{
+          t('manager.performanceOrder.checkedIn') }}</span>
+        <span class="legend-item"><span class="legend-dot legend-dot-inactive"></span>{{
+          t('manager.performanceOrder.notCheckedIn') }}</span>
+        <span class="legend-item"><span class="legend-swatch legend-swatch-overtime"></span>{{
+          t('manager.performanceOrder.pastEndTime') }}</span>
       </div>
       <div style="display:flex; gap:.6rem;">
         <button class="btn btn-secondary" :disabled="generating" @click="generateOrder">
@@ -50,6 +53,10 @@
         <button class="btn btn-secondary" :disabled="autoFilling || unassignedEntries.length === 0" @click="doAutoFill">
           <InlineSpinner v-if="autoFilling" />
           <span v-else>📅 {{ t('manager.performanceOrder.autoFill') }}</span>
+        </button>
+        <button class="btn btn-secondary" :disabled="recalculating" @click="doRecalculate">
+          <InlineSpinner v-if="recalculating" />
+          <span v-else>🔄 {{ t('manager.performanceOrder.recalculate') }}</span>
         </button>
       </div>
     </div>
@@ -66,16 +73,9 @@
           <h3>{{ t('manager.performanceOrder.unassigned') }}</h3>
           <span class="badge badge-lav">{{ unassignedEntries.length }}</span>
         </div>
-        <VueDraggable
-          v-model="unassignedEntries"
-          class="board-list"
-          :data-day-index="'null'"
-          group="performance-order"
-          item-key="id"
-          @end="onDragEnd"
-        >
-          <div v-for="element in unassignedEntries" :key="element.id" class="entry-card"
-            :class="entryClasses(element)">
+        <VueDraggable v-model="unassignedEntries" class="board-list" :data-day-index="'null'" group="performance-order"
+          item-key="id" @end="onDragEnd">
+          <div v-for="element in unassignedEntries" :key="element.id" class="entry-card" :class="entryClasses(element)">
             <template v-if="element.rowType === 'performance'">
               <div class="entry-main">
                 <strong>
@@ -85,7 +85,8 @@
                 </strong>
                 <span class="muted-text">{{ element.studentCountryCode }}</span>
               </div>
-              <div class="entry-times">{{ element.warmUpTime }} → {{ element.readyTime }} → {{ element.stageTime }}</div>
+              <div class="entry-times">{{ element.warmUpTime }} → {{ element.readyTime }} → {{ element.stageTime }}
+              </div>
             </template>
             <template v-else>
               <div class="entry-main entry-pause-label">⏸ {{ element.label }}</div>
@@ -109,16 +110,18 @@
           <h3>{{ t('manager.contestSettings.day') }} {{ dayIdx + 1 }}</h3>
           <span class="badge badge-lav">{{ dayEntries.length }}</span>
           <span class="badge badge-sm" :class="isDayValidated(dayIdx) ? 'badge-green' : 'badge-coral'">
-            {{ isDayValidated(dayIdx) ? t('manager.performanceOrder.validated') : t('manager.performanceOrder.pendingValidation') }}
+            {{ isDayValidated(dayIdx) ? t('manager.performanceOrder.validated') :
+              t('manager.performanceOrder.pendingValidation') }}
           </span>
         </div>
         <div class="board-column-actions">
-          <button v-if="!isDayValidated(dayIdx)" class="btn btn-primary btn-sm" :disabled="dayEntries.length === 0 || validatingDay === dayIdx"
-            @click="doValidateDay(dayIdx)">
+          <button v-if="!isDayValidated(dayIdx)" class="btn btn-primary btn-sm"
+            :disabled="dayEntries.length === 0 || validatingDay === dayIdx" @click="doValidateDay(dayIdx)">
             <InlineSpinner v-if="validatingDay === dayIdx" />
             <span v-else>✓ {{ t('manager.performanceOrder.validate') }}</span>
           </button>
-          <button v-else class="btn btn-secondary btn-sm" :disabled="validatingDay === dayIdx" @click="doUnvalidateDay(dayIdx)">
+          <button v-else class="btn btn-secondary btn-sm" :disabled="validatingDay === dayIdx"
+            @click="doUnvalidateDay(dayIdx)">
             <InlineSpinner v-if="validatingDay === dayIdx" />
             <span v-else>🔓 {{ t('manager.performanceOrder.unvalidate') }}</span>
           </button>
@@ -128,15 +131,8 @@
             📥
           </button>
         </div>
-        <VueDraggable
-          v-model="dayColumns[dayIdx]"
-          class="board-list"
-          :data-day-index="String(dayIdx)"
-          group="performance-order"
-          :disabled="isDayValidated(dayIdx)"
-          item-key="id"
-          @end="onDragEnd"
-        >
+        <VueDraggable v-model="dayColumns[dayIdx]" class="board-list" :data-day-index="String(dayIdx)"
+          group="performance-order" :disabled="isDayValidated(dayIdx)" item-key="id" @end="onDragEnd">
           <div v-for="element in dayColumns[dayIdx]" :key="element.id" class="entry-card"
             :class="entryClasses(element)">
             <template v-if="element.rowType === 'performance'">
@@ -148,17 +144,18 @@
                 </strong>
                 <span class="muted-text">{{ element.studentCountryCode }}</span>
               </div>
-              <div class="entry-times">{{ element.warmUpTime }} → {{ element.readyTime }} → {{ element.stageTime }}</div>
+              <div class="entry-times">{{ element.warmUpTime }} → {{ element.readyTime }} → {{ element.stageTime }}
+              </div>
             </template>
             <template v-else>
               <div class="entry-main entry-pause-label">⏸ {{ element.label }}</div>
             </template>
             <div class="entry-actions">
               <input class="entry-duration-input" type="number" min="1"
-                :value="element.stageDurationMinutes ?? element.durationMinutes"
-                :disabled="isDayValidated(dayIdx)"
+                :value="element.stageDurationMinutes ?? element.durationMinutes" :disabled="isDayValidated(dayIdx)"
                 @change="onDurationChange(element, $event)" />
-              <button class="btn btn-danger btn-sm" :disabled="isDayValidated(dayIdx)" @click="removeEntry(element)">✕</button>
+              <button class="btn btn-danger btn-sm" :disabled="isDayValidated(dayIdx)"
+                @click="removeEntry(element)">✕</button>
             </div>
           </div>
         </VueDraggable>
@@ -230,7 +227,8 @@
         <div v-else class="missing-candidates-list">
           <div v-for="c in missingCandidates" :key="c._id" class="missing-candidate-row">
             <span>{{ c.firstnames }} {{ c.surnames }} <span class="muted-text">({{ c.email }})</span></span>
-            <button class="btn btn-primary btn-sm" :disabled="addingMissingId === c._id" @click="confirmAddMissing(c._id)">
+            <button class="btn btn-primary btn-sm" :disabled="addingMissingId === c._id"
+              @click="confirmAddMissing(c._id)">
               <InlineSpinner v-if="addingMissingId === c._id" />
               <span v-else>{{ t('common.add') }}</span>
             </button>
@@ -288,6 +286,21 @@ async function loadRounds() {
     rounds.value = settings.rounds
   } catch (e) {
     pageError.value = extractErrorMessage(e)
+  }
+}
+
+const recalculating = ref(false)
+
+async function doRecalculate() {
+  recalculating.value = true
+  pageError.value = ''
+  try {
+    await api.recalculate(currentScope.value)
+    await loadBoard()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    recalculating.value = false
   }
 }
 
