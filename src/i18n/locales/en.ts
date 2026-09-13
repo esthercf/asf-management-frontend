@@ -397,6 +397,7 @@ const en = {
         loginTagline: 'Andorra Sax Fest — Management',
         manage: 'Manage',
         nav: {
+            performanceOrder: 'Performance Order',
             contestSettings: 'Contest Settings',
             rehearsals: 'Rehearsals',
             users: 'Users',
@@ -775,6 +776,14 @@ const en = {
             validateBeforeExport: 'Validate this order before exporting.',
             unassigned: 'Unassigned',
             removeConfirm: 'Remove this entry?',
+            checkedIn: 'Checked in',
+            notCheckedIn: 'Not checked in',
+            insertPause: 'Insert pause',
+            pauseType: 'Type',
+            pause: 'Pause',
+            lunch: 'Lunch',
+            pauseLabel: 'Label (optional)',
+            pauseAppendsHint: 'Added to the end of this column — drag it into position afterward.',
         },
     },
 }

@@ -13,7 +13,7 @@ export enum PerformanceOrderStatusEnum {
 }
 
 export interface PerformanceOrderEntryDto {
-  _id: string
+  id: string
   contestType: ContestTypeEnum
   round: string
   category: string | null
@@ -31,10 +31,19 @@ export interface PerformanceOrderEntryDto {
   stageTime?: string | null
   status: PerformanceOrderStatusEnum
   hasConflict?: boolean
+  pastEndTime?: boolean
   studentFullName?: string | null
   studentCountryCode?: string | null
   studentTeacherName?: string | null
+  studentActive?: boolean | null
   accompanistFullName?: string | null
+}
+
+export interface MissingCandidateDto {
+  _id: string
+  firstnames: string
+  surnames: string
+  email: string
 }
 
 export interface OrderScope {
@@ -47,6 +56,7 @@ export interface OrderScope {
  * Matches Management's real performance-order.controller.ts endpoints
  * exactly. dayIndex omitted from getFiltered() means "the unassigned
  * pool" — matches the entity's own null-means-unassigned convention.
+ * validate()/unvalidate() are per-day now, not per-scope.
  */
 export function usePerformanceOrderApi() {
   function scopeQuery(scope: OrderScope): URLSearchParams {
@@ -79,12 +89,44 @@ export function usePerformanceOrderApi() {
     return client.delete(`/performance-order/${id}`).then(r => r.data)
   }
 
-  function validate(scope: OrderScope): Promise<void> {
-    return client.post('/performance-order/validate', scope).then(r => r.data)
+  function validate(scope: OrderScope, dayIndex: number): Promise<void> {
+    return client.post('/performance-order/validate', { contestType: scope.contestType, round: scope.round, category: scope.category || undefined, dayIndex }).then(r => r.data)
   }
 
-  function unvalidate(scope: OrderScope): Promise<void> {
-    return client.post('/performance-order/unvalidate', scope).then(r => r.data)
+  function unvalidate(scope: OrderScope, dayIndex: number): Promise<void> {
+    return client.post('/performance-order/unvalidate', { contestType: scope.contestType, round: scope.round, category: scope.category || undefined, dayIndex }).then(r => r.data)
+  }
+
+  function autoFillDays(scope: OrderScope): Promise<void> {
+    return client.post('/performance-order/auto-fill', { contestType: scope.contestType, round: scope.round, category: scope.category || undefined }).then(r => r.data)
+  }
+
+  function searchMissingCandidates(scope: OrderScope, search?: string): Promise<MissingCandidateDto[]> {
+    const q = scopeQuery(scope)
+    if (search) q.set('search', search)
+    return client.get<MissingCandidateDto[]>(`/performance-order/missing-candidates?${q}`).then(r => r.data)
+  }
+
+  function addMissingStudent(scope: OrderScope, targetDayIndex: number, studentId: string): Promise<void> {
+    return client.post('/performance-order/add-missing', {
+      contestType: scope.contestType, round: scope.round, category: scope.category || undefined, targetDayIndex, studentId,
+    }).then(r => r.data)
+  }
+
+  function insertPause(
+    scope: OrderScope,
+    targetDayIndex: number | null,
+    position: number,
+    durationMinutes: number,
+    label: string,
+    rowType: 'pause' | 'lunch' = 'pause',
+  ): Promise<void> {
+    const body: Record<string, unknown> = {
+      contestType: scope.contestType, round: scope.round, position, durationMinutes, label, rowType,
+    }
+    if (scope.category) body.category = scope.category
+    if (targetDayIndex !== null) body.targetDayIndex = targetDayIndex
+    return client.post('/performance-order/insert-pause', body).then(r => r.data)
   }
 
   /**
@@ -113,5 +155,9 @@ export function usePerformanceOrderApi() {
     URL.revokeObjectURL(link.href)
   }
 
-  return { generate, getFiltered, moveEntry, updateDuration, removeEntry, validate, unvalidate, exportDay }
+  return {
+    generate, getFiltered, moveEntry, updateDuration, removeEntry,
+    validate, unvalidate, autoFillDays, searchMissingCandidates, addMissingStudent,
+    insertPause, exportDay,
+  }
 }

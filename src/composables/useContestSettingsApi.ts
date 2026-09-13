@@ -28,7 +28,7 @@ export interface ContestRoundDto {
 }
 
 export interface ContestSettingsDto {
-  _id: string
+  id: string
   contestType: ContestTypeEnum
   contestName: string
   rounds: ContestRoundDto[]
