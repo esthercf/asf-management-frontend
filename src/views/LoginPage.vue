@@ -251,7 +251,7 @@ async function login() {
   color: var(--white);
   font-style: italic;
   line-height: 1.3;
-  max-width: 320px;
+  max-width: 420px;
 }
 
 .art-rooms {

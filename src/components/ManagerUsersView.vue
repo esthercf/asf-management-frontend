@@ -269,8 +269,8 @@
         <div v-if="editingUser" class="rehearsal-section">
           <h3 class="section-title" style="font-size:.9rem;">{{ t('manager.users.rehearsal.title') }}</h3>
 
-          <div v-if="editingUser.rehearsals.length > 0" class="rehearsal-list">
-            <div v-for="r in editingUser.rehearsals" :key="r.category" class="rehearsal-list-row">
+          <div v-if="(editingUser.rehearsals ?? []).length > 0" class="rehearsal-list">
+            <div v-for="r in (editingUser.rehearsals ?? [])" :key="r.category" class="rehearsal-list-row">
               <div>
                 <strong>{{ r.category }}</strong>
                 — {{ r.artistFullName || '—' }} · #{{ r.roomNumber }} · {{ t('manager.rehearsals.columns.day') }}

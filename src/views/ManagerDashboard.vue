@@ -44,6 +44,9 @@
       <div class="nav-item" :class="{ active: view === 'performanceOrder' }" @click="view = 'performanceOrder'">
         <span class="nav-icon">🎲</span> {{ t('manager.nav.performanceOrder') }}
       </div>
+      <div class="nav-item" :class="{ active: view === 'daySchedules' }" @click="view = 'daySchedules'">
+        <span class="nav-icon">🗓️</span> {{ t('manager.nav.daySchedules') }}
+      </div>
       <span class="nav-section-label">{{ t('manager.nav.bookingSection') }}</span>
       <div class="nav-item" @click="router.push('/staff')">
         <span class="nav-icon">🏠</span> {{ t('manager.nav.bookingOversight') }}
@@ -71,6 +74,7 @@
       <ManagerRehearsalsView v-if="view === 'rehearsals'" />
       <ManagerContestSettingsView v-if="view === 'contestSettings'" />
       <ManagerPerformanceOrderView v-if="view === 'performanceOrder'" />
+      <ManagerDaySchedulesView v-if="view === 'daySchedules'" />
     </main>
   </div>
 </template>
@@ -93,13 +97,14 @@ import ManagerDiplomasView from '../components/ManagerDiplomasView.vue'
 import ManagerRehearsalsView from '../components/ManagerRehearsalsView.vue'
 import ManagerContestSettingsView from '../components/ManagerContestSettingsView.vue'
 import ManagerPerformanceOrderView from '../components/ManagerPerformanceOrderView.vue'
+import ManagerDaySchedulesView from '../components/ManagerDaySchedulesView.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const sessionApi = useSessionApi()
 
-type ViewName = 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen' | 'bookingLimits' | 'purchases' | 'diplomas' | 'rehearsals' | 'contestSettings' | 'performanceOrder'
+type ViewName = 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen' | 'bookingLimits' | 'purchases' | 'diplomas' | 'rehearsals' | 'contestSettings' | 'performanceOrder' | 'daySchedules'
 const view = ref<ViewName>('users')
 
 async function logout() {

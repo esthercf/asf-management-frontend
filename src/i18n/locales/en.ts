@@ -2,6 +2,7 @@ const en = {
     common: {
         noResults: 'No results found.',
         close: 'Close',
+        add: 'Add',
         loading: 'Loading…',
         error: 'Something went wrong.',
         save: 'Save changes',
@@ -390,7 +391,22 @@ const en = {
         Forbidden: "You don't have permission to perform this action.",
         NotFound: 'The requested resource was not found.',
         NetworkError: 'Could not reach the server. Please check your',
-        Unknown: 'Something went wrong. Please try'
+        Unknown: 'Something went wrong. Please try',
+        ContestSettingsNotFoundError: 'Contest settings were not found.',
+        ContestRoundNotFoundError: 'This round does not exist.',
+        ContestCategoryConfigNotFoundError: 'This category has no configuration in this round.',
+        ContestRoundConfigIncompleteError: 'This round is missing required configuration (venue, pieces, timing defaults or at least one day).',
+        ContestOrderAlreadyValidatedError: 'This order has been validated and cannot be regenerated.',
+        NoCandidateStudentsError: 'No students are tagged for this contest type or category.',
+        ContestOrderEntryNotFoundError: 'This order entry does not exist.',
+        ContestOrderValidatedNotEditableError: 'This day is validated. Unvalidate it before making changes.',
+        ContestOrderExportDayNotFoundError: 'This day does not exist for this round.',
+        ContestOrderExportEmptyError: 'There are no entries on this day yet.',
+        RehearsalAlreadyExistsError: 'This student already has a rehearsal for this category.',
+        RehearsalArtistConflictError: 'This pianist is already booked at that day and time.',
+        DayScheduleNotFoundError: 'This day schedule does not exist.',
+        DayScheduleHasBookingsError: 'This day already has bookings, so it cannot be changed or deleted.',
+        DayScheduleInUseError: 'This day is used by other records (events, activities, contest days or performance entries) and cannot be deleted.',
     },
     manager: {
         panel: 'Management Panel',
@@ -398,6 +414,7 @@ const en = {
         manage: 'Manage',
         nav: {
             performanceOrder: 'Performance Order',
+            daySchedules: 'Day schedules',
             contestSettings: 'Contest Settings',
             rehearsals: 'Rehearsals',
             users: 'Users',
@@ -617,6 +634,7 @@ const en = {
             batchTitle: 'Batch (multiple users)',
             batchDesc: 'Generate personalized schedules for several students at once, downloaded together as a single .zip file.',
             generateBatch: 'Generate & download batch',
+
         },
         bookingLimits: {
             title: 'Booking Limits',
@@ -799,6 +817,29 @@ const en = {
             afternoonAccompanist: 'Afternoon accompanist',
             noAccompanist: 'None',
             accompanistHint: 'Performances before the lunch pause use the morning pianist; from lunch onward, the afternoon one.',
+        },
+        daySchedules: {
+            edit: 'Edit day',
+            dateImmutableHint: "The date can't be changed. Delete this day and create a new one instead.",
+            title: 'Day schedules',
+            subtitle: 'Activate or deactivate bookable days. Inactive days cannot be booked.',
+            empty: 'No day schedules found.',
+            active: 'Active',
+            inactive: 'Inactive',
+            activate: 'Activate',
+            deactivate: 'Deactivate',
+            columns: {
+                date: 'Date',
+                slots: 'Time slots',
+                status: 'Status',
+                actions: 'Actions',
+            },
+            create: 'New day',
+            addSlot: 'Add slot',
+            validation: {
+                required: 'Date and every slot start and end time are required.',
+            },
+            deleteConfirm: 'Delete the day {date}? This cannot be undone.',
         },
     },
 }
