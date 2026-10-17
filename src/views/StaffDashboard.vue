@@ -27,7 +27,8 @@
       <div class="nav-item" :class="{ active: view === 'users' }" @click="view = 'users'; loadUsers()">
         <span class="nav-icon">👥</span> {{ t('staff.users.title') }}
       </div>
-      <div class="nav-item" :class="{ active: view === 'newbooking' }" @click="startNewBooking">
+      <div v-if="BOOKING_WRITES_ENABLED" class="nav-item" :class="{ active: view === 'newbooking' }"
+        @click="startNewBooking">
         <span class="nav-icon">➕</span> {{ t('staff.nav.newBooking') }}
       </div>
 
@@ -72,7 +73,7 @@
             <div class="stat-value">{{ rooms.length }}</div>
             <div class="stat-label">{{ t('staff.overview.totalRooms') }}</div>
           </div>
-          <div class="stat-card">
+          <div v-if="BOOKING_WRITES_ENABLED" class="stat-card">
             <div class="stat-icon">✅</div>
             <div class="stat-value">{{ totalFreeSlots }}</div>
             <div class="stat-label">{{ t('staff.overview.freeSlots') }}</div>
@@ -84,41 +85,43 @@
           </div>
         </div>
 
-        <div class="section-row">
-          <h2 class="section-title">{{ t('staff.overview.availabilityTitle') }}</h2>
-          <button class="btn btn-primary btn-sm" @click="startNewBooking">
-            + {{ t('staff.nav.newBooking') }}
-          </button>
-        </div>
+        <template v-if="BOOKING_WRITES_ENABLED">
+          <div class="section-row">
+            <h2 class="section-title">{{ t('staff.overview.availabilityTitle') }}</h2>
+            <button class="btn btn-primary btn-sm" @click="startNewBooking">
+              + {{ t('staff.nav.newBooking') }}
+            </button>
+          </div>
 
-        <div v-if="loadingAvailability" class="empty-state">
-          <div class="empty-icon">⏳</div>
-          <p>{{ t('common.loading') }}</p>
-        </div>
-        <div v-else class="room-grid">
-          <div v-for="room in availability" :key="room.id" class="card room-card">
-            <div class="room-card-header">
-              <div>
-                <div class="room-name">{{ room.name }}</div>
-                <div class="room-floor">
-                  Room #{{ room.roomNumber }}{{ room.floor != null ? ' · ' + t('staff.overview.floor') + ' ' +
-                    room.floor : '' }}
+          <div v-if="loadingAvailability" class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>{{ t('common.loading') }}</p>
+          </div>
+          <div v-else class="room-grid">
+            <div v-for="room in availability" :key="room.id" class="card room-card">
+              <div class="room-card-header">
+                <div>
+                  <div class="room-name">{{ room.name }}</div>
+                  <div class="room-floor">
+                    Room #{{ room.roomNumber }}{{ room.floor != null ? ' · ' + t('staff.overview.floor') + ' ' +
+                      room.floor : '' }}
+                  </div>
                 </div>
+                <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
               </div>
-              <div class="room-emoji">{{ sizeEmoji(room.size) }}</div>
-            </div>
-            <div class="room-details">
-              <span class="room-detail">{{ (room.available ?? []).length }} {{ t('staff.overview.freeSlots') }}</span>
-              <span v-if="room.windows" class="room-detail">· 🪟 {{ t('staff.overview.windows') }}</span>
-            </div>
-            <div class="room-card-footer">
-              <span class="badge" :class="(room.available ?? []).length > 0 ? 'badge-green' : 'badge-coral'">
-                {{ (room.available ?? []).length > 0 ? '✓ ' + t('staff.overview.hasSlots') : '✗ ' +
-                  t('staff.overview.full') }}
-              </span>
+              <div class="room-details">
+                <span class="room-detail">{{ (room.available ?? []).length }} {{ t('staff.overview.freeSlots') }}</span>
+                <span v-if="room.windows" class="room-detail">· 🪟 {{ t('staff.overview.windows') }}</span>
+              </div>
+              <div class="room-card-footer">
+                <span class="badge" :class="(room.available ?? []).length > 0 ? 'badge-green' : 'badge-coral'">
+                  {{ (room.available ?? []).length > 0 ? '✓ ' + t('staff.overview.hasSlots') : '✗ ' +
+                    t('staff.overview.full') }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
 
       <!-- ── Rooms management ── -->
@@ -345,7 +348,8 @@
             <option :value="SortEnum.Ascending">{{ t('staff.bookings.sort.soonestFirst') }}</option>
             <option :value="SortEnum.Descending">{{ t('staff.bookings.sort.latestFirst') }}</option>
           </select>
-          <button class="btn btn-primary" @click="startNewBooking">+ {{ t('staff.nav.newBooking') }}</button>
+          <button v-if="BOOKING_WRITES_ENABLED" class="btn btn-primary" @click="startNewBooking">+ {{
+            t('staff.nav.newBooking') }}</button>
         </div>
 
         <div v-if="loadingBookings" class="empty-state">
@@ -362,7 +366,7 @@
                 <th>{{ t('staff.bookings.columns.time') }}</th>
                 <th>{{ t('staff.bookings.columns.usage') }}</th>
                 <th>{{ t('staff.bookings.columns.bookingType') }}</th>
-                <th>{{ t('staff.bookings.columns.actions') }}</th>
+                <th v-if="BOOKING_WRITES_ENABLED">{{ t('staff.bookings.columns.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -386,7 +390,7 @@
                   </span>
                   <span v-else class="muted-text">—</span>
                 </td>
-                <td>
+                <td v-if="BOOKING_WRITES_ENABLED">
                   <div style="display:flex; flex-direction:column; gap:.4rem;">
                     <button :disabled="!!booking.userId"
                       :title="booking.user ? t('staff.bookings.alreadyAssigned') : t('staff.bookings.assignUserTooltip')"
@@ -413,7 +417,7 @@
       </div>
 
       <!-- ── New Booking (Staff flow) ── -->
-      <div v-if="view === 'newbooking'">
+      <div v-if="BOOKING_WRITES_ENABLED && view === 'newbooking'">
         <div class="page-header">
           <h1>{{ t('staff.newBooking.title') }}</h1>
           <p class="subtitle">{{ t('staff.newBooking.subtitle') }}</p>
@@ -816,7 +820,8 @@
     </Teleport>
 
     <!-- Assign User to Booking Modal -->
-    <AssignUserModal v-model="assignUserModalOpen" :booking-id="assigningBookingId" @assigned="onUserAssigned" />
+    <AssignUserModal v-if="BOOKING_WRITES_ENABLED" v-model="assignUserModalOpen" :booking-id="assigningBookingId"
+      @assigned="onUserAssigned" />
   </div>
 </template>
 
@@ -923,10 +928,16 @@ const pageError = ref('')
 const roomFormError = ref('')
 const roomFormFieldErrors = ref<Record<string, string>>({})
 
+
+// Manager only VIEWS bookings. Creating, cancelling and assigning them is done in the
+// Booking app (which owns the slot locks). Set to true only if the matching backend
+// endpoints in Manager are switched back on.
+const BOOKING_WRITES_ENABLED = false
+
 // ── Lifecycle ─────────────────────────────────────────────────────────────
 onMounted(() => {
   loadUsersSelector();
-  loadAvailability();
+  if (BOOKING_WRITES_ENABLED) loadAvailability();
   loadRooms();
   loadBookings();
 })
@@ -1183,19 +1194,23 @@ async function loadRoomStatus() {
     const day = selectedDate.getDate()
     const month = selectedDate.getMonth() + 1
 
-    const [availability, bookingsResult] = await Promise.all([
-      bookingApi.getAvailability({ roomId: viewingRoom.value.id, limit: 1000 }),
-      bookingApi.getBookings({ roomId: viewingRoom.value.id, day, month, limit: 200 }),
-    ])
+    // Manager shows only the BOOKED slots of the day. The free slots came from the
+    // availability endpoint, which belongs to the Booking app (it owns the slot locks).
+    // const [availability, bookingsResult] = await Promise.all([
+    //   bookingApi.getAvailability({ roomId: viewingRoom.value.id, limit: 1000 }),
+    //   bookingApi.getBookings({ roomId: viewingRoom.value.id, day, month, limit: 200 }),
+    // ])
+    const bookingsResult = await bookingApi.getBookings({ roomId: viewingRoom.value.id, day, month, limit: 200 })
 
-    const freeSlotsForDay = availability
-      .flatMap((r: AvailableRoomDto) => r.available ?? [])
-      .filter((s: AvailableBookingDto) => s.date === roomStatusDate.value)
+    // const freeSlotsForDay = availability
+    //   .flatMap((r: AvailableRoomDto) => r.available ?? [])
+    //   .filter((s: AvailableBookingDto) => s.date === roomStatusDate.value)
 
     const slotMap = new Map<number, { startTime: number; booking?: BookingDto }>()
-    for (const slot of freeSlotsForDay) {
-      slotMap.set(slot.startTime, { startTime: slot.startTime })
-    }
+    // for (const slot of freeSlotsForDay) {
+    //   slotMap.set(slot.startTime, { startTime: slot.startTime })
+    // }
+
     for (const booking of bookingsResult.data) {
       slotMap.set(booking.startTime, { startTime: booking.startTime, booking })
     }

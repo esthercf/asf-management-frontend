@@ -356,7 +356,7 @@ async function save() {
 async function removeRehearsal(r: UserRehearsalDto) {
   if (!confirm(t('manager.rehearsals.deleteConfirm'))) return
   try {
-    await api.deleteRehearsal(r.studentId)
+    await api.deleteRehearsal(r.studentId, r.category)
     await reload()
   } catch (e) {
     pageError.value = extractErrorMessage(e)
