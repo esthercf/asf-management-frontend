@@ -44,7 +44,7 @@
           <label class="form-label">{{ t('auth.resetPassword.confirmPassword') }}</label>
           <div class="password-field-wrapper">
             <input class="form-input" :class="{ 'has-error': fieldErrors.confirmPassword }"
-              :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword" placeholder="••I••••••"
+              :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword" placeholder="••••••••"
               @keydown.enter="submit" />
             <button type="button" class="toggle-visibility" @click="showConfirmPassword = !showConfirmPassword"
               :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
@@ -53,18 +53,7 @@
           </div>
           <span v-if="fieldErrors.confirmPassword" class="field-error">{{ fieldErrors.confirmPassword }}</span>
         </div>
-        <div class="form-group" style="margin-bottom: 1.75rem">
-          <label class="form-label">{{ t('auth.resetPassword.confirmPassword') }}</label>
-          <div class="password-field-wrapper">
-            <input class="form-input" :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword"
-              placeholder="••••••••" @keydown.enter="submit" />
-            <button type="button" class="toggle-visibility" @click="showConfirmPassword = !showConfirmPassword"
-              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
-              {{ showConfirmPassword ? '🙈' : '👁' }}
-            </button>
-          </div>
-        </div>
-
+    
         <div v-if="error" class="error-banner">⚠️ {{ error }}</div>
 
         <button class="btn btn-primary" style="width:100%; justify-content:center; padding:.85rem;" :disabled="loading"
