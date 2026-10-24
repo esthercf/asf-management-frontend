@@ -29,7 +29,7 @@
 
     <select class="form-input filter-select" v-model="countryFilter" @change="reload">
       <option :value="undefined">{{ t('manager.users.filters.allCountries') }}</option>
-      <option v-for="c in countryOptions" :key="c" :value="c">{{ c }}</option>
+      <option v-for="c in filterCountryOptions" :key="c.code" :value="c.code">{{ c.label }}</option>
     </select>
 
     <button class="btn btn-primary" @click="openCreateModal">+ {{ t('manager.users.create') }}</button>
@@ -195,7 +195,7 @@
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.columns.country') }}</label>
             <select class="form-input" v-model="form.countryCode">
-              <option v-for="c in countryOptions" :key="c" :value="c">{{ c }}</option>
+              <option v-for="c in formCountryOptions" :key="c.code" :value="c.code">{{ c.label }}</option>
             </select>
           </div>
           <div class="form-group">
@@ -376,6 +376,7 @@ import { CountryCode, GenderEnum, LanguageEnum, TshirtEnum, FilterActiveEnum } f
 import type { ManagerUserDto } from '../types/manager-user.types'
 import { useUserRehearsalApi, type ImportUserRehearsalsResult } from '../composables/useUserRehearsalApi'
 import { UserRehearsalInfo } from '../types/user.types'
+import { useCountryNames } from '../composables/useCountryNames'
 const { t } = useI18n()
 const userApi = useManagerUserApi()
 const userRehearsalApi = useUserRehearsalApi()
@@ -396,6 +397,7 @@ async function onUserFileSelected(event: Event) {
   try {
     userImportResult.value = await userApi.importFromExcel(file, sendWelcomeEmail.value)
     await reload()
+    loadCountries()
   } catch (e) {
     pageError.value = extractErrorMessage(e)
   } finally {
@@ -406,7 +408,22 @@ async function onUserFileSelected(event: Event) {
 
 const roleOptions = Object.values(RoleType)
 const bookingTypeOptions = Object.values(BookingTypeEnum)
-const countryOptions = Object.values(CountryCode)
+// Country names come from the browser, in the language of the screen; the code stays next to the name
+// because the Excel import asks for codes. The FORM offers every country; the FILTER only those that
+// have at least one user (the server tells us which).
+const { sortedCountryOptions } = useCountryNames()
+const formCountryOptions = computed(() => sortedCountryOptions(Object.values(CountryCode)))
+const usedCountryCodes = ref<string[]>([])
+const filterCountryOptions = computed(() => sortedCountryOptions(usedCountryCodes.value))
+
+async function loadCountries() {
+  try {
+    const codes = await userApi.getUserCountries()
+    usedCountryCodes.value = Array.isArray(codes) ? codes : []
+  } catch {
+    // the filter just stays as it was; the list itself keeps working
+  }
+}
 const genderOptions = Object.values(GenderEnum)
 const tshirtOptions = Object.values(TshirtEnum)
 const languageOptions = Object.values(LanguageEnum)
@@ -425,8 +442,10 @@ const countryFilter = ref<CountryCode | undefined>(undefined)
 const bookingTypeFilter = ref<BookingTypeEnum[]>([])
 const bookingTypeExactFilter = ref<BookingTypeEnum[]>([])
 const showBookingTypeFilters = ref(false)
+
 onMounted(() => {
   reload()
+  loadCountries()
 })
 
 async function reload() {
@@ -732,6 +751,7 @@ async function saveUser() {
       await reload()
     }
     userModal.value = false
+    loadCountries() // the user may have come from a country that was not in the filter yet
   } catch (e) {
     formError.value = extractErrorMessage(e)
   } finally {

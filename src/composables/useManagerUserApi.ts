@@ -40,6 +40,11 @@ export function useManagerUserApi() {
     return client.get<DatatableResult<ManagerUserDto>>(`/users?${q}`).then(r => r.data)
   }
 
+  /** Country codes that at least one user has (for the country filter of the list). */
+  function getUserCountries(): Promise<string[]> {
+    return client.get<string[]>('/users/countries').then(r => r.data)
+  }
+
   function getUserSelectorOptions(): Promise<ManagerUserBaseDto[]> {
     return client.get<ManagerUserBaseDto[]>('/users/selector').then(r => r.data)
   }
@@ -72,6 +77,6 @@ export function useManagerUserApi() {
   }
 
   return {
-    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel,
+    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel, getUserCountries
   }
 }
