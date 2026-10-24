@@ -407,7 +407,7 @@ const en = {
         DayScheduleNotFoundError: 'This day schedule does not exist.',
         DayScheduleHasBookingsError: 'This day already has bookings, so it cannot be changed or deleted.',
         DayScheduleInUseError: 'This day is used by other records (events, activities, contest days or performance entries) and cannot be deleted.',
-    },
+        FolderCodeAlreadyUsed: 'Another user already has this folder code.', },
     manager: {
         panel: 'Management Panel',
         loginTagline: 'Andorra Sax Fest — Management',

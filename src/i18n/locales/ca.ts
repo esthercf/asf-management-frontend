@@ -408,6 +408,7 @@ const ca: AppLocale = {
     ContestOrderExportEmptyError: 'Encara no hi ha entrades en aquest dia.',
     RehearsalAlreadyExistsError: 'Aquest estudiant ja té un assaig per a aquesta categoria.',
     RehearsalArtistConflictError: 'Aquest pianista ja està ocupat en aquest dia i hora.',
+    FolderCodeAlreadyUsed: 'Otro usuario ya tiene este código de carpeta.',
   },
   manager: {
     activities: {
