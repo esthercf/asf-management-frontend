@@ -96,6 +96,7 @@
             <th>{{ t('manager.users.columns.folderCode') }}</th>
             <th>{{ t('manager.users.columns.country') }}</th>
             <th>{{ t('manager.users.columns.roles') }}</th>
+            <th>{{ t('manager.users.columns.bookingType') }}</th>
             <th>{{ t('manager.users.columns.status') }}</th>
             <th>{{ t('manager.users.columns.actions') }}</th>
           </tr>
@@ -115,6 +116,12 @@
             <td>{{ u.countryCode }}</td>
             <td>
               <span v-for="r in u.roles" :key="r" class="badge badge-lav bt-tag">{{ r }}</span>
+            </td>
+            <td>
+              <div v-if="u.bookingTypeEnum?.length" style="display:flex; flex-wrap:wrap; gap:.25rem;">
+                <span v-for="bt in u.bookingTypeEnum" :key="bt" class="badge badge-sky bt-tag">{{ bt }}</span>
+              </div>
+              <span v-else>—</span>
             </td>
             <td>
               <span class="badge" :class="u.active ? 'badge-green' : 'badge-coral'">

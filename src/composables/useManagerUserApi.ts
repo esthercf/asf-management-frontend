@@ -19,7 +19,7 @@ export interface ImportUsersResult {
   message: string
   total: number
   succeeded: number
-  errors: { rowNumber: number; message: string }[]
+  errors: { row: number; reason: string }[]
 }
 
 export function useManagerUserApi() {
