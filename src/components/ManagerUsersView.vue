@@ -75,8 +75,8 @@
   <div v-if="userImportResult" class="card import-result-card">
     <p><strong>{{ userImportResult.message }}</strong></p>
     <ul v-if="userImportResult.errors.length > 0" class="import-errors">
-      <li v-for="err in userImportResult.errors" :key="err.rowNumber">
-        {{ t('manager.festivalEvents.importRowError', { row: err.rowNumber }) }}: {{ err.message }}
+      <li v-for="err in userImportResult.errors" :key="err.row">
+        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
       </li>
     </ul>
     <button class="btn btn-secondary btn-sm" @click="userImportResult = null">{{ t('common.close') }}</button>
