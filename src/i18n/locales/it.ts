@@ -788,6 +788,7 @@ const it: AppLocale = {
         birthdateInvalid: 'Questa non è una data valida.',
         birthdateRange: 'La data di nascita non può essere futura né anteriore al 1900.',
       },
+      hasNotes: 'Questa persona ha delle note',
       notes: 'Note',
       notesHint: 'Note interne, visibili solo qui in Manager (mai negli elenchi né in Booking). Non scrivere dati sulla salute o altri dati sensibili.',
       activate: 'Attiva',

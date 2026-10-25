@@ -816,6 +816,7 @@ const fr: AppLocale = {
         birthdateInvalid: "Ce n'est pas une date valide.",
         birthdateRange: 'La date de naissance ne peut pas être dans le futur ni antérieure à 1900.',
       },
+      hasNotes: 'Cette personne a des notes',
       notes: 'Notes',
       notesHint: "Notes internes, visibles uniquement ici dans Manager (jamais dans les listes ni dans Booking). N'y écrivez pas de données de santé ni d'autres données sensibles.",
       activate: 'Activer',

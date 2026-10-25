@@ -634,6 +634,7 @@ const ja: AppLocale = {
         birthdateRange: '生年月日は未来の日付や1900年より前の日付にはできません。',
         notesTooLong: 'メモが長すぎます（500文字以内）。',
       },
+      hasNotes: 'この人にはメモがあります',
       notes: 'メモ',
       notesHint: '内部メモです。Manager のここでのみ表示されます（一覧や Booking には表示されません）。健康情報などの機微な情報は書かないでください。',
       activate: '有効化',

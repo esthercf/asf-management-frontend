@@ -36,6 +36,8 @@ export interface ManagerUserDto {
   birthdate?: string // ISO date string over the wire
   /** staff notes about the person: only present when ONE person is opened (never in the list) */
   notes?: string
+    /** true when the person has notes: the list carries only this yes/no, never the text */
+  hasNotes?: boolean
   gender?: GenderEnum
   tshirtEnum?: TshirtEnum
   folderCode?: string

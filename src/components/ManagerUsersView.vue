@@ -135,6 +135,8 @@
                   {{ (u.firstnames[0] ?? '') + (u.surnames[0] ?? '') }}
                 </div>
                 <strong>{{ u.firstnames }} {{ u.surnames }}</strong>
+                <span v-if="u.hasNotes" :title="t('manager.users.hasNotes')" :aria-label="t('manager.users.hasNotes')"
+                  role="img">📝</span>
               </div>
             </td>
             <td>{{ u.email }}</td>

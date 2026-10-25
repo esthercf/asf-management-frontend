@@ -818,6 +818,7 @@ const ca: AppLocale = {
         birthdateRange: 'La data de naixement no pot ser futura ni anterior a 1900.',
       },
       notes: 'Notes',
+      hasNotes: 'Aquesta persona té notes',
       notesHint: 'Notes internes, visibles només aquí a Manager (mai a les llistes ni a Reserves). No hi escriguis dades de salut ni altres dades sensibles.',
       activate: 'Activar',
       active: 'Actiu',

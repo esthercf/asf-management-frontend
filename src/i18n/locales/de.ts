@@ -653,6 +653,7 @@ const de: AppLocale = {
         birthdateInvalid: 'Dies ist kein gültiges Datum.',
         birthdateRange: 'Das Geburtsdatum darf nicht in der Zukunft oder vor 1900 liegen.',
       },
+      hasNotes: 'Diese Person hat Notizen',
       notes: 'Notizen',
       notesHint: 'Interne Notizen, nur hier in Manager sichtbar (nie in den Listen oder in Booking). Schreiben Sie keine Gesundheitsdaten oder anderen sensiblen Daten hinein.',
       activate: 'Aktivieren',

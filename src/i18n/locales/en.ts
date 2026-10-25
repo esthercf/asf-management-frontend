@@ -485,6 +485,7 @@ const en = {
                 birthdateInvalid: 'This is not a valid date.',
                 birthdateRange: 'The date of birth cannot be in the future or before 1900.',
             },
+            hasNotes: 'This person has notes',
             notes: 'Notes',
             notesHint: 'Internal notes, visible only here in Manager (never in the lists or in Booking). Do not write health or other sensitive data.',
             title: 'Users',

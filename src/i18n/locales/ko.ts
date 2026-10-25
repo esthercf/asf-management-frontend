@@ -816,6 +816,7 @@ const ko: AppLocale = {
         birthdateRange: '생년월일은 미래이거나 1900년 이전일 수 없습니다.',
         notesTooLong: '메모가 너무 깁니다(최대 500자).',
       },
+      hasNotes: '이 사람에게는 메모가 있습니다',
       notes: '메모',
       notesHint: '내부 메모이며 Manager의 이 화면에서만 표시됩니다(목록이나 Booking에는 표시되지 않음). 건강 정보 등 민감한 정보는 적지 마세요.',
       importUsers: '사용자 가져오기',
