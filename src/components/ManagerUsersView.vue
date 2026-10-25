@@ -596,7 +596,18 @@ function openCreateModal() {
   userModal.value = true
 }
 
-function openEditModal(u: ManagerUserDto) {
+async function openEditModal(u: ManagerUserDto) {
+  // The list does not carry the date of birth (personal data, some contestants are minors): it is asked
+  // for, for the one person whose window is being opened. The list row stays as the person's record
+  // (it also brings the rehearsals), only the date comes from the detail.
+  let birthdate = ''
+  try {
+    const detail = await userApi.getUser(u.id)
+    birthdate = detail.birthdate ? detail.birthdate.substring(0, 10) : ''
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+    return
+  }
   editingUser.value = u
   form.value = {
     firstnames: u.firstnames,
@@ -607,7 +618,7 @@ function openEditModal(u: ManagerUserDto) {
     phoneNumber: u.phoneNumber ?? '',
     countryCode: u.countryCode,
     language: u.language,
-    birthdate: u.birthdate ? u.birthdate.substring(0, 10) : '',
+    birthdate,
     gender: u.gender ?? GenderEnum.OTHER,
     tshirtEnum: u.tshirtEnum ?? TshirtEnum.M,
     role: u.roles[0] ?? RoleType.Contestant,
