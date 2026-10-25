@@ -807,6 +807,7 @@ const zh: AppLocale = {
     },
     users: {
       validation: {
+        notesTooLong: '备注过长（最多 500 个字符）。',
         firstnamesRequired: '名字为必填项。',
         surnamesRequired: '姓氏为必填项。',
         emailRequired: '电子邮箱为必填项。',
@@ -816,6 +817,8 @@ const zh: AppLocale = {
         birthdateInvalid: '日期无效。',
         birthdateRange: '出生日期不能晚于今天，也不能早于1900年。',
       },
+      notes: '备注',
+      notesHint: '内部备注，仅在 Manager 中此处可见（不会出现在列表或 Booking 中）。请勿填写健康信息或其他敏感数据。',
       importUsers: '导入用户',
       sendWelcomeEmail: '发送欢迎邮件',
       importFolderCodes: '导入档案编号',

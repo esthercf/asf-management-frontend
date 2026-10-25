@@ -475,6 +475,7 @@ const en = {
         },
         users: {
             validation: {
+                notesTooLong: 'The notes are too long (500 characters at most).',
                 firstnamesRequired: 'The first name is required.',
                 surnamesRequired: 'The surname is required.',
                 emailRequired: 'The email is required.',
@@ -484,6 +485,8 @@ const en = {
                 birthdateInvalid: 'This is not a valid date.',
                 birthdateRange: 'The date of birth cannot be in the future or before 1900.',
             },
+            notes: 'Notes',
+            notesHint: 'Internal notes, visible only here in Manager (never in the lists or in Booking). Do not write health or other sensitive data.',
             title: 'Users',
             subtitle: 'Manage every registered user — profile, status, and tag.',
             searchPlaceholder: 'Search by name, email, or folder code…',

@@ -778,6 +778,7 @@ const it: AppLocale = {
     },
     users: {
       validation: {
+        notesTooLong: 'Le note sono troppo lunghe (massimo 500 caratteri).',
         firstnamesRequired: 'Il nome è obbligatorio.',
         surnamesRequired: 'Il cognome è obbligatorio.',
         emailRequired: "L'indirizzo email è obbligatorio.",
@@ -787,6 +788,8 @@ const it: AppLocale = {
         birthdateInvalid: 'Questa non è una data valida.',
         birthdateRange: 'La data di nascita non può essere futura né anteriore al 1900.',
       },
+      notes: 'Note',
+      notesHint: 'Note interne, visibili solo qui in Manager (mai negli elenchi né in Booking). Non scrivere dati sulla salute o altri dati sensibili.',
       activate: 'Attiva',
       active: 'Attivo',
       address: 'Indirizzo',

@@ -140,7 +140,7 @@
             <td>{{ u.email }}</td>
             <td>{{ u.folderCode ?? '—' }}</td>
             <td>{{ u.countryCode }}</td>
-                <!-- <td>
+            <!-- <td>
               <span v-for="r in u.roles" :key="r" class="badge badge-lav bt-tag">{{ r }}</span>
             </td> -->
             <td>
@@ -186,12 +186,12 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.firstnames') }}</label>
-                       <input class="form-input" :class="{ 'has-error': fieldErrors.firstnames }" v-model="form.firstnames" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.firstnames }" v-model="form.firstnames" />
             <span v-if="fieldErrors.firstnames" class="field-error">{{ fieldErrors.firstnames }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.surnames') }}</label>
-                       <input class="form-input" :class="{ 'has-error': fieldErrors.surnames }" v-model="form.surnames" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.surnames }" v-model="form.surnames" />
             <span v-if="fieldErrors.surnames" class="field-error">{{ fieldErrors.surnames }}</span>
           </div>
         </div>
@@ -199,8 +199,8 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.columns.email') }}</label>
-            <input class="form-input" :class="{ 'has-error': fieldErrors.email }" v-model="form.email" type="email" :disabled="!!editingUser"
-              :title="editingUser ? t('manager.users.emailImmutableHint') : ''" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.email }" v-model="form.email" type="email"
+              :disabled="!!editingUser" :title="editingUser ? t('manager.users.emailImmutableHint') : ''" />
             <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
           </div>
           <div class="form-group">
@@ -238,7 +238,8 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.birthdate') }}</label>
-                      <input class="form-input" :class="{ 'has-error': fieldErrors.birthdate }" type="date" v-model="form.birthdate" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.birthdate }" type="date"
+              v-model="form.birthdate" />
             <span v-if="fieldErrors.birthdate" class="field-error">{{ fieldErrors.birthdate }}</span>
           </div>
           <div class="form-group">
@@ -271,6 +272,14 @@
               {{ bt }}
             </label>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ t('manager.users.notes') }}</label>
+          <textarea class="form-input" :class="{ 'has-error': fieldErrors.notes }" v-model="form.notes" rows="3"
+            maxlength="500"></textarea>
+          <span v-if="fieldErrors.notes" class="field-error">{{ fieldErrors.notes }}</span>
+          <p class="muted-text" style="margin:.25rem 0 0;">{{ t('manager.users.notesHint') }}</p>
         </div>
 
         <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{ t('manager.users.addressSection') }}
@@ -571,6 +580,7 @@ interface FormState {
   countryCode: CountryCode
   language: LanguageEnum
   birthdate: string
+  notes: string
   gender: GenderEnum
   tshirtEnum: TshirtEnum
   role: RoleType
@@ -587,7 +597,7 @@ function blankForm(): FormState {
     firstnames: '', surnames: '', email: '', folderCode: '',
     phoneCode: '', phoneNumber: '',
     countryCode: CountryCode.AD, language: LanguageEnum.English,
-    birthdate: '', gender: GenderEnum.OTHER, tshirtEnum: TshirtEnum.M,
+    birthdate: '', notes: '', gender: GenderEnum.OTHER, tshirtEnum: TshirtEnum.M,
     role: RoleType.Contestant, bookingTypeEnum: [],
     addressLine: '', locality: '', addressCountry: '', zipCode: '',
     gdpr: false,
@@ -608,9 +618,11 @@ async function openEditModal(u: ManagerUserDto) {
   // for, for the one person whose window is being opened. The list row stays as the person's record
   // (it also brings the rehearsals), only the date comes from the detail.
   let birthdate = ''
+  let notes = ''
   try {
     const detail = await userApi.getUser(u.id)
     birthdate = detail.birthdate ? detail.birthdate.substring(0, 10) : ''
+    notes = detail.notes ?? ''
   } catch (e) {
     pageError.value = extractErrorMessage(e)
     return
@@ -626,6 +638,7 @@ async function openEditModal(u: ManagerUserDto) {
     countryCode: u.countryCode,
     language: u.language,
     birthdate,
+    notes,
     gender: u.gender ?? GenderEnum.OTHER,
     tshirtEnum: u.tshirtEnum ?? TshirtEnum.M,
     role: u.roles[0] ?? RoleType.Contestant,
@@ -789,6 +802,7 @@ async function saveUser() {
         countryCode: form.value.countryCode,
         language: form.value.language,
         birthdate: form.value.birthdate || undefined,
+        notes: form.value.notes.trim(),
         gender: form.value.gender,
         tshirtEnum: form.value.tshirtEnum,
         bookingTypeEnum: form.value.bookingTypeEnum,
@@ -813,6 +827,7 @@ async function saveUser() {
         countryCode: form.value.countryCode,
         language: form.value.language,
         birthdate: form.value.birthdate,
+        notes: form.value.notes.trim() || undefined,
         gender: form.value.gender,
         tshirtEnum: form.value.tshirtEnum,
         role: form.value.role,

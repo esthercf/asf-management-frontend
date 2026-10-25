@@ -807,6 +807,7 @@ const ca: AppLocale = {
     },
     users: {
       validation: {
+        notesTooLong: 'Les notes són massa llargues (500 caràcters com a màxim).',
         firstnamesRequired: 'El nom és obligatori.',
         surnamesRequired: 'Els cognoms són obligatoris.',
         emailRequired: 'El correu electrònic és obligatori.',
@@ -816,6 +817,8 @@ const ca: AppLocale = {
         birthdateInvalid: 'No és una data vàlida.',
         birthdateRange: 'La data de naixement no pot ser futura ni anterior a 1900.',
       },
+      notes: 'Notes',
+      notesHint: 'Notes internes, visibles només aquí a Manager (mai a les llistes ni a Reserves). No hi escriguis dades de salut ni altres dades sensibles.',
       activate: 'Activar',
       active: 'Actiu',
       address: 'Adreça',

@@ -34,6 +34,8 @@ export interface ManagerUserDto {
   language: LanguageEnum
   phoneCode?: string
   birthdate?: string // ISO date string over the wire
+  /** staff notes about the person: only present when ONE person is opened (never in the list) */
+  notes?: string
   gender?: GenderEnum
   tshirtEnum?: TshirtEnum
   folderCode?: string
@@ -64,6 +66,7 @@ export interface CreateManagerUserDto {
   countryCode: CountryCode
   phoneCode: string
   birthdate: string // ISO date string
+  notes?: string
   gender: GenderEnum
   tshirtEnum: TshirtEnum
   folderCode?: string
@@ -85,6 +88,8 @@ export interface UpdateManagerUserDto {
   language?: LanguageEnum
   countryCode?: CountryCode
   phoneCode?: string
+    /** an empty text clears the notes; not sent = unchanged */
+  notes?: string
   birthdate?: string
   gender?: GenderEnum
   tshirtEnum?: TshirtEnum

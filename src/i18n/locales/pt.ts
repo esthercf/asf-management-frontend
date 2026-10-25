@@ -806,6 +806,7 @@ const pt: AppLocale = {
     },
     users: {
       validation: {
+        notesTooLong: 'As notas são muito longas (máximo de 500 caracteres).',
         firstnamesRequired: 'O nome é obrigatório.',
         surnamesRequired: 'O sobrenome é obrigatório.',
         emailRequired: 'O e-mail é obrigatório.',
@@ -815,6 +816,8 @@ const pt: AppLocale = {
         birthdateInvalid: 'Esta não é uma data válida.',
         birthdateRange: 'A data de nascimento não pode ser futura nem anterior a 1900.',
       },
+      notes: 'Notas',
+      notesHint: 'Notas internas, visíveis apenas aqui no Manager (nunca nas listas nem no Booking). Não escreva dados de saúde nem outros dados sensíveis.',
       importUsers: 'Importar utilizadores',
       sendWelcomeEmail: 'Enviar e-mail de boas-vindas',
       importFolderCodes: 'Importar códigos de pasta',

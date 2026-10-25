@@ -808,6 +808,7 @@ const ru: AppLocale = {
 
     users: {
       validation: {
+        notesTooLong: 'Заметки слишком длинные (не более 500 символов).',
         firstnamesRequired: 'Имя обязательно.',
         surnamesRequired: 'Фамилия обязательна.',
         emailRequired: 'Адрес электронной почты обязателен.',
@@ -817,6 +818,8 @@ const ru: AppLocale = {
         birthdateInvalid: 'Это недопустимая дата.',
         birthdateRange: 'Дата рождения не может быть в будущем или раньше 1900 года.',
       },
+      notes: 'Заметки',
+      notesHint: 'Внутренние заметки, видны только здесь, в Manager (никогда в списках и в Booking). Не записывайте данные о здоровье и другие конфиденциальные данные.',
       activate: 'Активировать',
       active: 'Активен',
       address: 'Адрес',

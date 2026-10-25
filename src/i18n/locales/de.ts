@@ -643,6 +643,7 @@ const de: AppLocale = {
     },
     users: {
       validation: {
+        notesTooLong: 'Die Notizen sind zu lang (höchstens 500 Zeichen).',
         firstnamesRequired: 'Der Vorname ist erforderlich.',
         surnamesRequired: 'Der Nachname ist erforderlich.',
         emailRequired: 'Die E-Mail-Adresse ist erforderlich.',
@@ -652,6 +653,8 @@ const de: AppLocale = {
         birthdateInvalid: 'Dies ist kein gültiges Datum.',
         birthdateRange: 'Das Geburtsdatum darf nicht in der Zukunft oder vor 1900 liegen.',
       },
+      notes: 'Notizen',
+      notesHint: 'Interne Notizen, nur hier in Manager sichtbar (nie in den Listen oder in Booking). Schreiben Sie keine Gesundheitsdaten oder anderen sensiblen Daten hinein.',
       activate: 'Aktivieren',
       active: 'Aktiv',
       address: 'Adresse',
