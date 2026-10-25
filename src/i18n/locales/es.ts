@@ -659,6 +659,16 @@ const es: AppLocale = {
       userTitle: 'Usuario individual',
     },
     users: {
+      validation: {
+        firstnamesRequired: 'El nombre es obligatorio.',
+        surnamesRequired: 'Los apellidos son obligatorios.',
+        emailRequired: 'El correo electrónico es obligatorio.',
+        emailInvalid: 'Introduce una dirección de correo válida.',
+        chooseOption: 'Elige una opción.',
+        birthdateRequired: 'La fecha de nacimiento es obligatoria para los concursantes.',
+        birthdateInvalid: 'No es una fecha válida.',
+        birthdateRange: 'La fecha de nacimiento no puede ser futura ni anterior a 1900.',
+      },
       activate: 'Activar',
       active: 'Activo',
       address: 'Dirección',

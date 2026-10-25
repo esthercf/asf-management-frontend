@@ -805,6 +805,16 @@ const pt: AppLocale = {
       deleteConfirm: 'Eliminar o dia {date}? Esta ação não pode ser anulada.',
     },
     users: {
+      validation: {
+        firstnamesRequired: 'O nome é obrigatório.',
+        surnamesRequired: 'O sobrenome é obrigatório.',
+        emailRequired: 'O e-mail é obrigatório.',
+        emailInvalid: 'Digite um endereço de e-mail válido.',
+        chooseOption: 'Escolha uma opção.',
+        birthdateRequired: 'A data de nascimento é obrigatória para os participantes.',
+        birthdateInvalid: 'Esta não é uma data válida.',
+        birthdateRange: 'A data de nascimento não pode ser futura nem anterior a 1900.',
+      },
       importUsers: 'Importar utilizadores',
       sendWelcomeEmail: 'Enviar e-mail de boas-vindas',
       importFolderCodes: 'Importar códigos de pasta',

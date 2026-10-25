@@ -623,6 +623,16 @@ const ja: AppLocale = {
       userTitle: '個別ユーザー',
     },
     users: {
+      validation: {
+        firstnamesRequired: '名は必須です。',
+        surnamesRequired: '姓は必須です。',
+        emailRequired: 'メールアドレスは必須です。',
+        emailInvalid: '有効なメールアドレスを入力してください。',
+        chooseOption: '選択してください。',
+        birthdateRequired: '参加者には生年月日が必須です。',
+        birthdateInvalid: '有効な日付ではありません。',
+        birthdateRange: '生年月日は未来の日付や1900年より前の日付にはできません。',
+      },
       activate: '有効化',
       active: '有効',
       address: '住所',

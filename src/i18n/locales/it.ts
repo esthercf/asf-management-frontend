@@ -777,6 +777,16 @@ const it: AppLocale = {
       deleteConfirm: 'Eliminare il giorno {date}? Questa operazione non può essere annullata.',
     },
     users: {
+      validation: {
+        firstnamesRequired: 'Il nome è obbligatorio.',
+        surnamesRequired: 'Il cognome è obbligatorio.',
+        emailRequired: "L'indirizzo email è obbligatorio.",
+        emailInvalid: 'Inserisci un indirizzo email valido.',
+        chooseOption: "Scegli un'opzione.",
+        birthdateRequired: 'La data di nascita è obbligatoria per i concorrenti.',
+        birthdateInvalid: 'Questa non è una data valida.',
+        birthdateRange: 'La data di nascita non può essere futura né anteriore al 1900.',
+      },
       activate: 'Attiva',
       active: 'Attivo',
       address: 'Indirizzo',

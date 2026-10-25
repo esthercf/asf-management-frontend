@@ -805,6 +805,16 @@ const ko: AppLocale = {
       },
     },
     users: {
+      validation: {
+        firstnamesRequired: '이름은 필수입니다.',
+        surnamesRequired: '성은 필수입니다.',
+        emailRequired: '이메일은 필수입니다.',
+        emailInvalid: '올바른 이메일 주소를 입력하세요.',
+        chooseOption: '옵션을 선택하세요.',
+        birthdateRequired: '참가자는 생년월일이 필수입니다.',
+        birthdateInvalid: '올바른 날짜가 아닙니다.',
+        birthdateRange: '생년월일은 미래이거나 1900년 이전일 수 없습니다.',
+      },
       importUsers: '사용자 가져오기',
       sendWelcomeEmail: '환영 이메일 보내기',
       importFolderCodes: '폴더 코드 가져오기',

@@ -806,6 +806,16 @@ const zh: AppLocale = {
       userTitle: '单个用户',
     },
     users: {
+      validation: {
+        firstnamesRequired: '名字为必填项。',
+        surnamesRequired: '姓氏为必填项。',
+        emailRequired: '电子邮箱为必填项。',
+        emailInvalid: '请输入有效的电子邮箱地址。',
+        chooseOption: '请选择一个选项。',
+        birthdateRequired: '参赛者必须填写出生日期。',
+        birthdateInvalid: '日期无效。',
+        birthdateRange: '出生日期不能晚于今天，也不能早于1900年。',
+      },
       importUsers: '导入用户',
       sendWelcomeEmail: '发送欢迎邮件',
       importFolderCodes: '导入档案编号',

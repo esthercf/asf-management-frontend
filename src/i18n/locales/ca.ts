@@ -806,6 +806,16 @@ const ca: AppLocale = {
 
     },
     users: {
+      validation: {
+        firstnamesRequired: 'El nom és obligatori.',
+        surnamesRequired: 'Els cognoms són obligatoris.',
+        emailRequired: 'El correu electrònic és obligatori.',
+        emailInvalid: 'Introdueix una adreça de correu vàlida.',
+        chooseOption: 'Tria una opció.',
+        birthdateRequired: 'La data de naixement és obligatòria per als concursants.',
+        birthdateInvalid: 'No és una data vàlida.',
+        birthdateRange: 'La data de naixement no pot ser futura ni anterior a 1900.',
+      },
       activate: 'Activar',
       active: 'Actiu',
       address: 'Adreça',

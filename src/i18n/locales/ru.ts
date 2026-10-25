@@ -807,6 +807,16 @@ const ru: AppLocale = {
     },
 
     users: {
+      validation: {
+        firstnamesRequired: 'Имя обязательно.',
+        surnamesRequired: 'Фамилия обязательна.',
+        emailRequired: 'Адрес электронной почты обязателен.',
+        emailInvalid: 'Введите действительный адрес электронной почты.',
+        chooseOption: 'Выберите вариант.',
+        birthdateRequired: 'Дата рождения обязательна для участников.',
+        birthdateInvalid: 'Это недопустимая дата.',
+        birthdateRange: 'Дата рождения не может быть в будущем или раньше 1900 года.',
+      },
       activate: 'Активировать',
       active: 'Активен',
       address: 'Адрес',

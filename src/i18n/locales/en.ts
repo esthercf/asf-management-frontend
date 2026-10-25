@@ -474,6 +474,16 @@ const en = {
             },
         },
         users: {
+            validation: {
+                firstnamesRequired: 'The first name is required.',
+                surnamesRequired: 'The surname is required.',
+                emailRequired: 'The email is required.',
+                emailInvalid: 'Enter a valid email address.',
+                chooseOption: 'Choose an option.',
+                birthdateRequired: 'The date of birth is required for contestants.',
+                birthdateInvalid: 'This is not a valid date.',
+                birthdateRange: 'The date of birth cannot be in the future or before 1900.',
+            },
             title: 'Users',
             subtitle: 'Manage every registered user — profile, status, and tag.',
             searchPlaceholder: 'Search by name, email, or folder code…',

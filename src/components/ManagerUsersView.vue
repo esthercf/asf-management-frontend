@@ -186,19 +186,22 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.firstnames') }}</label>
-            <input class="form-input" v-model="form.firstnames" />
+                       <input class="form-input" :class="{ 'has-error': fieldErrors.firstnames }" v-model="form.firstnames" />
+            <span v-if="fieldErrors.firstnames" class="field-error">{{ fieldErrors.firstnames }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.surnames') }}</label>
-            <input class="form-input" v-model="form.surnames" />
+                       <input class="form-input" :class="{ 'has-error': fieldErrors.surnames }" v-model="form.surnames" />
+            <span v-if="fieldErrors.surnames" class="field-error">{{ fieldErrors.surnames }}</span>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.columns.email') }}</label>
-            <input class="form-input" v-model="form.email" type="email" :disabled="!!editingUser"
+            <input class="form-input" :class="{ 'has-error': fieldErrors.email }" v-model="form.email" type="email" :disabled="!!editingUser"
               :title="editingUser ? t('manager.users.emailImmutableHint') : ''" />
+            <span v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.folderCode') }}</label>
@@ -235,7 +238,8 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.birthdate') }}</label>
-            <input class="form-input" type="date" v-model="form.birthdate" />
+                      <input class="form-input" :class="{ 'has-error': fieldErrors.birthdate }" type="date" v-model="form.birthdate" />
+            <span v-if="fieldErrors.birthdate" class="field-error">{{ fieldErrors.birthdate }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.users.gender') }}</label>
@@ -391,10 +395,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ImportFolderCodesResult, ImportUsersResult, useManagerUserApi } from '../composables/useManagerUserApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { userFormSchema } from '../validation/user.schema'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
@@ -756,6 +762,12 @@ async function removeRehearsal(category: BookingTypeEnum) {
 
 async function saveUser() {
   formError.value = ''
+  const result = userFormSchema({ editing: !!editingUser.value }).safeParse(form.value)
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
+    return
+  }
+  fieldErrors.value = {}
   saving.value = true
   try {
     const addressPayload = (form.value.addressLine || form.value.locality || form.value.addressCountry || form.value.zipCode)
@@ -818,6 +830,10 @@ async function saveUser() {
     saving.value = false
   }
 }
+
+// ── Field messages of the zod validation (cleared every time the window is opened) ──
+const fieldErrors = ref<Record<string, string>>({})
+watch(userModal, () => { fieldErrors.value = {} })
 </script>
 
 <style scoped>
