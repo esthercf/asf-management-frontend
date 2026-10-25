@@ -29,13 +29,14 @@
       <div class="form-group">
         <label class="form-label">{{ t('manager.contestSettings.contestName') }}</label>
         <div style="display:flex; gap:.6rem;">
-          <input class="form-input" v-model="contestNameDraft" />
+          <input class="form-input" :class="{ 'has-error': nameError }" v-model="contestNameDraft" />
           <button class="btn btn-secondary" :disabled="savingName || contestNameDraft === settings.contestName"
             @click="saveContestName">
             <InlineSpinner v-if="savingName" />
             <span v-else>{{ t('common.save') }}</span>
           </button>
         </div>
+        <span v-if="nameError" class="field-error">{{ nameError }}</span>
       </div>
     </div>
 
@@ -123,7 +124,8 @@
         <h2 class="modal-title">{{ t('manager.contestSettings.createRound') }}</h2>
         <div class="form-group">
           <label class="form-label">{{ t('manager.contestSettings.roundName') }}</label>
-          <input class="form-input" v-model="newRoundName" />
+          <input class="form-input" :class="{ 'has-error': roundFieldErrors.name }" v-model="newRoundName" />
+          <span v-if="roundFieldErrors.name" class="field-error">{{ roundFieldErrors.name }}</span>
         </div>
         <div v-if="roundFormError" class="error-banner">⚠️ {{ roundFormError }}</div>
         <div class="modal-footer">
@@ -147,15 +149,18 @@
 
         <div v-if="contestType === ContestTypeEnum.YOUTH" class="form-group">
           <label class="form-label">{{ t('manager.diplomas.bookingType') }}</label>
-          <select class="form-input" v-model="configForm.category" :disabled="editingConfigCategory !== undefined">
+          <select class="form-input" :class="{ 'has-error': configFieldErrors.category }" v-model="configForm.category"
+            :disabled="editingConfigCategory !== undefined">
             <option value="" disabled>{{ t('manager.diplomas.bookingTypePlaceholder') }}</option>
             <option v-for="c in youthCategoryOptions" :key="c" :value="c">{{ c }}</option>
           </select>
+          <span v-if="configFieldErrors.category" class="field-error">{{ configFieldErrors.category }}</span>
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.contestSettings.venue') }}</label>
-          <input class="form-input" v-model="configForm.venue" />
+          <input class="form-input" :class="{ 'has-error': configFieldErrors.venue }" v-model="configForm.venue" />
+          <span v-if="configFieldErrors.venue" class="field-error">{{ configFieldErrors.venue }}</span>
         </div>
 
         <div class="form-group">
@@ -164,6 +169,8 @@
             <input class="form-input" v-model="configForm.pieces[i]" />
             <button class="btn btn-danger btn-sm" @click="configForm.pieces.splice(i, 1)">✕</button>
           </div>
+          <span v-if="configFieldErrors.pieces" class="field-error" style="margin:-.25rem 0 .5rem;">{{
+            configFieldErrors.pieces }}</span>
           <button class="btn btn-secondary btn-sm" @click="configForm.pieces.push('')">
             + {{ t('manager.contestSettings.addPiece') }}
           </button>
@@ -172,26 +179,40 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.warmUp') }}</label>
-            <input class="form-input" type="number" min="0" v-model.number="configForm.defaultWarmUpOffsetMinutes" />
+            <input class="form-input" :class="{ 'has-error': configFieldErrors.defaultWarmUpOffsetMinutes }"
+              type="number" min="0" v-model.number="configForm.defaultWarmUpOffsetMinutes" />
+            <span v-if="configFieldErrors.defaultWarmUpOffsetMinutes" class="field-error">{{
+              configFieldErrors.defaultWarmUpOffsetMinutes }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.ready') }}</label>
-            <input class="form-input" type="number" min="0" v-model.number="configForm.defaultReadyOffsetMinutes" />
+            <input class="form-input" :class="{ 'has-error': configFieldErrors.defaultReadyOffsetMinutes }"
+              type="number" min="0" v-model.number="configForm.defaultReadyOffsetMinutes" />
+            <span v-if="configFieldErrors.defaultReadyOffsetMinutes" class="field-error">{{
+              configFieldErrors.defaultReadyOffsetMinutes }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.stage') }}</label>
-            <input class="form-input" type="number" min="1" v-model.number="configForm.defaultStageDurationMinutes" />
+            <input class="form-input" :class="{ 'has-error': configFieldErrors.defaultStageDurationMinutes }"
+              type="number" min="1" v-model.number="configForm.defaultStageDurationMinutes" />
+            <span v-if="configFieldErrors.defaultStageDurationMinutes" class="field-error">{{
+              configFieldErrors.defaultStageDurationMinutes }}</span>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.pauseEvery') }}</label>
-            <input class="form-input" type="number" min="1"
-              v-model.number="configForm.defaultPauseEveryNPerformances" />
+            <input class="form-input" :class="{ 'has-error': configFieldErrors.defaultPauseEveryNPerformances }"
+              type="number" min="1" v-model.number="configForm.defaultPauseEveryNPerformances" />
+            <span v-if="configFieldErrors.defaultPauseEveryNPerformances" class="field-error">{{
+              configFieldErrors.defaultPauseEveryNPerformances }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.pauseDuration') }}</label>
-            <input class="form-input" type="number" min="0" v-model.number="configForm.defaultPauseDurationMinutes" />
+            <input class="form-input" :class="{ 'has-error': configFieldErrors.defaultPauseDurationMinutes }"
+              type="number" min="0" v-model.number="configForm.defaultPauseDurationMinutes" />
+            <span v-if="configFieldErrors.defaultPauseDurationMinutes" class="field-error">{{
+              configFieldErrors.defaultPauseDurationMinutes }}</span>
           </div>
         </div>
 
@@ -218,15 +239,21 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.date') }}</label>
-            <input class="form-input" type="date" v-model="dayForm.date" />
+            <input class="form-input" :class="{ 'has-error': dayFieldErrors.date }" type="date"
+              v-model="dayForm.date" />
+            <span v-if="dayFieldErrors.date" class="field-error">{{ dayFieldErrors.date }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.startTime') }}</label>
-            <input class="form-input" type="time" v-model="dayForm.startTime" />
+            <input class="form-input" :class="{ 'has-error': dayFieldErrors.startTime }" type="time"
+              v-model="dayForm.startTime" />
+            <span v-if="dayFieldErrors.startTime" class="field-error">{{ dayFieldErrors.startTime }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.contestSettings.endTime') }}</label>
-            <input class="form-input" type="time" v-model="dayForm.endTime" />
+            <input class="form-input" :class="{ 'has-error': dayFieldErrors.endTime }" type="time"
+              v-model="dayForm.endTime" />
+            <span v-if="dayFieldErrors.endTime" class="field-error">{{ dayFieldErrors.endTime }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -260,7 +287,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useContestSettingsApi,
@@ -273,6 +300,8 @@ import {
   type PianistDto,
 } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { contestNameSchema, roundFormSchema, categoryConfigSchema, contestDaySchema } from '../validation/contestSettings.schema'
 import InlineSpinner from './InlineSpinner.vue'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
 
@@ -323,6 +352,12 @@ async function reload() {
 }
 
 async function saveContestName() {
+  const result = contestNameSchema.safeParse({ contestName: contestNameDraft.value })
+  if (!result.success) {
+    nameError.value = zodErrorsToFieldMap(result.error, t).contestName ?? ''
+    return
+  }
+  nameError.value = ''
   savingName.value = true
   try {
     settings.value = await api.setContestName(contestType.value, contestNameDraft.value)
@@ -359,10 +394,12 @@ function openCreateRoundModal() {
 
 async function saveRound() {
   roundFormError.value = ''
-  if (!newRoundName.value.trim()) {
-    roundFormError.value = t('manager.contestSettings.validation.nameVenueRequired')
+  const result = roundFormSchema(settings.value?.rounds.map(r => r.name) ?? []).safeParse({ name: newRoundName.value })
+  if (!result.success) {
+    roundFieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
+  roundFieldErrors.value = {}
   savingRound.value = true
   try {
     settings.value = await api.addRound(contestType.value, newRoundName.value.trim())
@@ -427,19 +464,15 @@ function openEditConfigModal(roundName: string, config: ContestRoundCategoryConf
 
 async function saveConfig() {
   configFormError.value = ''
-  if (!configForm.value.venue.trim()) {
-    configFormError.value = t('manager.contestSettings.validation.nameVenueRequired')
+  const result = categoryConfigSchema({
+    requireCategory: contestType.value === ContestTypeEnum.YOUTH && editingConfigCategory.value === undefined,
+  }).safeParse(configForm.value)
+  if (!result.success) {
+    configFieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
-  if (contestType.value === ContestTypeEnum.YOUTH && editingConfigCategory.value === undefined && !configForm.value.category) {
-    configFormError.value = t('manager.diplomas.bookingTypePlaceholder')
-    return
-  }
+  configFieldErrors.value = {}
   const cleanPieces = configForm.value.pieces.map(p => p.trim()).filter(Boolean)
-  if (cleanPieces.length === 0) {
-    configFormError.value = t('manager.contestSettings.validation.pieceRequired')
-    return
-  }
 
   savingConfig.value = true
   try {
@@ -482,6 +515,7 @@ const dayForm = ref<ContestRoundDayDto>({ date: '', startTime: '09:00', endTime:
 
 function openAddDayModal(roundName: string, category: string | null) {
   dayModalRoundName.value = roundName
+  dayModalCategory.value = category
   editingDayIndex.value = null
   dayForm.value = { date: '', startTime: '09:00', endTime: '', morningAccompanistId: '', afternoonAccompanistId: '' }
   dayFormError.value = ''
@@ -504,10 +538,12 @@ function openEditDayModal(roundName: string, category: string | null, index: num
 }
 async function saveDay() {
   dayFormError.value = ''
-  if (!dayForm.value.date || !dayForm.value.startTime) {
-    dayFormError.value = t('manager.contestSettings.validation.dayRequired')
+  const result = contestDaySchema.safeParse(dayForm.value)
+  if (!result.success) {
+    dayFieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
+  dayFieldErrors.value = {}
 
   savingDay.value = true
   try {
@@ -541,6 +577,15 @@ async function removeDay(roundName: string, category: string | null, index: numb
 }
 
 useModalScrollLock(roundModalOpen, configModalOpen, dayModalOpen)
+
+// ── Field messages of the zod validation (cleared every time a window is opened) ──
+const nameError = ref('')
+const roundFieldErrors = ref<Record<string, string>>({})
+const configFieldErrors = ref<Record<string, string>>({})
+const dayFieldErrors = ref<Record<string, string>>({})
+watch(roundModalOpen, () => { roundFieldErrors.value = {} })
+watch(configModalOpen, () => { configFieldErrors.value = {} })
+watch(dayModalOpen, () => { dayFieldErrors.value = {} })
 </script>
 
 <style scoped>
