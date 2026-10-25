@@ -816,6 +816,8 @@ const ca: AppLocale = {
       emailImmutableHint: 'El correu electrònic no es pot canviar després de la creació.',
       importUsers: 'Importar usuaris',
       sendWelcomeEmail: 'Enviar correu de benvinguda',
+      importFolderCodes: 'Importar codis de carpeta',
+      folderCodesReplaced: 'Codis substituïts (comprova que no hi hagi errors)',
       gender: 'Gènere',
       inactive: 'Inactiu',
       locality: 'Ciutat / localitat',

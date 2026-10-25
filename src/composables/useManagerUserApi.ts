@@ -22,6 +22,20 @@ export interface ImportUsersResult {
   errors: { row: number; reason: string }[]
 }
 
+
+
+export interface ImportFolderCodesResult {
+  message: string
+  total: number
+  updated: number
+  unchanged: number
+  skipped: number
+  failed: number
+  /** rows where a DIFFERENT code was replaced: worth a second look, in case of a typo */
+  replaced: { row: number; email: string; from: string; to: string }[]
+  errors: { row: number; reason: string }[]
+}
+
 export function useManagerUserApi() {
 
   function getUsers(params: GetManagerUsersParams = {}): Promise<DatatableResult<ManagerUserDto>> {
@@ -66,7 +80,15 @@ export function useManagerUserApi() {
     return client.put<string>(`/users/active/byEmail/${encodeURIComponent(email)}`, dto).then(r => r.data)
   }
 
-
+  /** Sets or corrects the folder codes of existing users from an "email | folderCode" Excel file. */
+  function importFolderCodes(file: File): Promise<ImportFolderCodesResult> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return client.post<ImportFolderCodesResult>('/users/import/folder-codes', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  }
+  
   function importFromExcel(file: File, sendEmail: boolean): Promise<ImportUsersResult> {
     const formData = new FormData()
     formData.append('file', file)
@@ -77,6 +99,6 @@ export function useManagerUserApi() {
   }
 
   return {
-    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel, getUserCountries
+    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel, getUserCountries, importFolderCodes
   }
 }

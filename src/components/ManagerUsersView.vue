@@ -44,6 +44,13 @@
       {{ t('manager.users.sendWelcomeEmail') }}
     </label>
 
+    <button class="btn btn-secondary" :disabled="importingFolderCodes" @click="folderCodeFileInput?.click()">
+      <InlineSpinner v-if="importingFolderCodes" />
+      <span v-else>📥 {{ t('manager.users.importFolderCodes') }}</span>
+    </button>
+    <input ref="folderCodeFileInput" type="file" accept=".xlsx" style="display:none;"
+      @change="onFolderCodeFileSelected" />
+
 
     <button class="btn btn-secondary" @click="showBookingTypeFilters = !showBookingTypeFilters">
       {{ showBookingTypeFilters ? t('manager.users.filters.hideBookingTypeFilters') :
@@ -80,6 +87,24 @@
       </li>
     </ul>
     <button class="btn btn-secondary btn-sm" @click="userImportResult = null">{{ t('common.close') }}</button>
+  </div>
+
+  <div v-if="folderCodeImportResult" class="card import-result-card">
+    <p><strong>{{ folderCodeImportResult.message }}</strong></p>
+    <template v-if="folderCodeImportResult.replaced.length > 0">
+      <p style="margin:.75rem 0 0; font-size:.85rem; font-weight:700;">{{ t('manager.users.folderCodesReplaced') }}</p>
+      <ul style="margin:.25rem 0 .75rem; padding-left:1.25rem; font-size:.85rem;">
+        <li v-for="r in folderCodeImportResult.replaced" :key="r.row">
+          {{ t('manager.festivalEvents.importRowError', { row: r.row }) }}: {{ r.email }}: {{ r.from }} → {{ r.to }}
+        </li>
+      </ul>
+    </template>
+    <ul v-if="folderCodeImportResult.errors.length > 0" class="import-errors">
+      <li v-for="err in folderCodeImportResult.errors" :key="err.row">
+        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+      </li>
+    </ul>
+    <button class="btn btn-secondary btn-sm" @click="folderCodeImportResult = null">{{ t('common.close') }}</button>
   </div>
   <div v-if="loading" class="empty-state">
     <div class="empty-icon">⏳</div>
@@ -367,7 +392,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { ImportUsersResult, useManagerUserApi } from '../composables/useManagerUserApi'
+import { ImportFolderCodesResult, ImportUsersResult, useManagerUserApi } from '../composables/useManagerUserApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
@@ -402,6 +427,29 @@ async function onUserFileSelected(event: Event) {
     pageError.value = extractErrorMessage(e)
   } finally {
     importingUsers.value = false
+    input.value = ''
+  }
+}
+
+// ── Folder codes import ("email | folderCode" file: sets or corrects codes of existing users) ──
+const folderCodeFileInput = ref<HTMLInputElement | null>(null)
+const importingFolderCodes = ref(false)
+const folderCodeImportResult = ref<ImportFolderCodesResult | null>(null)
+
+async function onFolderCodeFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importingFolderCodes.value = true
+  folderCodeImportResult.value = null
+  pageError.value = ''
+  try {
+    folderCodeImportResult.value = await userApi.importFolderCodes(file)
+    await reload()
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    importingFolderCodes.value = false
     input.value = ''
   }
 }
