@@ -578,11 +578,35 @@ async function removeDay(roundName: string, category: string | null, index: numb
 
 useModalScrollLock(roundModalOpen, configModalOpen, dayModalOpen)
 
-// ── Field messages of the zod validation (cleared every time a window is opened) ──
+// ── Field messages of the zod validation ──
 const nameError = ref('')
 const roundFieldErrors = ref<Record<string, string>>({})
 const configFieldErrors = ref<Record<string, string>>({})
 const dayFieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (These are registered BEFORE the "window opened" watchers below, so that opening a window ends with a clean slate.)
+watch(contestNameDraft, () => {
+  if (!nameError.value) return
+  const result = contestNameSchema.safeParse({ contestName: contestNameDraft.value })
+  nameError.value = result.success ? '' : zodErrorsToFieldMap(result.error, t).contestName ?? ''
+})
+watch(newRoundName, () => {
+  if (Object.keys(roundFieldErrors.value).length === 0) return
+  const result = roundFormSchema(settings.value?.rounds.map(r => r.name) ?? []).safeParse({ name: newRoundName.value })
+  roundFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+})
+watch(configForm, () => {
+  if (Object.keys(configFieldErrors.value).length === 0) return
+  const result = categoryConfigSchema({
+    requireCategory: contestType.value === ContestTypeEnum.YOUTH && editingConfigCategory.value === undefined,
+  }).safeParse(configForm.value)
+  configFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+watch(dayForm, () => {
+  if (Object.keys(dayFieldErrors.value).length === 0) return
+  const result = contestDaySchema.safeParse(dayForm.value)
+  dayFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
 watch(roundModalOpen, () => { roundFieldErrors.value = {} })
 watch(configModalOpen, () => { configFieldErrors.value = {} })
 watch(dayModalOpen, () => { dayFieldErrors.value = {} })

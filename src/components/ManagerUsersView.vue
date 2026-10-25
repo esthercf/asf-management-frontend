@@ -831,8 +831,15 @@ async function saveUser() {
   }
 }
 
-// ── Field messages of the zod validation (cleared every time the window is opened) ──
+// ── Field messages of the zod validation ──
 const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch(form, () => {
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = userFormSchema({ editing: !!editingUser.value }).safeParse(form.value)
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
 watch(userModal, () => { fieldErrors.value = {} })
 </script>
 
