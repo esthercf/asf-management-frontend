@@ -10,6 +10,9 @@
         </div>
       </a>
 
+      <div class="nav-item" :class="{ active: view === 'home' }" @click="view = 'home'">
+        <span class="nav-icon">📊</span> {{ t('manager.home.nav') }}
+      </div>
       <span class="nav-section-label">{{ t('manager.manage') }}</span>
       <div class="nav-item" :class="{ active: view === 'users' }" @click="view = 'users'">
         <span class="nav-icon">👥</span> {{ t('manager.nav.users') }}
@@ -63,6 +66,7 @@
     </aside>
 
     <main class="main">
+      <ManagerHomeView v-if="view === 'home'" />
       <ManagerUsersView v-if="view === 'users'" />
       <ManagerFestivalEventsView v-if="view === 'festivalEvents'" />
       <ManagerEventStylesView v-if="view === 'eventStyles'" />
@@ -104,8 +108,8 @@ const router = useRouter()
 const auth = useAuthStore()
 const sessionApi = useSessionApi()
 
-type ViewName = 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen' | 'bookingLimits' | 'purchases' | 'diplomas' | 'rehearsals' | 'contestSettings' | 'performanceOrder' | 'daySchedules'
-const view = ref<ViewName>('users')
+type ViewName = 'home' | 'users' | 'festivalEvents' | 'eventStyles' | 'activities' | 'scheduleGen' | 'bookingLimits' | 'purchases' | 'diplomas' | 'rehearsals' | 'contestSettings' | 'performanceOrder' | 'daySchedules'
+const view = ref<ViewName>('home')
 
 async function logout() {
   try { await sessionApi.logout() } finally {

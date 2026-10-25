@@ -35,6 +35,26 @@ export interface ImportFolderCodesResult {
   replaced: { row: number; email: string; from: string; to: string }[]
   errors: { row: number; reason: string }[]
 }
+export interface CountItem { key: string | null; count: number }
+
+export interface CategoryStatistics {
+  /** null = all contestants together */
+  bookingType: string | null
+  total: number
+  gender: CountItem[]
+  /** age in completed years on the reference date; null = unknown */
+  age: { age: number | null; count: number }[]
+  country: CountItem[]
+  teacher: CountItem[]
+}
+
+export interface UserStatistics {
+  referenceDate: string
+  festivalDayKnown: boolean
+  total: number
+  categories: CategoryStatistics[]
+}
+
 
 export function useManagerUserApi() {
 
@@ -52,6 +72,11 @@ export function useManagerUserApi() {
     bookingTypeEnumExact?.forEach(bt => q.append('bookingTypeEnumExact', bt))
     countryCode?.forEach(c => q.append('countryCode', c))
     return client.get<DatatableResult<ManagerUserDto>>(`/users?${q}`).then(r => r.data)
+  }
+
+  /** Counts of the contestants per category, for the overview page (no personal data). */
+  function getUserStatistics(): Promise<UserStatistics> {
+    return client.get<UserStatistics>('/users/statistics').then(r => r.data)
   }
 
   /** Country codes that at least one user has (for the country filter of the list). */
@@ -88,7 +113,7 @@ export function useManagerUserApi() {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then(r => r.data)
   }
-  
+
   function importFromExcel(file: File, sendEmail: boolean): Promise<ImportUsersResult> {
     const formData = new FormData()
     formData.append('file', file)
@@ -99,6 +124,6 @@ export function useManagerUserApi() {
   }
 
   return {
-    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel, getUserCountries, importFolderCodes
+    getUsers, getUserSelectorOptions, getUser, createUser, updateUser, updateUserActiveByEmail, importFromExcel, getUserCountries, importFolderCodes, getUserStatistics
   }
 }
