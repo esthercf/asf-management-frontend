@@ -556,6 +556,8 @@ const en = {
                 comments: 'Comments',
                 save: 'Save rehearsal',
                 deleteConfirm: 'Remove this rehearsal record?',
+                roomPlaceholder: 'Choose a room…',
+                noCategories: 'This student has no categories yet. Add one to the student first, in Users.',
                 validation: {
                     required: 'Room, day, and start/end time are required.',
                     categoryRequired: 'Choose a category.',
@@ -568,8 +570,6 @@ const en = {
                     endTimeRequired: 'The end time is required.',
                     timeInvalid: 'Enter a valid time (HH:MM).',
                     endBeforeStart: 'The end time must be after the start time.',
-                    roomPlaceholder: 'Choose a room…',
-                    noCategories: 'This student has no categories yet. Add one to the student first, in Users.',
                 },
             },
         },

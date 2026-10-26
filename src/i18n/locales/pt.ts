@@ -882,9 +882,9 @@ const pt: AppLocale = {
         save: 'Guardar ensaio',
         startTime: 'Hora de início',
         title: 'Ensaio',
+        roomPlaceholder: 'Escolha uma sala…',
+        noCategories: 'Este estudante ainda não tem categorias. Adicione uma primeiro ao estudante, em Utilizadores.',
         validation: {
-          roomPlaceholder: 'Escolha uma sala…',
-          noCategories: 'Este estudante ainda não tem categorias. Adicione uma primeiro ao estudante, em Utilizadores.',
           required: 'Sala, dia e hora de início/término são obrigatórios.',
           categoryRequired: 'Escolha uma categoria.',
           artistEmailInvalid: 'Digite um endereço de e-mail válido ou deixe em branco.',

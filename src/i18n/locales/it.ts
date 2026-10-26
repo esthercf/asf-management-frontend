@@ -849,9 +849,9 @@ const it: AppLocale = {
         save: 'Salva prova',
         startTime: 'Ora di inizio',
         title: 'Prova',
+        roomPlaceholder: 'Scegli una sala…',
+        noCategories: 'Questo studente non ha ancora categorie. Aggiungine prima una allo studente, in Utenti.',
         validation: {
-          roomPlaceholder: 'Scegli una sala…',
-          noCategories: 'Questo studente non ha ancora categorie. Aggiungine prima una allo studente, in Utenti.',
           required: 'Sala, giorno e ora di inizio/fine sono obbligatori.',
           categoryRequired: 'Scegli una categoria.',
           artistEmailInvalid: 'Inserisci un indirizzo email valido, oppure lascia vuoto.',

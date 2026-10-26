@@ -882,9 +882,9 @@ const ko: AppLocale = {
         save: '리허설 저장',
         startTime: '시작 시간',
         title: '리허설',
+        roomPlaceholder: '방을 선택하세요…',
+        noCategories: '이 학생에게는 아직 카테고리가 없습니다. 먼저 사용자 화면에서 학생에게 카테고리를 추가하세요.',
         validation: {
-          roomPlaceholder: '방을 선택하세요…',
-          noCategories: '이 학생에게는 아직 카테고리가 없습니다. 먼저 사용자 화면에서 학생에게 카테고리를 추가하세요.',
           required: '방, 날짜, 시작/종료 시간은 필수입니다.',
           categoryRequired: '카테고리를 선택하세요.',
           artistEmailInvalid: '올바른 이메일 주소를 입력하거나 비워 두세요.',

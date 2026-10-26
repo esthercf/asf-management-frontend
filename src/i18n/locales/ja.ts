@@ -699,9 +699,9 @@ const ja: AppLocale = {
         save: 'リハーサルを保存',
         startTime: '開始時刻',
         title: 'リハーサル',
+        roomPlaceholder: '部屋を選択…',
+        noCategories: 'この学生にはまだカテゴリーがありません。先に「ユーザー」で学生にカテゴリーを追加してください。',
         validation: {
-          roomPlaceholder: '部屋を選択…',
-          noCategories: 'この学生にはまだカテゴリーがありません。先に「ユーザー」で学生にカテゴリーを追加してください。',
           required: '部屋、日、開始/終了時刻は必須です。',
           categoryRequired: 'カテゴリーを選択してください。',
           artistEmailInvalid: '有効なメールアドレスを入力するか、空欄のままにしてください。',
