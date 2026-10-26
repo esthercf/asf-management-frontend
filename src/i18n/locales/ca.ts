@@ -503,6 +503,8 @@ const ca: AppLocale = {
       artistFallbackHint: "S'utilitza només si el correu anterior no coincideix amb cap usuari registrat.",
       startTime: "Hora d'inici",
       endTime: 'Hora de finalització',
+      roomPlaceholder: 'Tria una sala…',
+      noCategories: "Aquest estudiant encara no té categories. Afegeix-ne una primer a l'estudiant, a Usuaris.",
       columns: {
         student: 'Estudiant',
         artist: 'Artista',
@@ -883,8 +885,6 @@ const ca: AppLocale = {
         save: 'Desar assaig',
         startTime: "Hora d'inici",
         title: 'Assaig',
-        roomPlaceholder: 'Tria una sala…',
-        noCategories: "Aquest estudiant encara no té categories. Afegeix-ne una primer a l'estudiant, a Usuaris.",
         validation: {
           required: "La sala, el dia i l'hora d'inici/finalització són obligatoris.",
           categoryRequired: 'Tria una categoria.',

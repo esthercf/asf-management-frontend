@@ -849,8 +849,6 @@ const it: AppLocale = {
         save: 'Salva prova',
         startTime: 'Ora di inizio',
         title: 'Prova',
-        roomPlaceholder: 'Scegli una sala…',
-        noCategories: 'Questo studente non ha ancora categorie. Aggiungine prima una allo studente, in Utenti.',
         validation: {
           required: 'Sala, giorno e ora di inizio/fine sono obbligatori.',
           categoryRequired: 'Scegli una categoria.',
@@ -877,6 +875,8 @@ const it: AppLocale = {
       zipCode: 'CAP',
     },
     rehearsals: {
+      roomPlaceholder: 'Scegli una sala…',
+      noCategories: 'Questo studente non ha ancora categorie. Aggiungine prima una allo studente, in Utenti.',
       title: 'Prove',
       subtitle: 'Gestisci gli orari delle prove degli studenti — una prova per studente.',
       searchByStudent: 'Cerca per e-mail dello studente…',

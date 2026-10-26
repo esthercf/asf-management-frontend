@@ -762,6 +762,8 @@ const fr: AppLocale = {
       diplomas: 'Diplômes',
     },
     rehearsals: {
+      roomPlaceholder: 'Choisir une salle…',
+      noCategories: "Cet étudiant n'a pas encore de catégorie. Ajoutez-en d'abord une à l'étudiant, dans Utilisateurs.",
       title: 'Répétitions',
       subtitle: 'Gérez les créneaux de répétition des étudiants — un par étudiant.',
       searchByStudent: "Rechercher par e-mail de l'étudiant…",
@@ -882,8 +884,6 @@ const fr: AppLocale = {
         save: 'Enregistrer la répétition',
         startTime: 'Heure de début',
         title: 'Répétition',
-        roomPlaceholder: 'Choisir une salle…',
-        noCategories: "Cet étudiant n'a pas encore de catégorie. Ajoutez-en d'abord une à l'étudiant, dans Utilisateurs.",
         validation: {
           required: "La salle, le jour et l'heure de début/fin sont obligatoires.",
           categoryRequired: 'Choisissez une catégorie.',

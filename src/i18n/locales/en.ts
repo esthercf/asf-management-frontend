@@ -462,6 +462,8 @@ const en = {
             artistFallbackHint: 'Used only if the email above doesn\'t match a registered user.',
             startTime: 'Start time',
             endTime: 'End time',
+            roomPlaceholder: 'Choose a room…',
+            noCategories: 'This student has no categories yet. Add one to the student first, in Users.',
             columns: {
                 student: 'Student',
                 artist: 'Artist',
@@ -556,8 +558,6 @@ const en = {
                 comments: 'Comments',
                 save: 'Save rehearsal',
                 deleteConfirm: 'Remove this rehearsal record?',
-                roomPlaceholder: 'Choose a room…',
-                noCategories: 'This student has no categories yet. Add one to the student first, in Users.',
                 validation: {
                     required: 'Room, day, and start/end time are required.',
                     categoryRequired: 'Choose a category.',

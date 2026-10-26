@@ -541,6 +541,8 @@ const de: AppLocale = {
       title: 'Ereignisstile',
     },
     rehearsals: {
+      roomPlaceholder: 'Raum wählen…',
+      noCategories: 'Dieser Student hat noch keine Kategorien. Fügen Sie zuerst eine beim Studenten hinzu, unter Benutzer.',
       title: 'Proben',
       subtitle: 'Verwalten Sie die Probenzeiten der Studenten – eine Probe pro Student.',
       searchByStudent: 'Nach Studenten-E-Mail suchen…',
@@ -714,8 +716,6 @@ const de: AppLocale = {
         save: 'Probe speichern',
         startTime: 'Startzeit',
         title: 'Probe',
-        roomPlaceholder: 'Raum wählen…',
-        noCategories: 'Dieser Student hat noch keine Kategorien. Fügen Sie zuerst eine beim Studenten hinzu, unter Benutzer.',
         validation: {
           required: 'Raum, Tag sowie Start- und Endzeit sind erforderlich.',
           categoryRequired: 'Wählen Sie eine Kategorie.',

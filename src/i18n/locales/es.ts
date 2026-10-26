@@ -734,8 +734,6 @@ const es: AppLocale = {
         save: 'Guardar ensayo',
         startTime: 'Hora de inicio',
         title: 'Ensayo',
-        roomPlaceholder: 'Elige una sala…',
-        noCategories: 'Este estudiante aún no tiene categorías. Añade una primero al estudiante, en Usuarios.',
         validation: {
           required: 'La sala, el día y la hora de inicio/fin son obligatorios.',
           categoryRequired: 'Elige una categoría.',
@@ -892,6 +890,8 @@ const es: AppLocale = {
       artistFallbackHint: 'Solo se utiliza si el correo electrónico anterior no coincide con un usuario registrado.',
       startTime: 'Hora de inicio',
       endTime: 'Hora de fin',
+      roomPlaceholder: 'Elige una sala…',
+      noCategories: 'Este estudiante aún no tiene categorías. Añade una primero al estudiante, en Usuarios.',
       columns: {
         student: 'Estudiante',
         artist: 'Pianista',

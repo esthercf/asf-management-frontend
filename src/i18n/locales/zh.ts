@@ -707,6 +707,8 @@ const zh: AppLocale = {
       deleteConfirm: '删除日期 {date} 的安排？此操作无法撤销。',
     },
     rehearsals: {
+      roomPlaceholder: '请选择房间…',
+      noCategories: '该学生还没有类别。请先在“用户”中为该学生添加类别。',
       title: '排练安排',
       subtitle: '管理学生的排练时段——每位学生一个时段。',
       searchByStudent: '按学生邮箱搜索…',
@@ -883,8 +885,6 @@ const zh: AppLocale = {
         save: '保存排练安排',
         startTime: '开始时间',
         title: '排练',
-        roomPlaceholder: '请选择房间…',
-        noCategories: '该学生还没有类别。请先在“用户”中为该学生添加类别。',
         validation: {
           required: '房间、日期以及开始/结束时间为必填项。',
           categoryRequired: '请选择类别。',

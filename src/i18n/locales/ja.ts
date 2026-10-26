@@ -580,6 +580,8 @@ const ja: AppLocale = {
     },
     panel: '管理パネル',
     rehearsals: {
+      roomPlaceholder: '部屋を選択…',
+      noCategories: 'この学生にはまだカテゴリーがありません。先に「ユーザー」で学生にカテゴリーを追加してください。',
       title: 'リハーサル',
       subtitle: '学生のリハーサル枠を管理します — 各学生につき1枠。',
       searchByStudent: '学生のメールアドレスで検索…',
@@ -699,8 +701,6 @@ const ja: AppLocale = {
         save: 'リハーサルを保存',
         startTime: '開始時刻',
         title: 'リハーサル',
-        roomPlaceholder: '部屋を選択…',
-        noCategories: 'この学生にはまだカテゴリーがありません。先に「ユーザー」で学生にカテゴリーを追加してください。',
         validation: {
           required: '部屋、日、開始/終了時刻は必須です。',
           categoryRequired: 'カテゴリーを選択してください。',

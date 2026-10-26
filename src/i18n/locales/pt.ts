@@ -596,6 +596,8 @@ const pt: AppLocale = {
       userTitle: 'Utilizador único',
     },
     rehearsals: {
+      roomPlaceholder: 'Escolha uma sala…',
+      noCategories: 'Este estudante ainda não tem categorias. Adicione uma primeiro ao estudante, em Utilizadores.',
       title: 'Ensaios',
       subtitle: 'Gerir os horários de ensaio dos alunos — um por aluno.',
       searchByStudent: 'Pesquisar por e-mail do aluno…',
@@ -882,8 +884,6 @@ const pt: AppLocale = {
         save: 'Guardar ensaio',
         startTime: 'Hora de início',
         title: 'Ensaio',
-        roomPlaceholder: 'Escolha uma sala…',
-        noCategories: 'Este estudante ainda não tem categorias. Adicione uma primeiro ao estudante, em Utilizadores.',
         validation: {
           required: 'Sala, dia e hora de início/término são obrigatórios.',
           categoryRequired: 'Escolha uma categoria.',
