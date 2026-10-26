@@ -428,6 +428,7 @@ import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { userFormSchema } from '../validation/user.schema'
 import { rehearsalFormSchema } from '../validation/rehearsal.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
@@ -885,6 +886,9 @@ watch(rehearsalForm, () => {
 }, { deep: true })
 
 watch(rehearsalFormOpen, () => { rehearsalFieldErrors.value = {} })
+
+// The page behind the open window must not scroll
+useModalScrollLock(userModal)
 
 </script>
 

@@ -142,7 +142,7 @@
             <label class="form-label">{{ t('manager.rehearsals.columns.room') }}</label>
             <select class="form-input" :class="{ 'has-error': fieldErrors.roomNumber }"
               v-model.number="form.roomNumber">
-              <option :value="undefined" disabled>{{ t('manager.diplomas.roomPlaceholder') }}</option>
+              <option :value="undefined" disabled>{{ t('manager.rehearsals.roomPlaceholder') }}</option>
               <option v-for="r in rooms" :key="r.id" :value="r.roomNumber">{{ r.name }} (#{{ r.roomNumber }})</option>
             </select>
             <span v-if="fieldErrors.roomNumber" class="field-error">{{ fieldErrors.roomNumber }}</span>
@@ -205,6 +205,7 @@ import type { RoomDto } from '../types/room.types'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { rehearsalFormSchema } from '../validation/rehearsal.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 
 const { t } = useI18n()
 const api = useUserRehearsalApi()
@@ -436,6 +437,9 @@ watch(modalOpen, () => {
   studentError.value = ''
   fieldErrors.value = {}
 })
+
+// The page behind the open window must not scroll
+useModalScrollLock(modalOpen)
 </script>
 
 <style scoped>
