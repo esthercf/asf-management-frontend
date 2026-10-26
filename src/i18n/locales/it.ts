@@ -409,6 +409,7 @@ const it: AppLocale = {
     DayScheduleHasBookingsError: 'Questo giorno ha già delle prenotazioni e non può essere modificato o eliminato.',
     DayScheduleInUseError: 'Questo giorno è utilizzato da altri record (eventi, attività, giornate di concorso o esibizioni) e non può essere eliminato.',
     FolderCodeAlreadyUsed: 'Un altro utente utilizza già questo codice cartella.',
+    RoundAlreadyExistsError: 'Esiste già un turno con questo nome.',
   },
   manager: {
     home: {
@@ -849,6 +850,16 @@ const it: AppLocale = {
         title: 'Prova',
         validation: {
           required: 'Sala, giorno e ora di inizio/fine sono obbligatori.',
+          categoryRequired: 'Scegli una categoria.',
+          artistEmailInvalid: 'Inserisci un indirizzo email valido, oppure lascia vuoto.',
+          roomRequired: 'La sala è obbligatoria.',
+          roomInvalid: 'Inserisci un numero di sala intero (1 o più).',
+          dayRequired: 'Il giorno è obbligatorio.',
+          dayInvalid: 'Inserisci un numero di giorno intero tra 1 e 31.',
+          startTimeRequired: "L'ora di inizio è obbligatoria.",
+          endTimeRequired: "L'ora di fine è obbligatoria.",
+          timeInvalid: "Inserisci un'ora valida (HH:MM).",
+          endBeforeStart: "L'ora di fine deve essere successiva all'ora di inizio.",
         },
       },
       importUsers: 'Importa utenti',
@@ -879,6 +890,7 @@ const it: AppLocale = {
       startTime: 'Ora di inizio',
       endTime: 'Ora di fine',
       columns: {
+        category: 'Categoria',
         student: 'Studente',
         artist: 'Pianista',
         room: 'Sala',

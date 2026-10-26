@@ -176,7 +176,7 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)"></button>
+    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
   </div>
 
   <!-- Create/Edit User Modal -->
@@ -340,16 +340,21 @@
 
           <div v-if="rehearsalFormOpen" class="rehearsal-form">
             <div class="form-group">
-              <label class="form-label">{{ t('manager.diplomas.bookingType') }}</label>
-              <select class="form-input" v-model="rehearsalForm.category" :disabled="!!editingRehearsalCategory">
+              <label class="form-label">{{ t('manager.rehearsals.columns.category') }}</label>
+              <select class="form-input" :class="{ 'has-error': rehearsalFieldErrors.category }"
+                v-model="rehearsalForm.category" :disabled="!!editingRehearsalCategory">
                 <option value="" disabled>{{ t('manager.diplomas.bookingTypePlaceholder') }}</option>
                 <option v-for="bt in availableRehearsalCategories" :key="bt" :value="bt">{{ bt }}</option>
               </select>
+              <span v-if="rehearsalFieldErrors.category" class="field-error">{{ rehearsalFieldErrors.category }}</span>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.artistEmail') }}</label>
-                <input class="form-input" v-model="rehearsalForm.artistEmail" type="email" />
+                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.artistEmail }"
+                  v-model="rehearsalForm.artistEmail" type="email" />
+                <span v-if="rehearsalFieldErrors.artistEmail" class="field-error">{{ rehearsalFieldErrors.artistEmail
+                }}</span>
               </div>
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.artistFullName') }}</label>
@@ -359,19 +364,29 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.room') }}</label>
-                <input class="form-input" type="number" v-model.number="rehearsalForm.roomNumber" />
+                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.roomNumber }" type="number"
+                  v-model.number="rehearsalForm.roomNumber" />
+                <span v-if="rehearsalFieldErrors.roomNumber" class="field-error">{{ rehearsalFieldErrors.roomNumber
+                }}</span>
               </div>
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.day') }}</label>
-                <input class="form-input" type="number" v-model.number="rehearsalForm.day" />
+                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.day }" type="number"
+                  v-model.number="rehearsalForm.day" />
+                <span v-if="rehearsalFieldErrors.day" class="field-error">{{ rehearsalFieldErrors.day }}</span>
               </div>
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.startTime') }}</label>
-                <input class="form-input" type="time" v-model="rehearsalForm.startTime" />
+                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.startTime }" type="time"
+                  v-model="rehearsalForm.startTime" />
+                <span v-if="rehearsalFieldErrors.startTime" class="field-error">{{ rehearsalFieldErrors.startTime
+                  }}</span>
               </div>
               <div class="form-group">
                 <label class="form-label">{{ t('manager.users.rehearsal.endTime') }}</label>
-                <input class="form-input" type="time" v-model="rehearsalForm.endTime" />
+                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.endTime }" type="time"
+                  v-model="rehearsalForm.endTime" />
+                <span v-if="rehearsalFieldErrors.endTime" class="field-error">{{ rehearsalFieldErrors.endTime }}</span>
               </div>
             </div>
             <div class="form-group">
@@ -412,6 +427,7 @@ import { ImportFolderCodesResult, ImportUsersResult, useManagerUserApi } from '.
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { userFormSchema } from '../validation/user.schema'
+import { rehearsalFormSchema } from '../validation/rehearsal.schema'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
@@ -715,27 +731,26 @@ function startEditRehearsal(r: UserRehearsalInfo) {
 async function saveRehearsal() {
   const user = editingUser.value
   if (!user) return
-  if (!rehearsalForm.value.category) {
-    rehearsalFormError.value = t('manager.rehearsals.validation.studentRequired')
+  const result = rehearsalFormSchema.safeParse(rehearsalForm.value)
+  if (!result.success) {
+    rehearsalFieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
-  if (rehearsalForm.value.roomNumber === undefined || rehearsalForm.value.day === undefined || !rehearsalForm.value.startTime || !rehearsalForm.value.endTime) {
-    rehearsalFormError.value = t('manager.users.rehearsal.validation.required')
-    return
-  }
+  rehearsalFieldErrors.value = {}
   rehearsalFormError.value = ''
+  const data = result.data // the validated (and trimmed) copy of the form: room and day are numbers here
   savingRehearsal.value = true
   try {
     const payload = {
-      artistEmail: rehearsalForm.value.artistEmail || undefined,
-      artistFullName: rehearsalForm.value.artistFullName || undefined,
-      roomNumber: rehearsalForm.value.roomNumber,
-      day: rehearsalForm.value.day,
-      startTime: rehearsalForm.value.startTime,
-      endTime: rehearsalForm.value.endTime,
-      comments: rehearsalForm.value.comments || undefined,
+      artistEmail: data.artistEmail || undefined,
+      artistFullName: data.artistFullName || undefined,
+      roomNumber: data.roomNumber,
+      day: data.day,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      comments: data.comments || undefined,
     }
-    const category = rehearsalForm.value.category as BookingTypeEnum
+    const category = data.category as BookingTypeEnum
 
     if (editingRehearsalCategory.value) {
       await userRehearsalApi.updateRehearsal(user.id, category, payload)
@@ -857,7 +872,20 @@ watch(form, () => {
   const result = userFormSchema({ editing: !!editingUser.value }).safeParse(form.value)
   fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
 }, { deep: true })
+
 watch(userModal, () => { fieldErrors.value = {} })
+
+// Same for the rehearsal form (live re-check first, "form opened" clean-up last).
+const rehearsalFieldErrors = ref<Record<string, string>>({})
+
+watch(rehearsalForm, () => {
+  if (Object.keys(rehearsalFieldErrors.value).length === 0) return
+  const result = rehearsalFormSchema.safeParse(rehearsalForm.value)
+  rehearsalFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(rehearsalFormOpen, () => { rehearsalFieldErrors.value = {} })
+
 </script>
 
 <style scoped>

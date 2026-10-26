@@ -408,6 +408,7 @@ const en = {
         DayScheduleHasBookingsError: 'This day already has bookings, so it cannot be changed or deleted.',
         DayScheduleInUseError: 'This day is used by other records (events, activities, contest days or performance entries) and cannot be deleted.',
         FolderCodeAlreadyUsed: 'Another user already has this folder code.',
+        RoundAlreadyExistsError: 'A round with this name already exists.',
     },
     manager: {
         panel: 'Management Panel',
@@ -468,6 +469,7 @@ const en = {
                 day: 'Day',
                 time: 'Time',
                 comments: 'Comments',
+                category: 'Category',
             },
             validation: {
                 studentRequired: 'Please select a student.',
@@ -556,6 +558,16 @@ const en = {
                 deleteConfirm: 'Remove this rehearsal record?',
                 validation: {
                     required: 'Room, day, and start/end time are required.',
+                    categoryRequired: 'Choose a category.',
+                    artistEmailInvalid: 'Enter a valid email address, or leave it empty.',
+                    roomRequired: 'The room is required.',
+                    roomInvalid: 'Enter a whole room number (1 or more).',
+                    dayRequired: 'The day is required.',
+                    dayInvalid: 'Enter a whole day number between 1 and 31.',
+                    startTimeRequired: 'The start time is required.',
+                    endTimeRequired: 'The end time is required.',
+                    timeInvalid: 'Enter a valid time (HH:MM).',
+                    endBeforeStart: 'The end time must be after the start time.',
                 },
             },
         },

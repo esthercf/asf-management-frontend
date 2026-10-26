@@ -409,6 +409,7 @@ const zh: AppLocale = {
     DayScheduleHasBookingsError: '该日期已有预订，因此无法修改或删除。',
     DayScheduleInUseError: '该日期正被其他记录使用（活动、大师班、比赛日或演出条目），无法删除。',
     FolderCodeAlreadyUsed: '另一位用户已使用此档案编号。',
+    RoundAlreadyExistsError: '已存在同名的轮次。',
   },
   manager: {
     home: {
@@ -721,6 +722,7 @@ const zh: AppLocale = {
       startTime: '开始时间',
       endTime: '结束时间',
       columns: {
+        category: '类别',
         student: '学生',
         artist: '艺术家',
         room: '房间',
@@ -882,6 +884,16 @@ const zh: AppLocale = {
         title: '排练',
         validation: {
           required: '房间、日期以及开始/结束时间为必填项。',
+          categoryRequired: '请选择类别。',
+          artistEmailInvalid: '请输入有效的电子邮箱地址，或留空。',
+          roomRequired: '房间为必填项。',
+          roomInvalid: '请输入整数房间号（1 或更大）。',
+          dayRequired: '天数为必填项。',
+          dayInvalid: '请输入 1 到 31 之间的整数天数。',
+          startTimeRequired: '开始时间为必填项。',
+          endTimeRequired: '结束时间为必填项。',
+          timeInvalid: '请输入有效时间（HH:MM）。',
+          endBeforeStart: '结束时间必须晚于开始时间。',
         },
       },
       role: '角色',

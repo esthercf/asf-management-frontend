@@ -410,6 +410,7 @@ const ru: AppLocale = {
     DayScheduleHasBookingsError: 'На этот день уже есть бронирования, поэтому его нельзя изменить или удалить.',
     DayScheduleInUseError: 'Этот день используется в других записях (событиях, мероприятиях, днях конкурса или выступлениях) и не может быть удалён.',
     FolderCodeAlreadyUsed: 'Этот код папки уже используется другим пользователем.',
+    RoundAlreadyExistsError: 'Тур с таким названием уже существует.',
   },
   manager: {
     home: {
@@ -794,6 +795,7 @@ const ru: AppLocale = {
       startTime: 'Время начала',
       endTime: 'Время окончания',
       columns: {
+        category: 'Категория',
         student: 'Студент',
         artist: 'Пианист',
         room: 'Комната',
@@ -879,6 +881,16 @@ const ru: AppLocale = {
         title: 'Репетиция',
         validation: {
           required: 'Комната, день и время начала/окончания обязательны.',
+          categoryRequired: 'Выберите категорию.',
+          artistEmailInvalid: 'Введите действительный адрес электронной почты или оставьте поле пустым.',
+          roomRequired: 'Укажите комнату.',
+          roomInvalid: 'Введите целый номер комнаты (1 или больше).',
+          dayRequired: 'Укажите день.',
+          dayInvalid: 'Введите целый номер дня от 1 до 31.',
+          startTimeRequired: 'Укажите время начала.',
+          endTimeRequired: 'Укажите время окончания.',
+          timeInvalid: 'Введите допустимое время (ЧЧ:ММ).',
+          endBeforeStart: 'Время окончания должно быть позже времени начала.',
         },
       },
       importUsers: 'Импорт пользователей',

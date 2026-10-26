@@ -426,6 +426,7 @@ const de: AppLocale = {
       'Dieser Tag wird von anderen Datensätzen (Veranstaltungen, Aktivitäten, Wettbewerbstagen oder Auftrittseinträgen) verwendet und kann nicht gelöscht werden.',
     FolderCodeAlreadyUsed:
       'Ein anderer Benutzer verwendet bereits diesen Ordnercode.',
+    RoundAlreadyExistsError: 'Eine Runde mit diesem Namen existiert bereits.',
   },
   manager: {
     home: {
@@ -556,6 +557,7 @@ const de: AppLocale = {
       startTime: 'Startzeit',
       endTime: 'Endzeit',
       columns: {
+        category: 'Kategorie',
         student: 'Student',
         artist: 'Pianist',
         room: 'Raum',
@@ -714,6 +716,16 @@ const de: AppLocale = {
         title: 'Probe',
         validation: {
           required: 'Raum, Tag sowie Start- und Endzeit sind erforderlich.',
+          categoryRequired: 'Wählen Sie eine Kategorie.',
+          artistEmailInvalid: 'Geben Sie eine gültige E-Mail-Adresse ein oder lassen Sie das Feld leer.',
+          roomRequired: 'Der Raum ist erforderlich.',
+          roomInvalid: 'Geben Sie eine ganze Raumnummer ein (1 oder mehr).',
+          dayRequired: 'Der Tag ist erforderlich.',
+          dayInvalid: 'Geben Sie eine ganze Tageszahl zwischen 1 und 31 ein.',
+          startTimeRequired: 'Die Startzeit ist erforderlich.',
+          endTimeRequired: 'Die Endzeit ist erforderlich.',
+          timeInvalid: 'Geben Sie eine gültige Uhrzeit ein (HH:MM).',
+          endBeforeStart: 'Die Endzeit muss nach der Startzeit liegen.',
         },
       },
       role: 'Rolle',

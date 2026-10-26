@@ -49,6 +49,7 @@
       <thead>
         <tr>
           <th>{{ t('manager.rehearsals.columns.student') }}</th>
+          <th>{{ t('manager.rehearsals.columns.category') }}</th>
           <th>{{ t('manager.rehearsals.columns.artist') }}</th>
           <th>{{ t('manager.rehearsals.columns.room') }}</th>
           <th>{{ t('manager.rehearsals.columns.day') }}</th>
@@ -61,8 +62,9 @@
         <tr v-for="r in rehearsals" :key="r._id">
           <td>
             <strong>{{ r.studentFullName ?? t('manager.diplomas.noStudentLinked') }}</strong>
-            <div class="muted-text">{{ r.studentEmail }}</div>
+           <div class="muted-text">{{ r.studentEmail }}</div>
           </td>
+          <td><span class="badge badge-sky">{{ r.category }}</span></td>
           <td>
             <strong>{{ r.artistFullName || '—' }}</strong>
             <div v-if="r.artistEmail" class="muted-text">{{ r.artistEmail }}</div>
@@ -89,8 +91,8 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)"></button>
-  </div>
+     <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
+    </div>
 
   <!-- Create/Edit Modal -->
   <Teleport to="body">

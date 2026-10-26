@@ -409,6 +409,7 @@ const es: AppLocale = {
     DayScheduleHasBookingsError: 'Este día ya tiene reservas y no se puede modificar ni eliminar.',
     DayScheduleInUseError: 'Este día está siendo utilizado por otros registros (eventos, actividades, días del concurso o actuaciones) y no se puede eliminar.',
     FolderCodeAlreadyUsed: 'Otro usuario ya tiene este código de carpeta.',
+    RoundAlreadyExistsError: 'Ya existe una ronda con este nombre.',
   },
   manager: {
     activities: {
@@ -735,6 +736,16 @@ const es: AppLocale = {
         title: 'Ensayo',
         validation: {
           required: 'La sala, el día y la hora de inicio/fin son obligatorios.',
+          categoryRequired: 'Elige una categoría.',
+          artistEmailInvalid: 'Introduce una dirección de correo válida, o déjalo vacío.',
+          roomRequired: 'La sala es obligatoria.',
+          roomInvalid: 'Introduce un número de sala entero (1 o más).',
+          dayRequired: 'El día es obligatorio.',
+          dayInvalid: 'Introduce un número de día entero entre 1 y 31.',
+          startTimeRequired: 'La hora de inicio es obligatoria.',
+          endTimeRequired: 'La hora de fin es obligatoria.',
+          timeInvalid: 'Introduce una hora válida (HH:MM).',
+          endBeforeStart: 'La hora de fin debe ser posterior a la hora de inicio.',
         },
       },
       role: 'Rol',

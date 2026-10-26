@@ -409,6 +409,7 @@ const ja: AppLocale = {
     DayScheduleHasBookingsError: 'この日にはすでに予約があるため、変更または削除できません。',
     DayScheduleInUseError: 'この日は他のレコード（イベント、アクティビティ、コンテスト日程、または演奏エントリー）で使用されているため、削除できません。',
     FolderCodeAlreadyUsed: 'このフォルダーコードは別のユーザーによってすでに使用されています。',
+    RoundAlreadyExistsError: 'この名前のラウンドは既に存在します。',
   },
   manager: {
     home: {
@@ -595,6 +596,7 @@ const ja: AppLocale = {
       startTime: '開始時刻',
       endTime: '終了時刻',
       columns: {
+         category: 'カテゴリー',
         student: '学生',
         artist: 'アーティスト',
         room: '部屋',
@@ -699,6 +701,16 @@ const ja: AppLocale = {
         title: 'リハーサル',
         validation: {
           required: '部屋、日、開始/終了時刻は必須です。',
+          categoryRequired: 'カテゴリーを選択してください。',
+          artistEmailInvalid: '有効なメールアドレスを入力するか、空欄のままにしてください。',
+          roomRequired: '部屋は必須です。',
+          roomInvalid: '部屋番号は1以上の整数で入力してください。',
+          dayRequired: '日は必須です。',
+          dayInvalid: '日は1〜31の整数で入力してください。',
+          startTimeRequired: '開始時刻は必須です。',
+          endTimeRequired: '終了時刻は必須です。',
+          timeInvalid: '有効な時刻を入力してください（HH:MM）。',
+          endBeforeStart: '終了時刻は開始時刻より後にしてください。',
         },
       },
       role: '役割',

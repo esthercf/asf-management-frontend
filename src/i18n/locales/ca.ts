@@ -409,6 +409,7 @@ const ca: AppLocale = {
     RehearsalAlreadyExistsError: 'Aquest estudiant ja té un assaig per a aquesta categoria.',
     RehearsalArtistConflictError: 'Aquest pianista ja està ocupat en aquest dia i hora.',
     FolderCodeAlreadyUsed: 'Otro usuario ya tiene este código de carpeta.',
+    RoundAlreadyExistsError: 'Ja existeix una ronda amb aquest nom.',
   },
   manager: {
     activities: {
@@ -509,6 +510,7 @@ const ca: AppLocale = {
         day: 'Dia',
         time: 'Hora',
         comments: 'Comentaris',
+        category: 'Categoria',
       },
       validation: {
         studentRequired: 'Si us plau, selecciona un estudiant.',
@@ -882,6 +884,16 @@ const ca: AppLocale = {
         title: 'Assaig',
         validation: {
           required: "La sala, el dia i l'hora d'inici/finalització són obligatoris.",
+          categoryRequired: 'Tria una categoria.',
+          artistEmailInvalid: 'Introdueix una adreça de correu vàlida, o deixa-ho buit.',
+          roomRequired: 'La sala és obligatòria.',
+          roomInvalid: 'Introdueix un número de sala enter (1 o més).',
+          dayRequired: 'El dia és obligatori.',
+          dayInvalid: 'Introdueix un número de dia enter entre 1 i 31.',
+          startTimeRequired: "L'hora d'inici és obligatòria.",
+          endTimeRequired: "L'hora de fi és obligatòria.",
+          timeInvalid: 'Introdueix una hora vàlida (HH:MM).',
+          endBeforeStart: "L'hora de fi ha de ser posterior a l'hora d'inici.",
         },
       },
       role: 'Rol',

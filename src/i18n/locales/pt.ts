@@ -409,6 +409,7 @@ const pt: AppLocale = {
     DayScheduleHasBookingsError: 'Este dia já tem reservas, pelo que não pode ser alterado nem eliminado.',
     DayScheduleInUseError: 'Este dia está a ser utilizado por outros registos (eventos, atividades, dias de concurso ou atuações) e não pode ser eliminado.',
     FolderCodeAlreadyUsed: 'Outro utilizador já está a utilizar este código de pasta.',
+    RoundAlreadyExistsError: 'Já existe uma rodada com este nome.',
   },
   manager: {
     home: {
@@ -611,6 +612,7 @@ const pt: AppLocale = {
       startTime: 'Hora de início',
       endTime: 'Hora de fim',
       columns: {
+        category: 'Categoria',
         student: 'Aluno',
         artist: 'Pianista',
         room: 'Sala',
@@ -881,6 +883,16 @@ const pt: AppLocale = {
         title: 'Ensaio',
         validation: {
           required: 'Sala, dia e hora de início/término são obrigatórios.',
+          categoryRequired: 'Escolha uma categoria.',
+          artistEmailInvalid: 'Digite um endereço de e-mail válido ou deixe em branco.',
+          roomRequired: 'A sala é obrigatória.',
+          roomInvalid: 'Digite um número de sala inteiro (1 ou mais).',
+          dayRequired: 'O dia é obrigatório.',
+          dayInvalid: 'Digite um número de dia inteiro entre 1 e 31.',
+          startTimeRequired: 'A hora de início é obrigatória.',
+          endTimeRequired: 'A hora de término é obrigatória.',
+          timeInvalid: 'Digite uma hora válida (HH:MM).',
+          endBeforeStart: 'A hora de término deve ser posterior à hora de início.',
         },
       },
       role: 'Função',

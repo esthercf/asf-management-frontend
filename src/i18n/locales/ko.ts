@@ -409,6 +409,7 @@ const ko: AppLocale = {
     DayScheduleHasBookingsError: '이 날짜에는 예약이 있어 수정하거나 삭제할 수 없습니다.',
     DayScheduleInUseError: '이 날짜는 다른 기록(이벤트, 활동, 대회 날짜 또는 공연 항목)에서 사용 중이므로 삭제할 수 없습니다.',
     FolderCodeAlreadyUsed: '다른 사용자가 이미 이 폴더 코드를 사용하고 있습니다.',
+    RoundAlreadyExistsError: '이 이름의 라운드가 이미 있습니다.',
   },
   manager: {
     home: {
@@ -793,6 +794,7 @@ const ko: AppLocale = {
       startTime: '시작 시간',
       endTime: '종료 시간',
       columns: {
+        category: '카테고리',
         student: '학생',
         artist: '연주자',
         room: '공간',
@@ -881,6 +883,16 @@ const ko: AppLocale = {
         title: '리허설',
         validation: {
           required: '방, 날짜, 시작/종료 시간은 필수입니다.',
+          categoryRequired: '카테고리를 선택하세요.',
+          artistEmailInvalid: '올바른 이메일 주소를 입력하거나 비워 두세요.',
+          roomRequired: '방은 필수입니다.',
+          roomInvalid: '방 번호는 1 이상의 정수여야 합니다.',
+          dayRequired: '날짜(일)는 필수입니다.',
+          dayInvalid: '일은 1에서 31 사이의 정수여야 합니다.',
+          startTimeRequired: '시작 시간은 필수입니다.',
+          endTimeRequired: '종료 시간은 필수입니다.',
+          timeInvalid: '올바른 시간을 입력하세요(HH:MM).',
+          endBeforeStart: '종료 시간은 시작 시간보다 늦어야 합니다.',
         },
       },
       role: '역할',

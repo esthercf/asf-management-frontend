@@ -409,6 +409,7 @@ const fr: AppLocale = {
     DayScheduleHasBookingsError: 'Cette journée comporte déjà des réservations et ne peut pas être modifiée ni supprimée.',
     DayScheduleInUseError: "Cette journée est utilisée par d'autres enregistrements (événements, activités, journées du concours ou prestations) et ne peut pas être supprimée.",
     FolderCodeAlreadyUsed: 'Un autre utilisateur possède déjà ce code de dossier.',
+    RoundAlreadyExistsError: 'Un tour portant ce nom existe déjà.',
   },
   manager: {
     home: {
@@ -776,6 +777,7 @@ const fr: AppLocale = {
       startTime: 'Heure de début',
       endTime: 'Heure de fin',
       columns: {
+        category: 'Catégorie',
         student: 'Étudiant',
         artist: 'Pianiste',
         room: 'Salle',
@@ -881,6 +883,16 @@ const fr: AppLocale = {
         title: 'Répétition',
         validation: {
           required: "La salle, le jour et l'heure de début/fin sont obligatoires.",
+          categoryRequired: 'Choisissez une catégorie.',
+          artistEmailInvalid: 'Saisissez une adresse e-mail valide, ou laissez le champ vide.',
+          roomRequired: 'La salle est obligatoire.',
+          roomInvalid: 'Saisissez un numéro de salle entier (1 ou plus).',
+          dayRequired: 'Le jour est obligatoire.',
+          dayInvalid: 'Saisissez un numéro de jour entier entre 1 et 31.',
+          startTimeRequired: "L'heure de début est obligatoire.",
+          endTimeRequired: "L'heure de fin est obligatoire.",
+          timeInvalid: 'Saisissez une heure valide (HH:MM).',
+          endBeforeStart: "L'heure de fin doit être postérieure à l'heure de début.",
         },
       },
       role: 'Rôle',
