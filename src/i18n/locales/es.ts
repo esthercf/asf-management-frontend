@@ -735,6 +735,8 @@ const es: AppLocale = {
         startTime: 'Hora de inicio',
         title: 'Ensayo',
         validation: {
+          roomPlaceholder: 'Elige una sala…',
+          noCategories: 'Este estudiante aún no tiene categorías. Añade una primero al estudiante, en Usuarios.',
           required: 'La sala, el día y la hora de inicio/fin son obligatorios.',
           categoryRequired: 'Elige una categoría.',
           artistEmailInvalid: 'Introduce una dirección de correo válida, o déjalo vacío.',
@@ -897,6 +899,7 @@ const es: AppLocale = {
         day: 'Día',
         time: 'Hora',
         comments: 'Comentarios',
+        category: 'Categoría',
       },
       validation: {
         studentRequired: 'Selecciona un estudiante.',

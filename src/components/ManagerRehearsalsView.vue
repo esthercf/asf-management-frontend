@@ -119,6 +119,8 @@
             <option v-for="bt in categoryOptions" :key="bt" :value="bt">{{ bt }}</option>
           </select>
           <span v-if="fieldErrors.category" class="field-error">{{ fieldErrors.category }}</span>
+          <span v-if="categoriesLoaded && categoryOptions.length === 0" class="field-hint">{{
+            t('manager.rehearsals.noCategories') }}</span>
         </div>
 
         <div class="form-row">
@@ -140,7 +142,7 @@
             <label class="form-label">{{ t('manager.rehearsals.columns.room') }}</label>
             <select class="form-input" :class="{ 'has-error': fieldErrors.roomNumber }"
               v-model.number="form.roomNumber">
-              <option :value="undefined" disabled>{{ t('manager.diplomas.templatePlaceholder') }}</option>
+              <option :value="undefined" disabled>{{ t('manager.diplomas.roomPlaceholder') }}</option>
               <option v-for="r in rooms" :key="r.id" :value="r.roomNumber">{{ r.name }} (#{{ r.roomNumber }})</option>
             </select>
             <span v-if="fieldErrors.roomNumber" class="field-error">{{ fieldErrors.roomNumber }}</span>
@@ -401,13 +403,18 @@ async function removeRehearsal(r: UserRehearsalDto) {
 const studentCategories = ref<BookingTypeEnum[]>([])
 const categoryOptions = computed(() => studentCategories.value)
 
+const categoriesLoaded = ref(false) // true once the student's categories have arrived (so "no categories" is not shown while loading)
+
 watch(selectedStudentId, async (id) => {
   studentCategories.value = []
+  categoriesLoaded.value = false
   form.value.category = ''
   if (!id || editingRehearsal.value) return
   try {
     const detail = await userApi.getUser(id)
+    if (selectedStudentId.value !== id) return // another student was picked meanwhile
     studentCategories.value = [...(detail.bookingTypeEnum ?? [])]
+    categoriesLoaded.value = true
   } catch (e) {
     formError.value = extractErrorMessage(e)
   }

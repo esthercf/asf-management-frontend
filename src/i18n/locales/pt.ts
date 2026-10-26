@@ -718,7 +718,7 @@ const pt: AppLocale = {
       deleteRoundConfirm: 'Eliminar esta ronda? Esta ação não pode ser anulada.',
       deleteDayConfirm: 'Eliminar este dia?',
       validation: {
-        nameRequired:'O nome do concurso é obrigatório.',
+        nameRequired: 'O nome do concurso é obrigatório.',
         nameVenueRequired: 'O nome da ronda e o local são obrigatórios.',
         pieceRequired: 'É necessária pelo menos uma peça musical.',
         dayRequired: 'A data e a hora de início são obrigatórias.',
@@ -883,6 +883,8 @@ const pt: AppLocale = {
         startTime: 'Hora de início',
         title: 'Ensaio',
         validation: {
+          roomPlaceholder: 'Escolha uma sala…',
+          noCategories: 'Este estudante ainda não tem categorias. Adicione uma primeiro ao estudante, em Utilizadores.',
           required: 'Sala, dia e hora de início/término são obrigatórios.',
           categoryRequired: 'Escolha uma categoria.',
           artistEmailInvalid: 'Digite um endereço de e-mail válido ou deixe em branco.',

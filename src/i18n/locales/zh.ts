@@ -884,6 +884,8 @@ const zh: AppLocale = {
         startTime: '开始时间',
         title: '排练',
         validation: {
+          roomPlaceholder: '请选择房间…',
+          noCategories: '该学生还没有类别。请先在“用户”中为该学生添加类别。',
           required: '房间、日期以及开始/结束时间为必填项。',
           categoryRequired: '请选择类别。',
           artistEmailInvalid: '请输入有效的电子邮箱地址，或留空。',

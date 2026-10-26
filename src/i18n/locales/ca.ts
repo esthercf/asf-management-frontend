@@ -884,6 +884,8 @@ const ca: AppLocale = {
         startTime: "Hora d'inici",
         title: 'Assaig',
         validation: {
+          roomPlaceholder: 'Tria una sala…',
+          noCategories: "Aquest estudiant encara no té categories. Afegeix-ne una primer a l'estudiant, a Usuaris.",
           required: "La sala, el dia i l'hora d'inici/finalització són obligatoris.",
           categoryRequired: 'Tria una categoria.',
           artistEmailInvalid: 'Introdueix una adreça de correu vàlida, o deixa-ho buit.',

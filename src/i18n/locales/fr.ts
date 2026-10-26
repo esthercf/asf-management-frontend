@@ -883,6 +883,8 @@ const fr: AppLocale = {
         startTime: 'Heure de début',
         title: 'Répétition',
         validation: {
+          roomPlaceholder: 'Choisir une salle…',
+          noCategories: "Cet étudiant n'a pas encore de catégorie. Ajoutez-en d'abord une à l'étudiant, dans Utilisateurs.",
           required: "La salle, le jour et l'heure de début/fin sont obligatoires.",
           categoryRequired: 'Choisissez une catégorie.',
           artistEmailInvalid: 'Saisissez une adresse e-mail valide, ou laissez le champ vide.',

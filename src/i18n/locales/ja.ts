@@ -596,7 +596,7 @@ const ja: AppLocale = {
       startTime: '開始時刻',
       endTime: '終了時刻',
       columns: {
-         category: 'カテゴリー',
+        category: 'カテゴリー',
         student: '学生',
         artist: 'アーティスト',
         room: '部屋',
@@ -700,6 +700,8 @@ const ja: AppLocale = {
         startTime: '開始時刻',
         title: 'リハーサル',
         validation: {
+          roomPlaceholder: '部屋を選択…',
+          noCategories: 'この学生にはまだカテゴリーがありません。先に「ユーザー」で学生にカテゴリーを追加してください。',
           required: '部屋、日、開始/終了時刻は必須です。',
           categoryRequired: 'カテゴリーを選択してください。',
           artistEmailInvalid: '有効なメールアドレスを入力するか、空欄のままにしてください。',

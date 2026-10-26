@@ -568,6 +568,8 @@ const en = {
                     endTimeRequired: 'The end time is required.',
                     timeInvalid: 'Enter a valid time (HH:MM).',
                     endBeforeStart: 'The end time must be after the start time.',
+                    roomPlaceholder: 'Choose a room…',
+                    noCategories: 'This student has no categories yet. Add one to the student first, in Users.',
                 },
             },
         },

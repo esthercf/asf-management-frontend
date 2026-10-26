@@ -715,6 +715,8 @@ const de: AppLocale = {
         startTime: 'Startzeit',
         title: 'Probe',
         validation: {
+          roomPlaceholder: 'Raum wählen…',
+          noCategories: 'Dieser Student hat noch keine Kategorien. Fügen Sie zuerst eine beim Studenten hinzu, unter Benutzer.',
           required: 'Raum, Tag sowie Start- und Endzeit sind erforderlich.',
           categoryRequired: 'Wählen Sie eine Kategorie.',
           artistEmailInvalid: 'Geben Sie eine gültige E-Mail-Adresse ein oder lassen Sie das Feld leer.',
