@@ -718,6 +718,7 @@ const pt: AppLocale = {
       deleteRoundConfirm: 'Eliminar esta ronda? Esta ação não pode ser anulada.',
       deleteDayConfirm: 'Eliminar este dia?',
       validation: {
+        nameRequired:'O nome do concurso é obrigatório.',
         nameVenueRequired: 'O nome da ronda e o local são obrigatórios.',
         pieceRequired: 'É necessária pelo menos uma peça musical.',
         dayRequired: 'A data e a hora de início são obrigatórias.',

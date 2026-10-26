@@ -814,6 +814,7 @@ const en = {
             deleteRoundConfirm: 'Delete this round? This cannot be undone.',
             deleteDayConfirm: 'Delete this day?',
             validation: {
+                nameRequired: 'The contest name is required.',
                 nameVenueRequired: 'Round name and venue are required.',
                 pieceRequired: 'At least one piece is required.',
                 dayRequired: 'Date and start time are required.',

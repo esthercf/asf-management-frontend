@@ -814,6 +814,7 @@ const ja: AppLocale = {
       deleteRoundConfirm: 'このラウンドを削除しますか？この操作は取り消せません。',
       deleteDayConfirm: 'この日程を削除しますか？',
       validation: {
+        nameRequired: 'コンテスト名は必須です。',
         nameVenueRequired: 'ラウンド名と会場は必須です。',
         pieceRequired: '少なくとも1曲を指定してください。',
         dayRequired: '日付と開始時刻は必須です。',

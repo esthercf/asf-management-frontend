@@ -835,6 +835,7 @@ const de: AppLocale = {
       deleteRoundConfirm: 'Diese Runde löschen? Dies kann nicht rückgängig gemacht werden.',
       deleteDayConfirm: 'Diesen Tag löschen?',
       validation: {
+        nameRequired: 'Der Name des Wettbewerbs ist erforderlich.',
         nameVenueRequired: 'Rundenname und Veranstaltungsort sind erforderlich.',
         pieceRequired: 'Mindestens ein Werk ist erforderlich.',
         dayRequired: 'Datum und Startzeit sind erforderlich.',

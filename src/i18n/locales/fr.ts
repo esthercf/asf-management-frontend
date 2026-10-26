@@ -654,6 +654,7 @@ const fr: AppLocale = {
       deleteRoundConfirm: 'Supprimer cette manche ? Cette action est irréversible.',
       deleteDayConfirm: 'Supprimer ce jour ?',
       validation: {
+        nameRequired: 'Le nom du concours est obligatoire.',
         nameVenueRequired: 'Le nom de la manche et le lieu sont obligatoires.',
         pieceRequired: 'Au moins une pièce est requise.',
         dayRequired: 'La date et l’heure de début sont obligatoires.',

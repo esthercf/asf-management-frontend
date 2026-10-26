@@ -27,4 +27,5 @@ export const rehearsalFormSchema = z
     .refine((f) => !HH_MM.test(f.startTime) || !HH_MM.test(f.endTime) || f.endTime > f.startTime, {
         message: K + 'endBeforeStart',
         path: ['endTime'],
+         when: () => true,
     })

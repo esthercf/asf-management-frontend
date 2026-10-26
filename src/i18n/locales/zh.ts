@@ -617,6 +617,7 @@ const zh: AppLocale = {
       deleteRoundConfirm: '删除此轮次？此操作无法撤销。',
       deleteDayConfirm: '删除此比赛日？',
       validation: {
+        nameRequired: '比赛名称为必填项。',
         nameVenueRequired: '必须填写轮次名称和场地。',
         pieceRequired: '至少需要一首曲目。',
         dayRequired: '必须填写日期和开始时间。',

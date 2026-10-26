@@ -689,6 +689,7 @@ const it: AppLocale = {
       deleteRoundConfirm: 'Eliminare questo turno? Questa operazione non può essere annullata.',
       deleteDayConfirm: 'Eliminare questo giorno?',
       validation: {
+        nameRequired: 'Il nome del concorso è obbligatorio.',
         nameVenueRequired: 'Il nome del turno e la sede sono obbligatori.',
         pieceRequired: 'È necessario inserire almeno un brano.',
         dayRequired: 'La data e l’ora di inizio sono obbligatorie.',

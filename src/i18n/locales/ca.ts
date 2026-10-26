@@ -610,6 +610,7 @@ const ca: AppLocale = {
       deleteRoundConfirm: 'Eliminar aquesta ronda? Aquesta acció no es pot desfer.',
       deleteDayConfirm: 'Eliminar aquest dia?',
       validation: {
+        nameRequired: 'El nom del concurs és obligatori.',
         nameVenueRequired: 'El nom de la ronda i el lloc són obligatoris.',
         pieceRequired: 'Cal almenys una obra.',
         dayRequired: "La data i l'hora d'inici són obligatòries.",

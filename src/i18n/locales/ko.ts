@@ -522,6 +522,7 @@ const ko: AppLocale = {
       deleteRoundConfirm: '이 라운드를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.',
       deleteDayConfirm: '이 날짜를 삭제하시겠습니까?',
       validation: {
+        nameRequired: '대회 이름은 필수입니다.',
         nameVenueRequired: '라운드 이름과 장소를 입력해야 합니다.',
         pieceRequired: '곡을 하나 이상 추가해야 합니다.',
         dayRequired: '날짜와 시작 시간을 입력해야 합니다.',

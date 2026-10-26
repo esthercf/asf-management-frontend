@@ -62,7 +62,7 @@
         <tr v-for="r in rehearsals" :key="r._id">
           <td>
             <strong>{{ r.studentFullName ?? t('manager.diplomas.noStudentLinked') }}</strong>
-           <div class="muted-text">{{ r.studentEmail }}</div>
+            <div class="muted-text">{{ r.studentEmail }}</div>
           </td>
           <td><span class="badge badge-sky">{{ r.category }}</span></td>
           <td>
@@ -91,8 +91,8 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-     <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
-    </div>
+    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
+  </div>
 
   <!-- Create/Edit Modal -->
   <Teleport to="body">
@@ -108,12 +108,25 @@
             {{ editingRehearsal.studentFullName ?? editingRehearsal.studentEmail }}
           </div>
           <UserSelector v-else v-model="selectedStudentId" :options="studentOptions" />
+          <span v-if="studentError" class="field-error">{{ studentError }}</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ t('manager.rehearsals.columns.category') }}</label>
+          <select class="form-input" :class="{ 'has-error': fieldErrors.category }" v-model="form.category"
+            :disabled="!!editingRehearsal">
+            <option value="" disabled>—</option>
+            <option v-for="bt in categoryOptions" :key="bt" :value="bt">{{ bt }}</option>
+          </select>
+          <span v-if="fieldErrors.category" class="field-error">{{ fieldErrors.category }}</span>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.artistEmail') }}</label>
-            <input class="form-input" v-model="form.artistEmail" type="email" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.artistEmail }" v-model="form.artistEmail"
+              type="email" />
+            <span v-if="fieldErrors.artistEmail" class="field-error">{{ fieldErrors.artistEmail }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.artistFullName') }}</label>
@@ -125,22 +138,30 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.columns.room') }}</label>
-            <select class="form-input" v-model.number="form.roomNumber">
+            <select class="form-input" :class="{ 'has-error': fieldErrors.roomNumber }"
+              v-model.number="form.roomNumber">
               <option :value="undefined" disabled>{{ t('manager.diplomas.templatePlaceholder') }}</option>
               <option v-for="r in rooms" :key="r.id" :value="r.roomNumber">{{ r.name }} (#{{ r.roomNumber }})</option>
             </select>
+            <span v-if="fieldErrors.roomNumber" class="field-error">{{ fieldErrors.roomNumber }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.columns.day') }}</label>
-            <input class="form-input" type="number" v-model.number="form.day" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.day }" type="number"
+              v-model.number="form.day" />
+            <span v-if="fieldErrors.day" class="field-error">{{ fieldErrors.day }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.startTime') }}</label>
-            <input class="form-input" type="time" v-model="form.startTime" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.startTime }" type="time"
+              v-model="form.startTime" />
+            <span v-if="fieldErrors.startTime" class="field-error">{{ fieldErrors.startTime }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.rehearsals.endTime') }}</label>
-            <input class="form-input" type="time" v-model="form.endTime" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.endTime }" type="time"
+              v-model="form.endTime" />
+            <span v-if="fieldErrors.endTime" class="field-error">{{ fieldErrors.endTime }}</span>
           </div>
         </div>
 
@@ -164,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useUserRehearsalApi,
@@ -179,6 +200,9 @@ import InlineSpinner from './InlineSpinner.vue'
 import UserSelector from './UserSelector.vue'
 import type { UserBaseDto } from '../types/booking.types'
 import type { RoomDto } from '../types/room.types'
+import { BookingTypeEnum } from '../enums/booking.enum'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { rehearsalFormSchema } from '../validation/rehearsal.schema'
 
 const { t } = useI18n()
 const api = useUserRehearsalApi()
@@ -286,6 +310,7 @@ const saving = ref(false)
 const formError = ref('')
 
 interface FormState {
+  category: BookingTypeEnum | ''
   artistEmail: string
   artistFullName: string
   roomNumber: number | undefined
@@ -296,7 +321,7 @@ interface FormState {
 }
 
 function blankForm(): FormState {
-  return { artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startTime: '', endTime: '', comments: '' }
+  return { category: '', artistEmail: '', artistFullName: '', roomNumber: undefined, day: undefined, startTime: '', endTime: '', comments: '' }
 }
 
 const form = ref<FormState>(blankForm())
@@ -304,6 +329,7 @@ const form = ref<FormState>(blankForm())
 function openCreateModal() {
   editingRehearsal.value = null
   selectedStudentId.value = null
+  studentCategories.value = []
   form.value = blankForm()
   formError.value = ''
   modalOpen.value = true
@@ -311,7 +337,9 @@ function openCreateModal() {
 
 function openEditModal(r: UserRehearsalDto) {
   editingRehearsal.value = r
+  studentCategories.value = [r.category as BookingTypeEnum]
   form.value = {
+    category: r.category as BookingTypeEnum,
     artistEmail: r.artistEmail ?? '',
     artistFullName: r.artistFullName ?? '',
     roomNumber: r.roomNumber,
@@ -326,26 +354,30 @@ function openEditModal(r: UserRehearsalDto) {
 
 async function save() {
   const studentId = editingRehearsal.value?.studentId ?? selectedStudentId.value
-  if (!studentId) {
-    formError.value = t('manager.rehearsals.validation.studentRequired')
-    return
-  }
-  if (form.value.roomNumber === undefined || form.value.day === undefined || !form.value.startTime || !form.value.endTime) {
-    formError.value = t('manager.users.rehearsal.validation.required')
-    return
-  }
+  studentError.value = studentId ? '' : t('manager.rehearsals.validation.studentRequired')
+  const result = rehearsalFormSchema.safeParse(form.value)
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+  if (!studentId || !result.success) return
   formError.value = ''
+  const data = result.data // the validated (and trimmed) copy of the form: room and day are numbers here
   saving.value = true
   try {
-    await api.saveRehearsal(studentId, {
-      artistEmail: form.value.artistEmail || undefined,
-      artistFullName: form.value.artistFullName || undefined,
-      roomNumber: form.value.roomNumber,
-      day: form.value.day,
-      startTime: form.value.startTime,
-      endTime: form.value.endTime,
-      comments: form.value.comments || undefined,
-    })
+    const payload = {
+      artistEmail: data.artistEmail || undefined,
+      artistFullName: data.artistFullName || undefined,
+      roomNumber: data.roomNumber,
+      day: data.day,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      comments: data.comments || undefined,
+    }
+    // a rehearsal belongs to ONE category of the student: create or update that one (never "the student's")
+    const category = data.category as BookingTypeEnum
+    if (editingRehearsal.value) {
+      await api.updateRehearsal(studentId, category, payload)
+    } else {
+      await api.createRehearsal(studentId, category, payload)
+    }
     modalOpen.value = false
     await reload()
   } catch (e) {
@@ -364,6 +396,39 @@ async function removeRehearsal(r: UserRehearsalDto) {
     pageError.value = extractErrorMessage(e)
   }
 }
+
+// ── Category of the rehearsal: one of the booking types the student actually holds ──
+const studentCategories = ref<BookingTypeEnum[]>([])
+const categoryOptions = computed(() => studentCategories.value)
+
+watch(selectedStudentId, async (id) => {
+  studentCategories.value = []
+  form.value.category = ''
+  if (!id || editingRehearsal.value) return
+  try {
+    const detail = await userApi.getUser(id)
+    studentCategories.value = [...(detail.bookingTypeEnum ?? [])]
+  } catch (e) {
+    formError.value = extractErrorMessage(e)
+  }
+})
+
+// ── Field messages of the zod validation ──
+const studentError = ref('')
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch([form, selectedStudentId], () => {
+  if (studentError.value && selectedStudentId.value) studentError.value = ''
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = rehearsalFormSchema.safeParse(form.value)
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(modalOpen, () => {
+  studentError.value = ''
+  fieldErrors.value = {}
+})
 </script>
 
 <style scoped>

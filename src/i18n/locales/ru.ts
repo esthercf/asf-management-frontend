@@ -598,6 +598,7 @@ const ru: AppLocale = {
       deleteRoundConfirm: 'Удалить этот тур? Это действие нельзя отменить.',
       deleteDayConfirm: 'Удалить этот день?',
       validation: {
+        nameRequired: 'Название конкурса обязательно.',
         nameVenueRequired: 'Необходимо указать название тура и место проведения.',
         pieceRequired: 'Добавьте хотя бы одно произведение.',
         dayRequired: 'Необходимо указать дату и время начала.',
