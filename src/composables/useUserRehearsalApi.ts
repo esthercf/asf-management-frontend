@@ -57,16 +57,6 @@ export function useUserRehearsalApi() {
     return client.get<DatatableResult<UserRehearsalDto>>(`/user-rehearsals?${q}`).then(r => r.data)
   }
 
-  /** @deprecated superseded by createRehearsal()/updateRehearsal(), which are category-aware. */
-  function saveRehearsal(studentId: string, payload: UserRehearsalPayload): Promise<void> {
-    return client.put(`/user-rehearsals/${studentId}`, payload).then(r => r.data)
-  }
-
-  /** @deprecated superseded by deleteRehearsal(studentId, category). */
-  function deleteRehearsalLegacy(studentId: string): Promise<void> {
-    return client.delete(`/user-rehearsals/${studentId}`).then(r => r.data)
-  }
-
   function createRehearsal(studentId: string, category: string, payload: UserRehearsalPayload): Promise<void> {
     return client.post(`/user-rehearsals/${studentId}/${category}`, payload).then(r => r.data)
   }
@@ -86,5 +76,5 @@ export function useUserRehearsalApi() {
     }).then(r => r.data)
   }
 
-  return { getFiltered, saveRehearsal, deleteRehearsalLegacy, createRehearsal, updateRehearsal, deleteRehearsal, importFromExcel }
+  return { getFiltered, createRehearsal, updateRehearsal, deleteRehearsal, importFromExcel }
 }
