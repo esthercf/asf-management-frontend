@@ -34,7 +34,7 @@
                     <td><strong>{{ d.date }}</strong></td>
                     <td>
                         <span v-for="(s, i) in d.slots" :key="i" class="badge badge-lav slot-tag">{{ s.start }}–{{ s.end
-                            }}</span>
+                        }}</span>
                     </td>
                     <td>
                         <span class="badge" :class="isActive(d) ? 'badge-green' : 'badge-coral'">
@@ -70,7 +70,7 @@
         <div v-if="modalOpen" class="modal-overlay" @click.self="modalOpen = false">
             <div class="modal">
                 <h2 class="modal-title">{{ editingId ? t('manager.daySchedules.edit') : t('manager.daySchedules.create')
-                    }}</h2>
+                }}</h2>
 
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.daySchedules.columns.date') }}</label>
@@ -78,37 +78,39 @@
                         :disabled="!!editingId" :title="editingId ? t('manager.daySchedules.dateImmutableHint') : ''" />
                     <span v-if="fieldErrors.date" class="field-error">{{ fieldErrors.date }}</span>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ t('manager.daySchedules.columns.slots') }}</label>
-                <div v-for="(slot, i) in form.slots" :key="i" style="margin-bottom:.5rem;">
-                    <div style="display:flex; gap:.5rem; align-items:center;">
-                        <input class="form-input" :class="{ 'has-error': fieldErrors[`slots.${i}.start`] }" type="time"
-                            v-model="slot.start" />
-                        <span>–</span>
-                        <input class="form-input" :class="{ 'has-error': fieldErrors[`slots.${i}.end`] }" type="time"
-                            v-model="slot.end" />
-                        <button class="btn btn-danger btn-sm" :disabled="form.slots.length === 1"
-                            @click="form.slots.splice(i, 1)">✕</button>
+
+                <div class="form-group">
+                    <label class="form-label">{{ t('manager.daySchedules.columns.slots') }}</label>
+                    <div v-for="(slot, i) in form.slots" :key="i" style="margin-bottom:.5rem;">
+                        <div style="display:flex; gap:.5rem; align-items:center;">
+                            <input class="form-input" :class="{ 'has-error': fieldErrors[`slots.${i}.start`] }"
+                                type="time" v-model="slot.start" />
+                            <span>–</span>
+                            <input class="form-input" :class="{ 'has-error': fieldErrors[`slots.${i}.end`] }"
+                                type="time" v-model="slot.end" />
+                            <button class="btn btn-danger btn-sm" :disabled="form.slots.length === 1"
+                                @click="form.slots.splice(i, 1)">✕</button>
+                        </div>
+                        <span v-if="fieldErrors[`slots.${i}.start`] || fieldErrors[`slots.${i}.end`]"
+                            class="field-error">
+                            {{ fieldErrors[`slots.${i}.start`] || fieldErrors[`slots.${i}.end`] }}
+                        </span>
                     </div>
-                    <span v-if="fieldErrors[`slots.${i}.start`] || fieldErrors[`slots.${i}.end`]" class="field-error">
-                        {{ fieldErrors[`slots.${i}.start`] || fieldErrors[`slots.${i}.end`] }}
-                    </span>
+                    <button class="btn btn-secondary btn-sm" @click="form.slots.push({ start: '', end: '' })">
+                        + {{ t('manager.daySchedules.addSlot') }}
+                    </button>
                 </div>
-                <button class="btn btn-secondary btn-sm" @click="form.slots.push({ start: '', end: '' })">
-                    + {{ t('manager.daySchedules.addSlot') }}
-                </button>
-            </div>
 
-            <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
+                <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
 
-            <div class="modal-footer">
-                <button class="btn btn-secondary" @click="modalOpen = false">{{ t('common.cancel') }}</button>
-                <button class="btn btn-primary" :disabled="saving" @click="saveDay">
-                    <InlineSpinner v-if="saving" />
-                    <span v-else>{{ t('common.save') }}</span>
-                </button>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="modalOpen = false">{{ t('common.cancel') }}</button>
+                    <button class="btn btn-primary" :disabled="saving" @click="saveDay">
+                        <InlineSpinner v-if="saving" />
+                        <span v-else>{{ t('common.save') }}</span>
+                    </button>
+                </div>
             </div>
         </div>
     </Teleport>

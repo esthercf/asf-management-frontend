@@ -485,6 +485,14 @@ const ca: AppLocale = {
       title: 'Límits de reserva',
       validation: {
         nameRequired: 'El nom és obligatori.',
+        nameTaken: 'Ja hi ha una altra regla amb aquest nom.',
+        minutesRequired: 'Els minuts màxims per dia són obligatoris.',
+        minutesInvalid: 'Fes servir un nombre enter, 0 o més.',
+        priorityRequired: 'La prioritat és obligatòria.',
+        priorityInvalid: 'Fes servir un nombre enter.',
+        tagsContradict: 'Un tag no pot ser alhora necessari («tots» o «com a mínim un») i exclòs aquí.',
+        flagsContradict: 'Un indicador no pot ser alhora necessari i prohibit.',
+        exactMatchNeedsTags: 'Amb «coincidència exacta», tria com a mínim un tag aquí.',
       },
     },
     rehearsals: {
