@@ -519,6 +519,14 @@ const de: AppLocale = {
       title: 'Buchungslimits',
       validation: {
         nameRequired: 'Name ist erforderlich.',
+        nameTaken: 'Eine andere Regel hat bereits diesen Namen.',
+        minutesRequired: 'Die maximalen Minuten pro Tag sind erforderlich.',
+        minutesInvalid: 'Verwende eine ganze Zahl, 0 oder mehr.',
+        priorityRequired: 'Die Priorität ist erforderlich.',
+        priorityInvalid: 'Verwende eine ganze Zahl.',
+        tagsContradict: 'Ein Tag kann nicht gleichzeitig verlangt („alle“ oder „mindestens eines“) und hier ausgeschlossen sein.',
+        flagsContradict: 'Ein Kennzeichen kann nicht gleichzeitig erforderlich und verboten sein.',
+        exactMatchNeedsTags: 'Bei „exakter Übereinstimmung“ wähle hier mindestens ein Tag.',
       },
     },
     eventStyles: {

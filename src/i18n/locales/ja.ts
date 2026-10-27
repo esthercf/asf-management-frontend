@@ -501,6 +501,14 @@ const ja: AppLocale = {
       title: '予約制限',
       validation: {
         nameRequired: '名前は必須です。',
+        nameTaken: '同じ名前のルールがすでにあります。',
+        minutesRequired: '1日の最大分数は必須です。',
+        minutesInvalid: '0以上の整数を入力してください。',
+        priorityRequired: '優先度は必須です。',
+        priorityInvalid: '整数を入力してください。',
+        tagsContradict: '同じ予約タイプを必須（「すべて」または「少なくとも1つ」）とここでの除外の両方に指定することはできません。',
+        flagsContradict: '同じフラグを必須と禁止の両方に指定することはできません。',
+        exactMatchNeedsTags: '「完全一致」の場合は、ここで予約タイプを少なくとも1つ選んでください。',
       },
     },
     eventStyles: {

@@ -691,6 +691,14 @@ const ko: AppLocale = {
       title: '예약 제한',
       validation: {
         nameRequired: '이름은 필수입니다.',
+        nameTaken: '같은 이름의 규칙이 이미 있습니다.',
+        minutesRequired: '하루 최대 분은 필수입니다.',
+        minutesInvalid: '0 이상의 정수를 사용하세요.',
+        priorityRequired: '우선순위는 필수입니다.',
+        priorityInvalid: '정수를 사용하세요.',
+        tagsContradict: '같은 예약 유형을 필수("모두" 또는 "최소 하나")와 여기서의 제외에 동시에 지정할 수 없습니다.',
+        flagsContradict: '같은 플래그를 필수와 금지에 동시에 지정할 수 없습니다.',
+        exactMatchNeedsTags: '"정확히 일치"를 사용할 때는 여기서 예약 유형을 하나 이상 선택하세요.',
       },
     },
     eventStyles: {

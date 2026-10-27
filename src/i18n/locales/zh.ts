@@ -502,6 +502,14 @@ const zh: AppLocale = {
       title: '预订限制',
       validation: {
         nameRequired: '名称为必填项。',
+        nameTaken: '已有其他规则使用此名称。',
+        minutesRequired: '每天最大分钟数为必填项。',
+        minutesInvalid: '请使用 0 或以上的整数。',
+        priorityRequired: '优先级为必填项。',
+        priorityInvalid: '请使用整数。',
+        tagsContradict: '同一预订类型不能既是必需的（“所有”或“至少一种”）又在此处被排除。',
+        flagsContradict: '同一标志不能既是必需的又是禁止的。',
+        exactMatchNeedsTags: '使用“精确匹配”时，请在此处至少选择一种预订类型。',
       },
     },
     eventStyles: {

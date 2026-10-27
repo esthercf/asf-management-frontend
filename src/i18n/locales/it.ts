@@ -501,6 +501,14 @@ const it: AppLocale = {
       title: 'Limiti di prenotazione',
       validation: {
         nameRequired: 'Il nome è obbligatorio.',
+        nameTaken: "Un'altra regola ha già questo nome.",
+        minutesRequired: 'I minuti massimi al giorno sono obbligatori.',
+        minutesInvalid: 'Usa un numero intero, 0 o più.',
+        priorityRequired: 'La priorità è obbligatoria.',
+        priorityInvalid: 'Usa un numero intero.',
+        tagsContradict: 'Un tipo di prenotazione non può essere insieme richiesto («tutti» o «almeno uno») ed escluso qui.',
+        flagsContradict: 'Un indicatore non può essere insieme richiesto e vietato.',
+        exactMatchNeedsTags: 'Con «corrispondenza esatta», scegli almeno un tipo di prenotazione qui.',
       },
     },
     eventStyles: {

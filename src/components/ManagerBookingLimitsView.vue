@@ -85,15 +85,21 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">{{ t('manager.bookingLimits.columns.name') }}</label>
-                        <input class="form-input" v-model="form.name" />
+                        <input class="form-input" :class="{ 'has-error': fieldErrors.name }" v-model="form.name" />
+                        <span v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</span>
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ t('manager.bookingLimits.columns.minutes') }}</label>
-                        <input class="form-input" type="number" min="0" v-model.number="form.maxMinutesPerDay" />
+                        <input class="form-input" :class="{ 'has-error': fieldErrors.maxMinutesPerDay }" type="number"
+                            min="0" v-model.number="form.maxMinutesPerDay" />
+                        <span v-if="fieldErrors.maxMinutesPerDay" class="field-error">{{ fieldErrors.maxMinutesPerDay
+                        }}</span>
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ t('manager.bookingLimits.columns.priority') }}</label>
-                        <input class="form-input" type="number" v-model.number="form.priority" />
+                        <input class="form-input" :class="{ 'has-error': fieldErrors.priority }" type="number"
+                            v-model.number="form.priority" />
+                        <span v-if="fieldErrors.priority" class="field-error">{{ fieldErrors.priority }}</span>
                     </div>
                 </div>
 
@@ -106,6 +112,8 @@
 
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.bookingLimits.allOf') }}</label>
+                    <span v-if="fieldErrors.allOfBookingTypes" class="field-error">{{ fieldErrors.allOfBookingTypes
+                    }}</span>
                     <div class="checkbox-grid">
                         <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
                             <input type="checkbox" :value="bt" v-model="form.allOfBookingTypes" />
@@ -134,6 +142,8 @@
 
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.bookingLimits.noneOf') }}</label>
+                    <span v-if="fieldErrors.noneOfBookingTypes" class="field-error">{{ fieldErrors.noneOfBookingTypes
+                    }}</span>
                     <div class="checkbox-grid">
                         <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
                             <input type="checkbox" :value="bt" v-model="form.noneOfBookingTypes" />
@@ -154,6 +164,7 @@
 
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.bookingLimits.forbiddenFlags') }}</label>
+                    <span v-if="fieldErrors.forbiddenFlags" class="field-error">{{ fieldErrors.forbiddenFlags }}</span>
                     <div class="checkbox-grid">
                         <label v-for="flagName in flagNames" :key="flagName" class="checkbox-row">
                             <input type="checkbox" :value="flagName" v-model="form.forbiddenFlags" />
@@ -182,12 +193,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBookingLimitApi, type BookingLimitConfiguration, type BookingLimitFlags, type BookingLimitRule } from '../composables/useBookingLimitApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import InlineSpinner from './InlineSpinner.vue'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { bookingLimitRuleSchema } from '../validation/bookingLimit.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 
 const { t } = useI18n()
 const api = useBookingLimitApi()
@@ -245,6 +259,28 @@ function blankForm(): BookingLimitRule {
 }
 
 const form = ref<BookingLimitRule>(blankForm())
+
+// The name must differ from the OTHER rules (the one being edited may keep its own name)
+const ruleSchema = computed(() => bookingLimitRuleSchema(
+    (config.value?.rules ?? []).filter(r => r._id !== editingRule.value?._id).map(r => r.name),
+))
+
+// ── Field messages of the zod validation ──
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch(form, () => {
+    if (Object.keys(fieldErrors.value).length === 0) return
+    const result = ruleSchema.value.safeParse(form.value)
+    fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(ruleModal, () => {
+    fieldErrors.value = {}
+})
+
+// The page behind the open window must not scroll
+useModalScrollLock(ruleModal)
 
 function openCreateRule() {
     editingRule.value = null

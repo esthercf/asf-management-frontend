@@ -501,6 +501,14 @@ const pt: AppLocale = {
       title: 'Limites de reserva',
       validation: {
         nameRequired: 'O nome é obrigatório.',
+        nameTaken: 'Já existe outra regra com este nome.',
+        minutesRequired: 'Os minutos máximos por dia são obrigatórios.',
+        minutesInvalid: 'Use um número inteiro, 0 ou mais.',
+        priorityRequired: 'A prioridade é obrigatória.',
+        priorityInvalid: 'Use um número inteiro.',
+        tagsContradict: 'Um tipo de reserva não pode ser ao mesmo tempo necessário («todos» ou «pelo menos um») e excluído aqui.',
+        flagsContradict: 'Um indicador não pode ser ao mesmo tempo obrigatório e proibido.',
+        exactMatchNeedsTags: 'Com «correspondência exata», escolha pelo menos um tipo de reserva aqui.',
       },
     },
     eventStyles: {
