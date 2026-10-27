@@ -60,9 +60,9 @@
                         <td>
                             <div style="display:flex; gap:.5rem;">
                                 <button class="btn btn-secondary btn-sm" @click="openEditRule(rule)">{{ t('common.edit')
-                                    }}</button>
+                                }}</button>
                                 <button class="btn btn-danger btn-sm" @click="removeRule(rule)">{{ t('common.delete')
-                                    }}</button>
+                                }}</button>
                             </div>
                         </td>
                     </tr>
@@ -93,7 +93,7 @@
                         <input class="form-input" :class="{ 'has-error': fieldErrors.maxMinutesPerDay }" type="number"
                             min="0" v-model.number="form.maxMinutesPerDay" />
                         <span v-if="fieldErrors.maxMinutesPerDay" class="field-error">{{ fieldErrors.maxMinutesPerDay
-                        }}</span>
+                            }}</span>
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ t('manager.bookingLimits.columns.priority') }}</label>
@@ -113,7 +113,7 @@
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.bookingLimits.allOf') }}</label>
                     <span v-if="fieldErrors.allOfBookingTypes" class="field-error">{{ fieldErrors.allOfBookingTypes
-                    }}</span>
+                        }}</span>
                     <div class="checkbox-grid">
                         <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
                             <input type="checkbox" :value="bt" v-model="form.allOfBookingTypes" />
@@ -143,7 +143,7 @@
                 <div class="form-group">
                     <label class="form-label">{{ t('manager.bookingLimits.noneOf') }}</label>
                     <span v-if="fieldErrors.noneOfBookingTypes" class="field-error">{{ fieldErrors.noneOfBookingTypes
-                    }}</span>
+                        }}</span>
                     <div class="checkbox-grid">
                         <label v-for="bt in bookingTypeOptions" :key="bt" class="checkbox-row">
                             <input type="checkbox" :value="bt" v-model="form.noneOfBookingTypes" />
@@ -298,15 +298,21 @@ function openEditRule(rule: BookingLimitRule) {
 
 async function saveRule() {
     if (!config.value) return
-    if (!form.value.name.trim()) {
-        formError.value = t('manager.bookingLimits.validation.nameRequired')
+    formError.value = ''
+    const result = ruleSchema.value.safeParse(form.value)
+    if (!result.success) {
+        fieldErrors.value = zodErrorsToFieldMap(result.error, t)
         return
     }
-    formError.value = ''
+    fieldErrors.value = {}
+    const data = result.data // the validated copy: trimmed name, real numbers
     saving.value = true
     try {
         const otherRules = config.value.rules.filter(r => r._id !== editingRule.value?._id)
-        const nextRules = [...otherRules, form.value]
+        // Keep everything from the form (including _id, so an edited rule stays the same rule),
+        // with the cleaned values from the validation on top
+        const saved: BookingLimitRule = { ...form.value, name: data.name, maxMinutesPerDay: data.maxMinutesPerDay, priority: data.priority }
+        const nextRules = [...otherRules, saved]
         config.value = await api.setRules(nextRules)
         ruleModal.value = false
     } catch (e) {
