@@ -85,11 +85,11 @@
             <div class="muted-text">{{ p.studentEmail }}</div>
           </td>
           <td>
-            <span v-if="p.teacherRawName">{{ p.teacherRawName }}</span>
+            <span v-if="shownSlot(p).teacherRawName">{{ shownSlot(p).teacherRawName }}</span>
             <span v-else class="muted-text">—</span>
           </td>
           <td>
-            <span v-if="p.date">{{ p.date }} — {{ formatSlotTime(p.hour, p.minutes) }}</span>
+           <span v-if="shownSlot(p).date">{{ shownSlot(p).date }} — {{ formatSlotTime(shownSlot(p).hour, shownSlot(p).minutes) }}</span>
             <span v-else class="muted-text">—</span>
           </td>
           <td>
@@ -155,14 +155,17 @@
         <div v-if="editingPurchase" class="details-grid">
           <div class="detail-row">
             <span class="detail-label">{{ t('manager.purchases.columns.teacher') }}</span>
-            <span>{{ editingPurchase.teacherRawName || '—' }}<span v-if="editingPurchase.teacherEmail"> ({{
-              editingPurchase.teacherEmail }})</span></span>
+            <span>{{ shownSlot(editingPurchase).teacherRawName || '—' }}<span
+                v-if="shownSlot(editingPurchase).teacherEmail"> ({{ shownSlot(editingPurchase).teacherEmail }})</span></span>
           </div>
           <div class="detail-row">
             <span class="detail-label">{{ t('manager.purchases.columns.slot') }}</span>
             <span>
-              <template v-if="editingPurchase.date">{{ editingPurchase.date }} — {{ formatSlotTime(editingPurchase.hour,
-                editingPurchase.minutes) }}</template>
+              <template v-if="shownSlot(editingPurchase).date">{{ shownSlot(editingPurchase).date }} — {{
+                formatSlotTime(shownSlot(editingPurchase).hour, shownSlot(editingPurchase).minutes) }}</template>
+              <span v-if="hasMoved(editingPurchase)" class="muted-text"> ({{ t('manager.purchases.soldFor', {
+                slot: `${editingPurchase.date} ${formatSlotTime(editingPurchase.hour, editingPurchase.minutes)}`,
+              }) }})</span>
               <template v-else>—</template>
             </span>
           </div>
@@ -301,6 +304,16 @@ function statusBadgeClass(s: PurchaseStatusEnum): string {
 function formatSlotTime(hour: number | undefined, minutes: number | undefined): string {
   if (hour === undefined || minutes === undefined) return ''
   return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+}
+
+/** Where the masterclass is now; without one (pending, or older data) what it was sold for */
+function shownSlot(p: MasterclassPurchaseDto) {
+  return p.currentSlot ?? { teacherRawName: p.teacherRawName ?? '', teacherEmail: p.teacherEmail, date: p.date ?? '', hour: p.hour, minutes: p.minutes }
+}
+/** True when the masterclass was moved (or changed teacher) after the sale */
+function hasMoved(p: MasterclassPurchaseDto): boolean {
+  const c = p.currentSlot
+  return !!c && (c.date !== p.date || c.hour !== p.hour || c.minutes !== p.minutes || c.teacherRawName !== p.teacherRawName)
 }
 
 const purchases = ref<MasterclassPurchaseDto[]>([])

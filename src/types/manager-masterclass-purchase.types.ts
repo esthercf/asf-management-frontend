@@ -23,6 +23,8 @@ export interface MasterclassPurchaseDto {
   orderReference?: string
   comments?: string
   tshirtEnum: TshirtEnum | undefined
+  /** Where its masterclass is now (list only); date/hour/minutes above = what it was sold for */
+  currentSlot?: { teacherRawName: string; teacherEmail?: string; date: string; hour: number; minutes: number }
 }
 
 export interface CreateMasterclassPurchaseDto {

@@ -32,11 +32,10 @@
   </div>
 
   <div v-if="importResult" class="card import-result-card">
-    <p><strong>{{ t('manager.festivalEvents.importRowError', { row: 0 }).split(':')[0] ? '' : '' }}{{
-      importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount') }}</strong></p>
+    <p><strong>{{ importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount') }}</strong></p>
     <ul v-if="importResult.errors.length > 0" class="import-errors">
       <li v-for="err in importResult.errors" :key="err.rowNumber">
-        {{ t('manager.festivalEvents.importRowError', { row: err.rowNumber }) }}: {{ err.message }}
+        {{ t('manager.activities.importRow', { row: err.rowNumber }) }}: {{ err.message }}
       </li>
     </ul>
     <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
@@ -63,7 +62,7 @@
           <th>{{ t('manager.activities.columns.room') }}</th>
           <th>{{ t('manager.activities.columns.student') }}</th>
           <th>{{ t('manager.activities.columns.users') }}</th>
-          <th>{{ t('manager.users.columns.actions') }}</th>
+          <th>{{ t('manager.activities.columns.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -116,12 +115,16 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.activities.teacherName') }}</label>
-            <input class="form-input" v-model="form.teacherRawName" :disabled="!!editingActivity"
+            <input class="form-input" :class="{ 'has-error': fieldErrors.teacherRawName }" v-model="form.teacherRawName"
+              :disabled="!!editingActivity"
               :title="editingActivity ? t('manager.activities.teacherImmutableHint') : ''" />
+            <span v-if="fieldErrors.teacherRawName" class="field-error">{{ fieldErrors.teacherRawName }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.activities.teacherEmail') }}</label>
-            <input class="form-input" v-model="form.teacherEmail" :disabled="!!editingActivity" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.teacherEmail }" v-model="form.teacherEmail"
+              :disabled="!!editingActivity" />
+            <span v-if="fieldErrors.teacherEmail" class="field-error">{{ fieldErrors.teacherEmail }}</span>
           </div>
         </div>
 
@@ -145,15 +148,20 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.activities.columns.date') }}</label>
-            <input class="form-input" type="date" v-model="form.date" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.date }" type="date" v-model="form.date" />
+            <span v-if="fieldErrors.date" class="field-error">{{ fieldErrors.date }}</span>
           </div>
           <div class="form-group">
-            <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
-            <input class="form-input" type="time" v-model="form.startTimeStr" />
+            <label class="form-label">{{ t('manager.activities.startTime') }}</label>
+            <input class="form-input" :class="{ 'has-error': fieldErrors.startTimeStr }" type="time"
+              v-model="form.startTimeStr" />
+            <span v-if="fieldErrors.startTimeStr" class="field-error">{{ fieldErrors.startTimeStr }}</span>
           </div>
           <div class="form-group">
-            <label class="form-label">{{ t('manager.festivalEvents.durationMinutes') }}</label>
-            <input class="form-input" type="number" min="1" v-model.number="form.durationMinutes" />
+            <label class="form-label">{{ t('manager.activities.durationMinutes') }}</label>
+            <input class="form-input" :class="{ 'has-error': fieldErrors.durationMinutes }" type="number" min="1"
+              v-model.number="form.durationMinutes" />
+            <span v-if="fieldErrors.durationMinutes" class="field-error">{{ fieldErrors.durationMinutes }}</span>
           </div>
         </div>
 
@@ -162,11 +170,21 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.activities.columns.student') }}</label>
-            <input class="form-input" v-model="form.studentEmail" />
+            <template v-if="form.type === ActivityTypeEnum.MASTERCLASS">
+              <input class="form-input" :value="editingActivity?.studentFullName || '—'" disabled />
+              <span class="field-hint">{{ t('manager.activities.masterclassStudentHint') }}</span>
+            </template>
+            <template v-else>
+              <input class="form-input" :class="{ 'has-error': fieldErrors.studentEmail }"
+                v-model="form.studentEmail" />
+              <span v-if="fieldErrors.studentEmail" class="field-error">{{ fieldErrors.studentEmail }}</span>
+            </template>
           </div>
           <div class="form-group">
-            <label class="form-label">{{ t('manager.users.folderCode') }}</label>
-            <input class="form-input" v-model="form.folderCode" />
+            <label class="form-label">{{ t('manager.activities.folderCode') }}</label>
+            <input v-if="form.type === ActivityTypeEnum.MASTERCLASS" class="form-input"
+              :value="editingActivity?.folderCode || '—'" disabled />
+            <input v-else class="form-input" v-model="form.folderCode" />
           </div>
         </div>
 
@@ -200,11 +218,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoomApi } from '../composables/useRoomApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { activityFormSchema } from '../validation/activity.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 import { ActivityTypeEnum } from '../types/manager-activity.types'
 import type { ActivityDto } from '../types/manager-activity.types'
 import type { RoomDto } from '../types/room.types'
@@ -364,6 +385,24 @@ function blankForm(): FormState {
 
 const form = ref<FormState>(blankForm())
 
+// ── Field messages of the zod validation ──
+const activitySchema = computed(() => activityFormSchema(!editingActivity.value))
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch(form, () => {
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = activitySchema.value.safeParse(form.value)
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(modalOpen, () => {
+  fieldErrors.value = {}
+})
+
+// The page behind the open window must not scroll
+useModalScrollLock(modalOpen)
+
 function openCreateModal() {
   editingActivity.value = null
   form.value = blankForm()
@@ -393,6 +432,16 @@ function openEditModal(a: ActivityDto) {
 
 async function save() {
   formError.value = ''
+  const result = activitySchema.value.safeParse(form.value)
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
+    return
+  }
+  fieldErrors.value = {}
+  // Trimmed values and a real number for the duration, as checked
+  form.value.teacherRawName = result.data.teacherRawName
+  form.value.teacherEmail = result.data.teacherEmail
+  form.value.durationMinutes = result.data.durationMinutes
   saving.value = true
   try {
     const [hourStr, minuteStr] = form.value.startTimeStr.split(':')
@@ -409,8 +458,9 @@ async function save() {
         roomId: form.value.roomId,
         comments: form.value.comments || undefined,
         internalComments: form.value.internalComments || undefined,
-        studentEmail: form.value.studentEmail || undefined,
-        folderCode: form.value.folderCode || undefined,
+        // A masterclass gets its student only from its purchase
+        studentEmail: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.studentEmail || undefined,
+        folderCode: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.folderCode || undefined,
         userIds: form.value.userIds.length > 0 ? form.value.userIds : undefined,
       })
     } else {
