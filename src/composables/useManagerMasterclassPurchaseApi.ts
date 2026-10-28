@@ -13,6 +13,10 @@ export interface ImportPurchasesResult {
   succeeded: number
   failed: number
   errors: { row: number; reason: string }[]
+  /** Rows whose order reference was already imported (left untouched). */
+  skipped: number
+  /** Rows saved as PENDING purchases (no free masterclass found), with the reason. */
+  pending: { row: number; reason: string }[]
 }
 export function useManagerMasterclassPurchaseApi() {
 

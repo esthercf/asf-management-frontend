@@ -30,6 +30,7 @@ export function useManagerActivityApi() {
     if (filters.fromDate) q.set('fromDate', filters.fromDate)
     if (filters.toDate) q.set('toDate', filters.toDate)
     filters.userIds?.forEach(id => q.append('userIds', id))
+    if (filters.freeOnly) q.set('freeOnly', 'true')
     q.set('page', String(filters.page ?? 1))
     q.set('limit', String(filters.limit ?? 20))
     return client.get<DatatableResult<ActivityDto>>(`/activities?${q}`).then(r => r.data)

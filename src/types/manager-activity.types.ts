@@ -82,4 +82,6 @@ export interface GetActivitiesFilterDto {
   page?: number
   limit?: number
   userIds?: string[]
+  /** Only activities without a student (for masterclasses: not sold yet). */
+  freeOnly?: boolean
 }

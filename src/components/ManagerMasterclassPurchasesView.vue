@@ -33,12 +33,29 @@
   </label>
 
   <div v-if="importResult" class="card import-result-card">
-    <p><strong>{{ importResult.message }}</strong></p>
-    <ul v-if="importResult.errors.length > 0" class="import-errors">
-      <li v-for="err in importResult.errors" :key="err.row">
-        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
-      </li>
-    </ul>
+    <p><strong>{{ t('manager.purchases.importSummary', {
+      created: importResult.succeeded,
+      skipped: importResult.skipped ?? 0,
+      failed: importResult.failed,
+    }) }}</strong></p>
+
+    <template v-if="importResult.pending?.length">
+      <p>{{ t('manager.purchases.importPendingTitle') }}</p>
+      <ul class="import-errors">
+        <li v-for="p in importResult.pending" :key="'p' + p.row">
+          {{ t('manager.purchases.importRow', { row: p.row }) }}: {{ p.reason }}
+        </li>
+      </ul>
+    </template>
+
+    <template v-if="importResult.errors.length > 0">
+      <p>{{ t('manager.purchases.importErrorsTitle') }}</p>
+      <ul class="import-errors">
+        <li v-for="err in importResult.errors" :key="'e' + err.row">
+          {{ t('manager.purchases.importRow', { row: err.row }) }}: {{ err.reason }}
+        </li>
+      </ul>
+    </template>
     <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
   </div>
 
@@ -58,7 +75,7 @@
           <th>{{ t('manager.purchases.columns.price') }}</th>
           <th>{{ t('manager.purchases.columns.purchasedAt') }}</th>
           <th>{{ t('manager.purchases.columns.comments') }}</th>
-          <th>{{ t('manager.users.columns.actions') }}</th>
+          <th>{{ t('manager.purchases.columns.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -99,7 +116,7 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)"></button>
+    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
   </div>
 
   <!-- Create/Edit Modal -->
@@ -113,8 +130,9 @@
         <div v-if="!editingPurchase" class="form-group">
           <label class="form-label">{{ t('manager.purchases.student') }}</label>
           <div class="search-wrap">
-            <input class="form-input" v-model="studentQuery" :placeholder="t('manager.users.searchPlaceholder')"
-              @input="onStudentQueryChange" @focus="showStudentResults = true" @blur="onStudentBlur" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.studentEmail }" v-model="studentQuery"
+              :placeholder="t('manager.purchases.studentSearchPlaceholder')" @input="onStudentQueryChange"
+              @focus="showStudentResults = true" @blur="onStudentBlur" />
             <div v-if="showStudentResults && studentResults.length > 0" class="results-dropdown">
               <button v-for="u in studentResults" :key="u.id" type="button" class="result-row"
                 @mousedown.prevent="pickStudent(u)">
@@ -123,6 +141,7 @@
               </button>
             </div>
           </div>
+          <span v-if="fieldErrors.studentEmail" class="field-error">{{ fieldErrors.studentEmail }}</span>
           <div v-if="pickedStudent" class="selected-chip" style="margin-top:.5rem;">
             <span>{{ pickedStudent.firstnames }} {{ pickedStudent.surnames }} — {{ pickedStudent.email }}</span>
             <button class="clear-btn" type="button" @click="pickedStudent = null">✕</button>
@@ -161,11 +180,15 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.purchases.columns.price') }}</label>
-            <input class="form-input" type="number" step="0.01" v-model.number="form.price" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.price }" type="number" step="0.01"
+              v-model.number="form.price" />
+            <span v-if="fieldErrors.price" class="field-error">{{ fieldErrors.price }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.purchases.currency') }}</label>
-            <input class="form-input" v-model="form.currency" placeholder="EUR" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.currency }" v-model="form.currency"
+              placeholder="EUR" />
+            <span v-if="fieldErrors.currency" class="field-error">{{ fieldErrors.currency }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.purchases.orderReference') }}</label>
@@ -175,7 +198,9 @@
         <div class="form-row" v-if="!editingPurchase">
           <div class="form-group">
             <label class="form-label">{{ t('manager.purchases.purchasedAt') }}</label>
-            <input class="form-input" type="date" v-model="form.purchasedAt" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.purchasedAt }" type="date"
+              v-model="form.purchasedAt" />
+            <span v-if="fieldErrors.purchasedAt" class="field-error">{{ fieldErrors.purchasedAt }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.purchases.tshirt') }}</label>
@@ -184,6 +209,16 @@
               <option v-for="s in tshirtOptions" :key="s" :value="s">{{ s }}</option>
             </select>
           </div>
+        </div>
+
+        <div v-if="editingPurchase" class="form-group">
+          <label class="form-label">{{ t('manager.purchases.masterclass') }}</label>
+          <span v-if="fieldErrors.activityId" class="field-error">{{ fieldErrors.activityId }}</span>
+          <select class="form-input" :class="{ 'has-error': fieldErrors.activityId }" v-model="form.activityId">
+            <option v-if="!editingPurchase.activityId" value="">{{ t('manager.purchases.noMasterclass') }}</option>
+            <option v-else :value="editingPurchase.activityId">{{ t('manager.purchases.currentMasterclass') }}</option>
+            <option v-for="a in freeMasterclasses" :key="a._id" :value="a._id">{{ masterclassLabel(a) }}</option>
+          </select>
         </div>
 
         <div v-if="editingPurchase" class="form-group">
@@ -198,42 +233,20 @@
           <input class="form-input" v-model="form.comments" />
         </div>
 
-        <!-- Every purchase always has a teaching slot behind it — matches
-             the real buying flow (student + slot chosen together, never
-             "pay now, figure out the teacher later"). -->
+        <!-- The masterclass is planned in advance (Activities import) and sold here. Without one,
+             the purchase is saved as pending and assigned later. -->
         <template v-if="!editingPurchase">
           <h3 class="section-title" style="font-size:.9rem; margin-top:1rem;">{{
             t('manager.purchases.schedulingSection') }}</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.activities.teacherName') }}</label>
-              <input class="form-input" v-model="activityForm.teacherRawName" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.activities.teacherEmail') }}</label>
-              <input class="form-input" v-model="activityForm.teacherEmail" />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.activities.columns.room') }}</label>
-              <select class="form-input" v-model="activityForm.roomId">
-                <option :value="undefined">{{ t('manager.activities.noRoom') }}</option>
-                <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }} (#{{ r.roomNumber }})</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.activities.columns.date') }}</label>
-              <input class="form-input" type="date" v-model="activityForm.date" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
-              <input class="form-input" type="time" v-model="activityForm.startTimeStr" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.festivalEvents.durationMinutes') }}</label>
-              <input class="form-input" type="number" min="1" v-model.number="activityForm.durationMinutes" />
-            </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('manager.purchases.masterclass') }}</label>
+            <span v-if="fieldErrors.activityId" class="field-error">{{ fieldErrors.activityId }}</span>
+            <select class="form-input" :class="{ 'has-error': fieldErrors.activityId }" v-model="form.activityId">
+              <option value="">{{ t('manager.purchases.noMasterclass') }}</option>
+              <option v-for="a in freeMasterclasses" :key="a._id" :value="a._id">{{ masterclassLabel(a) }}</option>
+            </select>
+            <p v-if="freeMasterclasses.length === 0" class="field-hint">{{ t('manager.purchases.noFreeMasterclasses') }}
+            </p>
           </div>
         </template>
 
@@ -252,25 +265,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useManagerMasterclassPurchaseApi, type ImportPurchasesResult } from '../composables/useManagerMasterclassPurchaseApi'
 import { useManagerActivityApi } from '../composables/useManagerActivityApi'
 import { useManagerUserApi } from '../composables/useManagerUserApi'
-import { useRoomApi } from '../composables/useRoomApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { purchaseFormSchema } from '../validation/purchase.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 import { PurchaseStatusEnum } from '../types/manager-masterclass-purchase.types'
 import type { MasterclassPurchaseDto } from '../types/manager-masterclass-purchase.types'
 import { ActivityTypeEnum } from '../types/manager-activity.types'
-import type { RoomDto } from '../types/room.types'
+import type { ActivityDto } from '../types/manager-activity.types'
 import type { ManagerUserBaseDto } from '../types/manager-user.types'
 import { TshirtEnum } from '../enums/user.enum'
+
 const { t } = useI18n()
 const api = useManagerMasterclassPurchaseApi()
 const activityApi = useManagerActivityApi()
 const userApi = useManagerUserApi()
-const roomApi = useRoomApi()
 
 const statusOptions = Object.values(PurchaseStatusEnum)
 const tshirtOptions = Object.values(TshirtEnum)
@@ -289,7 +304,7 @@ function formatSlotTime(hour: number | undefined, minutes: number | undefined): 
 }
 
 const purchases = ref<MasterclassPurchaseDto[]>([])
-const rooms = ref<RoomDto[]>([])
+
 const loading = ref(false)
 const pageError = ref('')
 
@@ -324,18 +339,9 @@ async function onFileSelected(event: Event) {
 }
 
 onMounted(async () => {
-  await loadRooms()
   await reload()
 })
 
-async function loadRooms() {
-  try {
-    const data = await roomApi.getRooms({ limit: 200 })
-    rooms.value = data?.data ?? []
-  } catch (e) {
-    pageError.value = extractErrorMessage(e)
-  }
-}
 
 async function reload() {
   loading.value = true
@@ -413,33 +419,62 @@ interface FormState {
   comments: string
   purchasedAt: string
   tshirtEnum: TshirtEnum | undefined
+  activityId: string // the chosen masterclass; '' = none yet (the purchase stays pending)
 }
+
 function blankForm(): FormState {
-  return { price: undefined, currency: '', orderReference: '', status: PurchaseStatusEnum.PENDING, comments: '', purchasedAt: '', tshirtEnum: undefined }
+  return { price: undefined, currency: '', orderReference: '', status: PurchaseStatusEnum.PENDING, comments: '', purchasedAt: '', tshirtEnum: undefined, activityId: '' }
 }
 const form = ref<FormState>(blankForm())
 
-interface ActivityFormState {
-  teacherRawName: string
-  teacherEmail: string
-  roomId: string | undefined
-  date: string
-  startTimeStr: string
-  durationMinutes: number
+// ── Free masterclasses (planned in advance, not sold yet) ──
+const freeMasterclasses = ref<ActivityDto[]>([])
+async function loadFreeMasterclasses() {
+  try {
+    const data = await activityApi.getFiltered({ type: ActivityTypeEnum.MASTERCLASS, freeOnly: true, limit: 500 })
+    freeMasterclasses.value = (data?.data ?? []).sort((a, b) =>
+      a.date.localeCompare(b.date) || a.hour - b.hour || a.minutes - b.minutes)
+  } catch (e) {
+    formError.value = extractErrorMessage(e)
+  }
 }
-function blankActivityForm(): ActivityFormState {
-  return { teacherRawName: '', teacherEmail: '', roomId: undefined, date: '', startTimeStr: '09:00', durationMinutes: 45 }
+// ── Field messages of the zod validation ──
+const purchaseSchema = computed(() => purchaseFormSchema(!editingPurchase.value, editingPurchase.value?.activityId))
+/** What zod checks: the form plus the picked student (which lives outside the form) */
+function formToCheck() {
+  return { ...form.value, studentEmail: pickedStudent.value?.email ?? '' }
 }
-const activityForm = ref<ActivityFormState>(blankActivityForm())
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch([form, pickedStudent], () => {
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = purchaseSchema.value.safeParse(formToCheck())
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(modalOpen, () => {
+  fieldErrors.value = {}
+})
+
+// The page behind the open window must not scroll
+useModalScrollLock(modalOpen)
+
+/** "2026-11-12 10:00 — Ana Pérez (room 3)" */
+function masterclassLabel(a: ActivityDto): string {
+  const room = a.roomNumber ? ` (${t('manager.purchases.roomShort', { room: a.roomNumber })})` : ''
+  return `${a.date} ${formatSlotTime(a.hour, a.minutes)} — ${a.teacherRawName}${room}`
+}
+
 
 function openCreateModal() {
   editingPurchase.value = null
   pickedStudent.value = null
   studentQuery.value = ''
   form.value = blankForm()
-  activityForm.value = blankActivityForm()
   formError.value = ''
   modalOpen.value = true
+  loadFreeMasterclasses()
 }
 
 function openEditModal(p: MasterclassPurchaseDto) {
@@ -452,61 +487,52 @@ function openEditModal(p: MasterclassPurchaseDto) {
     comments: p.comments ?? '',
     purchasedAt: '',
     tshirtEnum: p.tshirtEnum,
+    activityId: p.activityId ?? '',
   }
   formError.value = ''
   modalOpen.value = true
+  loadFreeMasterclasses()
 }
 
 async function save() {
   formError.value = ''
 
-  if (!editingPurchase.value && !pickedStudent.value) {
-    formError.value = t('manager.purchases.validation.studentRequired')
+  const result = purchaseSchema.value.safeParse(formToCheck())
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
-  if (!editingPurchase.value && (!activityForm.value.teacherRawName || !activityForm.value.teacherEmail || !activityForm.value.date)) {
-    formError.value = t('manager.purchases.validation.schedulingRequired')
-    return
-  }
+  fieldErrors.value = {}
+  // Put the cleaned values back (real number or empty price, EUR in capitals, trimmed reference),
+  // so the requests below send exactly what was checked
+  form.value.price = result.data.price
+  form.value.currency = result.data.currency
+  form.value.orderReference = result.data.orderReference
 
   saving.value = true
   try {
     if (editingPurchase.value) {
+      // Only send activityId when it really changes (assigning a pending purchase, or moving it)
+      const newActivityId = form.value.activityId && form.value.activityId !== editingPurchase.value.activityId
+        ? form.value.activityId
+        : undefined
       await api.update(editingPurchase.value._id, {
-        status: form.value.status,
+        activityId: newActivityId,
+        // A pending purchase that gets a masterclass is scheduled now
+        status: newActivityId && form.value.status === PurchaseStatusEnum.PENDING
+          ? PurchaseStatusEnum.SCHEDULED
+          : form.value.status,
         price: form.value.price,
         currency: form.value.currency || undefined,
         comments: form.value.comments || undefined,
       })
     } else {
-      const [hourStr, minuteStr] = activityForm.value.startTimeStr.split(':')
-      const activity = await activityApi.create({
-        type: ActivityTypeEnum.MASTERCLASS,
-        teacherRawName: activityForm.value.teacherRawName,
-        teacherEmail: activityForm.value.teacherEmail || undefined,
-        date: activityForm.value.date,
-        hour: Number(hourStr),
-        minutes: Number(minuteStr),
-        durationMinutes: activityForm.value.durationMinutes,
-        roomId: activityForm.value.roomId,
-        studentEmail: pickedStudent.value!.email,
-        folderCode: pickedStudent.value!.folderCode,
-      })
-
+      // The masterclass was planned in advance; the backend copies its teacher, date and time
+      // and writes the student on it. Without one, the purchase is saved as pending.
       await api.create({
         studentRawName: `${pickedStudent.value!.firstnames} ${pickedStudent.value!.surnames}`,
         studentEmail: pickedStudent.value!.email,
-        activityId: activity._id,
-        // Sent explicitly rather than left to the backend's activityId
-        // fallback resolution — using the just-created Activity's own
-        // returned value (not activityForm directly), since findOrCreate()
-        // may have matched an already-existing Activity with its own
-        // stored teacherEmail rather than creating a fresh one.
-        teacherRawName: activity.teacherRawName,
-        teacherEmail: activity.teacherEmail!,
-        date: activity.date,
-        hour: activity.hour,
-        minutes: activity.minutes,
+        activityId: form.value.activityId || undefined,
         price: form.value.price,
         currency: form.value.currency || undefined,
         orderReference: form.value.orderReference || undefined,
