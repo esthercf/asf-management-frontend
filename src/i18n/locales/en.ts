@@ -630,6 +630,14 @@ const en = {
             seedDefaults: 'Seed default styles',
             preview: 'Preview',
             previewSample: 'Sample text',
+            actions: 'Actions',
+            fontColorPlaceholder: '{hex} (optional)',
+            validation: {
+                nameRequired: 'The name is required.',
+                nameTaken: 'Another style already has this name.',
+                fillColorRequired: 'The fill colour is required.',
+                colorInvalid: 'Use 6 hexadecimal digits, like DADADA.',
+            },
             columns: {
                 preview: 'Preview',
                 name: 'Name',

@@ -32,7 +32,7 @@
           <th>{{ t('manager.eventStyles.columns.fillColor') }}</th>
           <th>{{ t('manager.eventStyles.columns.fontColor') }}</th>
           <th>{{ t('manager.eventStyles.columns.bold') }}</th>
-          <th>{{ t('manager.users.columns.actions') }}</th>
+          <th>{{ t('manager.eventStyles.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -72,22 +72,27 @@
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.eventStyles.columns.name') }}</label>
-          <input class="form-input" v-model="form.name" />
+          <input class="form-input" :class="{ 'has-error': fieldErrors.name }" v-model="form.name" />
+          <span v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</span>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.eventStyles.columns.fillColor') }}</label>
+            <span v-if="fieldErrors.fillColorHex" class="field-error">{{ fieldErrors.fillColorHex }}</span>
             <div style="display:flex; gap:.5rem; align-items:center;">
               <input type="color" v-model="fillColorPicker" style="width:44px; height:38px; padding:0; border:none;" />
-              <input class="form-input" v-model="form.fillColorHex" placeholder="DADADA" maxlength="6" />
+              <input class="form-input" :class="{ 'has-error': fieldErrors.fillColorHex }" v-model="form.fillColorHex"
+                placeholder="DEFAULT_FILL" maxlength="7" />
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.eventStyles.columns.fontColor') }}</label>
+            <span v-if="fieldErrors.fontColorHex" class="field-error">{{ fieldErrors.fontColorHex }}</span>
             <div style="display:flex; gap:.5rem; align-items:center;">
               <input type="color" v-model="fontColorPicker" style="width:44px; height:38px; padding:0; border:none;" />
-              <input class="form-input" v-model="form.fontColorHex" placeholder="000000 (optional)" maxlength="6" />
+              <input class="form-input" :class="{ 'has-error': fieldErrors.fontColorHex }" v-model="form.fontColorHex"
+                :placeholder="t('manager.eventStyles.fontColorPlaceholder', { hex: noHash(COLOUR_PALETTE.black) })" maxlength="7" />
             </div>
           </div>
         </div>
@@ -130,12 +135,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useManagerEventStyleApi } from '../composables/useManagerEventStyleApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { eventStyleFormSchema } from '../validation/eventStyle.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 import type { EventStyleDto } from '../types/manager-event-style.types'
+import { COLOUR_PALETTE } from '../constants/colors'
+
+/** '#DADADA' → 'DADADA' (the backend stores colours without '#') */
+const noHash = (c: string) => c.replace(/^#/, '')
+const DEFAULT_FILL = noHash(COLOUR_PALETTE.lightGray)
 
 const { t } = useI18n()
 const api = useManagerEventStyleApi()
@@ -196,16 +209,37 @@ interface FormState {
   isDefaultForActivities: boolean
 }
 
-const form = ref<FormState>({ name: '', fillColorHex: 'DADADA', fontColorHex: '', bold: false, isDefaultForActivities:false })
+const form = ref<FormState>({ name: '', fillColorHex: DEFAULT_FILL, fontColorHex: '', bold: false, isDefaultForActivities: false })
 
 const fillColorPicker = computed({
-  get: () => '#' + (form.value.fillColorHex || 'FFFFFF'),
+  get: () => '#' + (form.value.fillColorHex.replace(/^#/, '') || COLOUR_PALETTE.white),
   set: (v: string) => { form.value.fillColorHex = v.replace('#', '').toUpperCase() },
 })
 const fontColorPicker = computed({
-  get: () => '#' + (form.value.fontColorHex || '000000'),
+  get: () => '#' + (form.value.fontColorHex.replace(/^#/, '') || COLOUR_PALETTE.black),
   set: (v: string) => { form.value.fontColorHex = v.replace('#', '').toUpperCase() },
 })
+
+// ── Field messages of the zod validation ──
+// The name must differ from the OTHER styles (the one being edited may keep its own name)
+const styleSchema = computed(() => eventStyleFormSchema(
+  styles.value.filter(s => s._id !== editingStyle.value?._id).map(s => s.name),
+))
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch(form, () => {
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = styleSchema.value.safeParse(form.value)
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(modalOpen, () => {
+  fieldErrors.value = {}
+})
+
+// The page behind the open window must not scroll
+useModalScrollLock(modalOpen)
 
 function openCreateModal() {
   editingStyle.value = null
@@ -229,12 +263,19 @@ function openEditModal(s: EventStyleDto) {
 
 async function save() {
   formError.value = ''
+  const result = styleSchema.value.safeParse(form.value)
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
+    return
+  }
+  fieldErrors.value = {}
+  const data = result.data // trimmed name, colours as "DADADA"
   saving.value = true
   try {
     const payload = {
-      name: form.value.name,
-      fillColorHex: form.value.fillColorHex.toUpperCase(),
-      fontColorHex: form.value.fontColorHex ? form.value.fontColorHex.toUpperCase() : undefined,
+      name: data.name,
+      fillColorHex: data.fillColorHex,
+      fontColorHex: data.fontColorHex || undefined,
       bold: form.value.bold,
       isDefaultForActivities: form.value.isDefaultForActivities,
     }

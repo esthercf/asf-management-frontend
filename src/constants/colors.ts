@@ -18,6 +18,8 @@ export const COLOUR_PALETTE = {
   alert: '#D92929',
   gray: '#A6A6A6',
   white: '#FFFFFF',
+  black: '#000000',
+  lightGray: '#DADADA', // default fill of a new event style
 } as const;
 
 // ── Derived shades ──────────────────────────────────────────────────────
