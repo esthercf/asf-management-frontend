@@ -599,6 +599,8 @@ const ru: AppLocale = {
       subtitle: 'Создание персонализированных дипломов на основе шаблона.',
       template: 'Шаблон диплома',
       templatePlaceholder: 'Выберите шаблон…',
+      chooseTemplateFirst: 'Выберите шаблон, чтобы начать. Здесь появятся варианты генерации.',
+      studentSearchPlaceholder: 'Найдите студента по имени или e-mail…',
       byTypeTitle: 'По категории',
       byTypeDesc: 'Создать дипломы сразу для всех студентов с указанным тегом.',
       bookingType: 'Категория',

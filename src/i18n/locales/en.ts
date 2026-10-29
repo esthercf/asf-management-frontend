@@ -826,6 +826,8 @@ const en = {
             template: 'Diploma template',
             templatePlaceholder: 'Choose a template…',
             byTypeTitle: 'By category',
+            chooseTemplateFirst: 'Choose a template to start. The generation options for it will appear here.',
+            studentSearchPlaceholder: 'Search the student by name or email…',
             byTypeDesc: 'Generate diplomas for every student with a given tag at once.',
             bookingType: 'Category',
             bookingTypePlaceholder: 'Choose a category…',

@@ -663,6 +663,8 @@ const fr: AppLocale = {
       subtitle: 'Générez des diplômes personnalisés à partir d’un modèle.',
       template: 'Modèle de diplôme',
       templatePlaceholder: 'Choisir un modèle…',
+      chooseTemplateFirst: 'Choisis un modèle pour commencer. Les options de génération apparaîtront ici.',
+      studentSearchPlaceholder: 'Cherche l’élève par nom ou e-mail…',
       byTypeTitle: 'Par catégorie',
       byTypeDesc: 'Générez en une seule fois les diplômes de tous les étudiants associés à une catégorie donnée.',
       bookingType: 'Catégorie',

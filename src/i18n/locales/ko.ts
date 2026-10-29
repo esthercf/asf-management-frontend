@@ -497,6 +497,8 @@ const ko: AppLocale = {
       subtitle: '템플릿을 사용하여 개인별 수료증을 생성합니다.',
       template: '수료증 템플릿',
       templatePlaceholder: '템플릿 선택…',
+      chooseTemplateFirst: '먼저 템플릿을 선택하세요. 생성 옵션이 여기에 표시됩니다.',
+      studentSearchPlaceholder: '이름 또는 이메일로 학생 검색…',
       byTypeTitle: '카테고리별',
       byTypeDesc: '특정 태그가 지정된 모든 학생의 수료증을 한 번에 생성합니다.',
       bookingType: '카테고리',

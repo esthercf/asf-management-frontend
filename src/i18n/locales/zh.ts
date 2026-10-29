@@ -626,6 +626,8 @@ const zh: AppLocale = {
       subtitle: '根据模板生成个性化证书。',
       template: '证书模板',
       templatePlaceholder: '选择模板…',
+      chooseTemplateFirst: '请先选择模板，生成选项将显示在这里。',
+      studentSearchPlaceholder: '按姓名或邮箱搜索学生…',
       byTypeTitle: '按类别生成',
       byTypeDesc: '一次性为具有指定标签的所有学生生成证书。',
       bookingType: '类别',

@@ -698,6 +698,8 @@ const it: AppLocale = {
       subtitle: 'Genera diplomi personalizzati a partire da un modello.',
       template: 'Modello del diploma',
       templatePlaceholder: 'Scegli un modello…',
+      chooseTemplateFirst: 'Scegli un modello per iniziare. Qui compariranno le opzioni di generazione.',
+      studentSearchPlaceholder: 'Cerca lo studente per nome o email…',
       byTypeTitle: 'Per categoria',
       byTypeDesc: 'Genera contemporaneamente i diplomi di tutti gli studenti con un determinato tag.',
       bookingType: 'Categoria',

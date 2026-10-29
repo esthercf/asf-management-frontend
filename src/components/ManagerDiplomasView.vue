@@ -21,7 +21,10 @@
   <!-- ── Solo / Youth (student-based) — hidden entirely once the
        Masterclass template is picked, since that flow uses a
        different data model (Activities, not Students directly). ── -->
-  <template v-if="templateKey !== 'masterclass'">
+  <!-- Nothing to generate until a template is chosen: say so, instead of showing disabled buttons -->
+  <p v-if="!templateKey" class="gen-desc">{{ t('manager.diplomas.chooseTemplateFirst') }}</p>
+
+  <template v-else-if="templateKey !== 'masterclass'">
     <!-- By booking type (bulk) -->
     <div class="card gen-card">
       <h2 class="section-title">{{ t('manager.diplomas.byTypeTitle') }}</h2>
@@ -45,7 +48,7 @@
       <h2 class="section-title">{{ t('manager.diplomas.singleTitle') }}</h2>
       <p class="gen-desc">{{ t('manager.diplomas.singleDesc') }}</p>
       <div class="search-wrap">
-        <input class="form-input" v-model="userQuery" :placeholder="t('manager.users.searchPlaceholder')"
+        <input class="form-input" v-model="userQuery" :placeholder="t('manager.diplomas.studentSearchPlaceholder')"
           @input="onUserQueryChange" @focus="showResults = true" @blur="onBlur" />
         <div v-if="showResults && userResults.length > 0" class="results-dropdown">
           <button v-for="u in userResults" :key="u.id" type="button" class="result-row"
@@ -103,8 +106,8 @@
 
       <div class="form-group">
         <label class="form-label">{{ t('manager.diplomas.searchByTeacher') }}</label>
-        <input class="form-input" v-model="activityTeacherFilter" :placeholder="t('manager.diplomas.teacherPlaceholder')"
-          @input="debouncedActivitySearch" />
+        <input class="form-input" v-model="activityTeacherFilter"
+          :placeholder="t('manager.diplomas.teacherPlaceholder')" @input="debouncedActivitySearch" />
       </div>
 
       <div v-if="loadingActivities" class="empty-state">
@@ -217,13 +220,22 @@ async function generateByType() {
     // matching the same cap used elsewhere in this app for "get
     // everyone" style requests) before handing the ids to the batch
     // generation endpoint.
-    const data = await userApi.getUsers({
-      page: 1,
-      limit: 200,
-      roleType: undefined,
-      bookingTypeEnum: [selectedBookingType.value],
-    })
-    const studentIds = (data?.data ?? []).map(u => u.id)
+    // Read EVERY page: with only the first one, students after the 200th would get no diploma, silently
+    const studentIds: string[] = []
+    let page = 1
+    let totalPages = 1
+    do {
+      const data = await userApi.getUsers({
+        page,
+        limit: 200,
+        roleType: undefined,
+        bookingTypeEnum: [selectedBookingType.value],
+      })
+      studentIds.push(...(data?.data ?? []).map(u => u.id))
+      totalPages = data?.metadata?.totalPages ?? 1
+      page++
+    } while (page <= totalPages)
+
     if (studentIds.length === 0) {
       pageError.value = t('manager.diplomas.noMatchingStudents')
       return

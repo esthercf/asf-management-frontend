@@ -591,6 +591,8 @@ const es: AppLocale = {
       subtitle: 'Genera diplomas personalizados a partir de una plantilla.',
       template: 'Plantilla del diploma',
       templatePlaceholder: 'Selecciona una plantilla…',
+      chooseTemplateFirst: 'Elige una plantilla para empezar. Aquí aparecerán las opciones de generación.',
+      studentSearchPlaceholder: 'Busca al estudiante por nombre o correo…',
       byTypeTitle: 'Por categoría',
       byTypeDesc: 'Genera diplomas para todos los estudiantes que tengan una determinada etiqueta.',
       bookingType: 'Categoría',

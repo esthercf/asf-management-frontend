@@ -845,6 +845,8 @@ const de: AppLocale = {
       subtitle: 'Personalisierte Diplome aus einer Vorlage erstellen.',
       template: 'Diplomvorlage',
       templatePlaceholder: 'Vorlage auswählen…',
+      chooseTemplateFirst: 'Wähle eine Vorlage, um zu beginnen. Die Optionen zum Erstellen erscheinen dann hier.',
+      studentSearchPlaceholder: 'Student nach Name oder E-Mail suchen…',
       byTypeTitle: 'Nach Kategorie',
       byTypeDesc: 'Diplome für alle Studenten einer bestimmten Kategorie gleichzeitig erstellen.',
       bookingType: 'Kategorie',

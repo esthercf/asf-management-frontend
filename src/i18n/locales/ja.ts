@@ -825,6 +825,8 @@ const ja: AppLocale = {
       subtitle: 'テンプレートから個別の修了証を生成します。',
       template: '修了証テンプレート',
       templatePlaceholder: 'テンプレートを選択…',
+      chooseTemplateFirst: 'まずテンプレートを選んでください。生成オプションがここに表示されます。',
+      studentSearchPlaceholder: '名前またはメールで受講生を検索…',
       byTypeTitle: 'カテゴリー別',
       byTypeDesc: '指定したタグを持つすべての学生の修了証を一括生成します。',
       bookingType: 'カテゴリー',
