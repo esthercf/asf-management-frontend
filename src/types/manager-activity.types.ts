@@ -65,6 +65,7 @@ export interface UpdateActivityDto {
   durationMinutes?: number
   roomId?: string
   comments?: string
+  label?: string
   internalComments?: string
   studentEmail?: string
   studentId?: string

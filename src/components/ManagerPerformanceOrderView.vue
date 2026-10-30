@@ -13,9 +13,9 @@
   <div class="section-row">
     <div class="contest-type-toggle">
       <button class="btn" :class="contestType === ContestTypeEnum.SOLO ? 'btn-primary' : 'btn-secondary'"
-        @click="switchContestType(ContestTypeEnum.SOLO)">{{ t('manager.contestSettings.solo') }}</button>
+        @click="switchContestType(ContestTypeEnum.SOLO)">{{ t('manager.performanceOrder.solo') }}</button>
       <button class="btn" :class="contestType === ContestTypeEnum.YOUTH ? 'btn-primary' : 'btn-secondary'"
-        @click="switchContestType(ContestTypeEnum.YOUTH)">{{ t('manager.contestSettings.youth') }}</button>
+        @click="switchContestType(ContestTypeEnum.YOUTH)">{{t('manager.performanceOrder.youth')}}</button>
     </div>
 
     <select class="form-input filter-select" v-model="selectedRoundName" @change="onRoundOrCategoryChange">
@@ -107,7 +107,7 @@
       <!-- One column per configured day -->
       <div v-for="(dayEntries, dayIdx) in dayColumns" :key="dayIdx" class="board-column">
         <div class="board-column-header">
-          <h3>{{ t('manager.contestSettings.day') }} {{ dayIdx + 1 }}</h3>
+          <h3>{{ t('manager.performanceOrder.day') }} {{ dayIdx + 1 }}</h3>
           <span class="badge badge-lav">{{ dayEntries.length }}</span>
           <span class="badge badge-sm" :class="isDayValidated(dayIdx) ? 'badge-green' : 'badge-coral'">
             {{ isDayValidated(dayIdx) ? t('manager.performanceOrder.validated') :
@@ -187,8 +187,11 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">{{ t('manager.contestSettings.pauseDuration') }}</label>
-            <input class="form-input" type="number" min="1" v-model.number="pauseForm.durationMinutes" />
+            <label class="form-label">{{ t('manager.performanceOrder.pauseDuration') }}</label>
+            <input class="form-input" :class="{ 'has-error': pauseFieldErrors.durationMinutes }" type="number" min="1"
+              v-model.number="pauseForm.durationMinutes" />
+            <span v-if="pauseFieldErrors.durationMinutes" class="field-error">{{ pauseFieldErrors.durationMinutes
+              }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.performanceOrder.pauseLabel') }}</label>
@@ -214,9 +217,9 @@
       <div class="modal">
         <h2 class="modal-title">{{ t('manager.performanceOrder.addMissingStudent') }}</h2>
         <div class="form-group">
-          <label class="form-label">{{ t('manager.users.searchPlaceholder') }}</label>
+          <label class="form-label">{{ t('manager.performanceOrder.studentSearchPlaceholder') }}</label>
           <input class="form-input" v-model="missingSearchText" @input="debouncedMissingSearch"
-            :placeholder="t('manager.users.searchPlaceholder')" />
+            :placeholder="t('manager.performanceOrder.studentSearchPlaceholder')" />
         </div>
         <div v-if="searchingMissing" class="empty-state" style="padding:1.5rem 0;">
           <InlineSpinner />
@@ -244,13 +247,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { VueDraggable } from 'vue-draggable-plus'
 import { usePerformanceOrderApi, type PerformanceOrderEntryDto, type OrderScope, type MissingCandidateDto } from '../composables/usePerformanceOrderApi'
 import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { pauseFormSchema, entryDurationSchema } from '../validation/performanceOrder.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 
 const { t } = useI18n()
 const api = usePerformanceOrderApi()
@@ -440,8 +446,16 @@ async function onDragEnd(evt: { to: HTMLElement; newIndex?: number }) {
 }
 
 async function onDurationChange(entry: PerformanceOrderEntryDto, event: Event) {
-  const minutes = Number((event.target as HTMLInputElement).value)
-  if (!minutes || minutes < 1) return
+  const input = event.target as HTMLInputElement
+  const raw = input.value.trim()
+  const result = entryDurationSchema.safeParse(raw === '' ? '' : Number(raw))
+  if (!result.success) {
+    // Say why, and put the real value back in the box instead of leaving the wrong one there
+    pageError.value = t(result.error.issues[0].message)
+    input.value = String(entry.stageDurationMinutes ?? entry.durationMinutes)
+    return
+  }
+  const minutes = result.data
   try {
     await api.updateDuration(entry.id, minutes)
     await loadBoard()
@@ -475,6 +489,20 @@ const insertingPause = ref(false)
 const pauseFormError = ref('')
 const pauseForm = ref({ rowType: 'pause' as 'pause' | 'lunch', durationMinutes: 15, label: '' })
 
+// ── Field messages of the zod validation ──
+const pauseFieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch(pauseForm, () => {
+  if (Object.keys(pauseFieldErrors.value).length === 0) return
+  const result = pauseFormSchema.safeParse(pauseForm.value)
+  pauseFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(pauseModalOpen, () => {
+  pauseFieldErrors.value = {}
+})
+
 function openInsertPauseModal(dayIndex: number | null) {
   pauseModalTargetDayIndex.value = dayIndex
   pauseForm.value = { rowType: 'pause', durationMinutes: 15, label: '' }
@@ -484,10 +512,14 @@ function openInsertPauseModal(dayIndex: number | null) {
 
 async function submitInsertPause() {
   pauseFormError.value = ''
-  if (!pauseForm.value.durationMinutes || pauseForm.value.durationMinutes < 1) {
-    pauseFormError.value = t('manager.contestSettings.validation.dayRequired')
+  const result = pauseFormSchema.safeParse(pauseForm.value)
+  if (!result.success) {
+    pauseFieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
+  pauseFieldErrors.value = {}
+  pauseForm.value.label = result.data.label // trimmed
+
   insertingPause.value = true
   try {
     const targetList = pauseModalTargetDayIndex.value === null ? unassignedEntries.value : dayColumns.value[pauseModalTargetDayIndex.value]
@@ -517,6 +549,9 @@ const missingCandidates = ref<MissingCandidateDto[]>([])
 const searchingMissing = ref(false)
 const addingMissingId = ref<string | null>(null)
 const missingStudentError = ref('')
+
+// The page behind an open window (pause/lunch, or re-adding a missing student) must not scroll
+useModalScrollLock(pauseModalOpen, missingStudentModalOpen)
 
 function openMissingStudentModal(dayIndex: number) {
   missingStudentTargetDayIndex.value = dayIndex
