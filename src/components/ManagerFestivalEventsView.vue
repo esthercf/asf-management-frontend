@@ -53,7 +53,7 @@
           <th>{{ t('manager.festivalEvents.columns.location') }}</th>
           <th>{{ t('manager.festivalEvents.columns.appliesTo') }}</th>
           <th>{{ t('manager.festivalEvents.columns.style') }}</th>
-          <th>{{ t('manager.users.columns.actions') }}</th>
+          <th>{{ t('manager.festivalEvents.columns.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -62,8 +62,8 @@
           <td><span class="badge badge-sky">{{ eventTypeLabel(ev.eventType) }}</span></td>
           <td>{{ ev.date }}</td>
           <td>{{ formatHM(ev.hour, ev.minutes) }} – {{ formatMinutes(ev.endTime) }}</td>
-          <td>{{ ev.location ?? '—' }}</td>
-          <td>{{ ev.appliesTo.join(', ') }}</td>
+          <td>{{ ev.location || '—' }}</td>
+          <td>{{ev.appliesTo.map(c => t(`common.scheduleCategories.${c}`)).join(', ')}}</td>
           <td>
             <span v-if="styleById.get(ev.styleId ?? '')" class="style-chip" :style="{
               background: '#' + styleById.get(ev.styleId ?? '')!.fillColorHex,
@@ -94,30 +94,36 @@
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.festivalEvents.columns.label') }}</label>
-          <input class="form-input" v-model="form.label" />
+          <input class="form-input" :class="{ 'has-error': fieldErrors.label }" v-model="form.label" />
+          <span v-if="fieldErrors.label" class="field-error">{{ fieldErrors.label }}</span>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.festivalEvents.columns.type') }}</label>
             <select class="form-input" v-model="form.eventType">
-              <option v-for="ty in eventTypeOptions" :key="ty" :value="ty">{{ ty }}</option>
+              <option v-for="ty in eventTypeOptions" :key="ty" :value="ty">{{ eventTypeLabel(ty) }}</option>
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.festivalEvents.columns.date') }}</label>
-            <input class="form-input" type="date" v-model="form.date" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.date }" type="date" v-model="form.date" />
+            <span v-if="fieldErrors.date" class="field-error">{{ fieldErrors.date }}</span>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ t('manager.festivalEvents.startTime') }}</label>
-            <input class="form-input" type="time" v-model="form.startTimeStr" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.startTimeStr }" type="time"
+              v-model="form.startTimeStr" />
+            <span v-if="fieldErrors.startTimeStr" class="field-error">{{ fieldErrors.startTimeStr }}</span>
           </div>
-           <div class="form-group">
+          <div class="form-group">
             <label class="form-label">{{ t('manager.festivalEvents.endTime') }}</label>
-            <input class="form-input" type="time" v-model="form.endTimeStr" />
+            <input class="form-input" :class="{ 'has-error': fieldErrors.endTimeStr }" type="time"
+              v-model="form.endTimeStr" />
+            <span v-if="fieldErrors.endTimeStr" class="field-error">{{ fieldErrors.endTimeStr }}</span>
           </div>
         </div>
 
@@ -137,7 +143,14 @@
 
         <div class="form-group">
           <label class="form-label">{{ t('manager.festivalEvents.appliesToHint') }}</label>
-          <input class="form-input" v-model="appliesToText" placeholder="ALL, YOUTH_A, YOUTH_B" />
+          <span v-if="fieldErrors.appliesTo" class="field-error">{{ fieldErrors.appliesTo }}</span>
+          <div style="display:flex; flex-wrap:wrap; gap:.4rem 1.2rem;">
+            <label v-for="c in SCHEDULE_CATEGORIES" :key="c"
+              style="display:flex; align-items:center; gap:.4rem; font-size:.85rem; cursor:pointer;">
+              <input type="checkbox" :value="c" v-model="appliesToSelected" style="width:auto;" />
+              {{ t(`common.scheduleCategories.${c}`) }}
+            </label>
+          </div>
         </div>
 
         <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
@@ -155,13 +168,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useManagerFestivalEventApi } from '../composables/useManagerFestivalEventApi'
 import type { ImportFestivalEventsResult } from '../composables/useManagerFestivalEventApi'
 import { useManagerEventStyleApi } from '../composables/useManagerEventStyleApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
+import { SCHEDULE_CATEGORIES } from '../constants/scheduleCategories'
+import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
+import { festivalEventFormSchema } from '../validation/festivalEvent.schema'
+import { useModalScrollLock } from '../composables/useModalScrollLock'
 import { FestivalEventTypeEnum } from '../types/manager-festival-event.types'
 import type { FestivalEventDto } from '../types/manager-festival-event.types'
 import type { EventStyleDto } from '../types/manager-event-style.types'
@@ -260,14 +277,14 @@ const modalOpen = ref(false)
 const editingEvent = ref<FestivalEventDto | null>(null)
 const saving = ref(false)
 const formError = ref('')
-const appliesToText = ref('')
+const appliesToSelected = ref<string[]>([])
 
 interface FormState {
   label: string
   eventType: FestivalEventTypeEnum
   date: string
   startTimeStr: string // 'HH:mm', bridges to hour/minutes for the API
-  endTimeStr: string 
+  endTimeStr: string
   location: string
   styleId: string | undefined
 }
@@ -275,16 +292,37 @@ interface FormState {
 function blankForm(): FormState {
   return {
     label: '', eventType: FestivalEventTypeEnum.OTHER, date: '',
-    startTimeStr: '09:00',endTimeStr: '09:45', location: '', styleId: undefined,
+    startTimeStr: '09:00', endTimeStr: '09:45', location: '', styleId: undefined,
   }
 }
 
 const form = ref<FormState>(blankForm())
 
+// ── Field messages of the zod validation ──
+/** What zod checks: the form plus the ticked categories (which live outside the form) */
+function formToCheck() {
+  return { ...form.value, appliesTo: appliesToSelected.value }
+}
+const fieldErrors = ref<Record<string, string>>({})
+// Once a message is showing, re-check on every change so it goes away as soon as the field is fixed.
+// (Registered BEFORE the watcher below, so that opening the window ends with a clean slate.)
+watch([form, appliesToSelected], () => {
+  if (Object.keys(fieldErrors.value).length === 0) return
+  const result = festivalEventFormSchema.safeParse(formToCheck())
+  fieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+watch(modalOpen, () => {
+  fieldErrors.value = {}
+})
+
+// The page behind the open window must not scroll
+useModalScrollLock(modalOpen)
+
 function openCreateModal() {
   editingEvent.value = null
   form.value = blankForm()
-  appliesToText.value = 'ALL'
+  appliesToSelected.value = ['ALL']
   formError.value = ''
   modalOpen.value = true
 }
@@ -300,23 +338,26 @@ function openEditModal(ev: FestivalEventDto) {
     location: ev.location ?? '',
     styleId: ev.styleId,
   }
-  appliesToText.value = ev.appliesTo.join(', ')
+  appliesToSelected.value = [...ev.appliesTo]
   formError.value = ''
   modalOpen.value = true
 }
 
 async function save() {
   formError.value = ''
-  const [hourStr, minuteStr] = form.value.startTimeStr.split(':')
-  const [endHourStr, endMinuteStr] = form.value.endTimeStr.split(':')
-  if (Number(endHourStr) * 60 + Number(endMinuteStr) <= Number(hourStr) * 60 + Number(minuteStr)) {
-    formError.value = t('manager.festivalEvents.validation.endAfterStart')
+  const result = festivalEventFormSchema.safeParse(formToCheck())
+  if (!result.success) {
+    fieldErrors.value = zodErrorsToFieldMap(result.error, t)
     return
   }
+  fieldErrors.value = {}
+  form.value.label = result.data.label // trimmed
+  const [hourStr, minuteStr] = form.value.startTimeStr.split(':')
+  const [endHourStr, endMinuteStr] = form.value.endTimeStr.split(':')
 
   saving.value = true
   try {
-    const appliesTo = appliesToText.value.split(',').map(s => s.trim()).filter(Boolean)
+    const appliesTo = [...appliesToSelected.value]
 
     if (editingEvent.value) {
       await api.update(editingEvent.value._id, {

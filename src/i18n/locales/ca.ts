@@ -3,6 +3,18 @@ import type { AppLocale } from './en'
 const ca: AppLocale = {
   common: {
     close: 'Tanca',
+     scheduleCategories: {
+      ALL: 'Tothom',
+      solo: 'Solo',
+      youth_A: 'Youth A',
+      youth_B: 'Youth B',
+      youth_C: 'Youth C',
+      youth_D: 'Youth D',
+      masterClass: 'Només masterclass',
+      firstRoundFinalist: 'Solo – 2a ronda',
+      secondRoundFinalist: 'Solo – ronda final',
+      pianist: 'Pianistes',
+    },
     add: 'Afegir',
     noResults: "No s'han trobat resultats.",
     loading: 'Carregant…',
@@ -418,6 +430,7 @@ const ca: AppLocale = {
     UserNotExistsError: 'Aquest usuari no existeix.',
     MasterclassPurchaseNotFoundError: 'Aquesta compra ja no existeix.',
     InvalidDurationError: "L'hora de finalització ha de ser posterior a la d'inici.",
+    UnknownScheduleCategoryError: 'Categoria d’horari desconeguda.',
   },
   manager: {
     activities: {
@@ -788,7 +801,17 @@ const ca: AppLocale = {
       title: "Estils d'esdeveniments",
     },
     festivalEvents: {
-      appliesToHint: "S'aplica a (separats per comes, p. ex. ALL, YOUTH_A, YOUTH_B)",
+      appliesToHint: "S'aplica a (a quins horaris apareix aquest esdeveniment)",
+      validation: {
+        labelRequired: "L'etiqueta és obligatòria.",
+        dateRequired: 'La data és obligatòria.',
+        dateInvalid: 'Aquesta data no existeix.',
+        startRequired: "L'hora d'inici és obligatòria.",
+        endRequired: "L'hora de finalització és obligatòria.",
+        timeInvalid: 'Fes servir el format HH:MM.',
+        endAfterStart: "L'hora de finalització ha de ser posterior a la d'inici.",
+        appliesToRequired: 'Tria almenys una categoria.',
+      },
       columns: {
         appliesTo: "S'aplica a",
         date: 'Data',
@@ -797,6 +820,7 @@ const ca: AppLocale = {
         style: 'Estil',
         time: 'Hora',
         type: 'Tipus',
+        actions: 'Accions',
       },
       create: 'Nou esdeveniment',
       createTitle: 'Crear esdeveniment del festival',
@@ -868,6 +892,7 @@ const ca: AppLocale = {
       category: 'Categoria',
       categoryHint: 'Coincideix amb el valor "s\'aplica a" d\'un esdeveniment del festival.',
       categoryPlaceholder: 'p. ex. YOUTH_A, ALL',
+      studentSearchPlaceholder: 'Cerca per nom, correu o codi de carpeta…',
       generateBatch: 'Generar i descarregar lot',
       generateBlank: 'Generar calendari en blanc',
       generateForUser: 'Generar calendari',

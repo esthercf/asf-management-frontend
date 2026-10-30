@@ -12,7 +12,10 @@
 
   <div class="form-group" style="max-width:320px;">
     <label class="form-label">{{ t('manager.scheduleGen.category') }}</label>
-    <input class="form-input" v-model="category" :placeholder="t('manager.scheduleGen.categoryPlaceholder')" />
+    <select class="form-input" v-model="category">
+  <option value="">{{ t('manager.scheduleGen.categoryPlaceholder') }}</option>
+  <option v-for="c in SCHEDULE_CATEGORIES" :key="c" :value="c">{{ t(`common.scheduleCategories.${c}`) }}</option>
+</select>
     <span class="field-hint">{{ t('manager.scheduleGen.categoryHint') }}</span>
   </div>
 
@@ -31,7 +34,7 @@
     <h2 class="section-title">{{ t('manager.scheduleGen.userTitle') }}</h2>
     <p class="gen-desc">{{ t('manager.scheduleGen.userDesc') }}</p>
     <div class="search-wrap">
-      <input class="form-input" v-model="userQuery" :placeholder="t('manager.users.searchPlaceholder')"
+      <input class="form-input" v-model="userQuery" :placeholder="t('manager.scheduleGen.studentSearchPlaceholder')"
         @input="onUserQueryChange" @focus="showResults = true" @blur="onBlur" />
       <div v-if="showResults && userResults.length > 0" class="results-dropdown">
         <button v-for="u in userResults" :key="u.id" type="button" class="result-row" @mousedown.prevent="pickUser(u)">
@@ -85,6 +88,7 @@ import { useManagerUserApi } from '../composables/useManagerUserApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
 import type { ManagerUserBaseDto } from '../types/manager-user.types'
+import { SCHEDULE_CATEGORIES } from '../constants/scheduleCategories'
 
 const { t } = useI18n()
 const userApi = useManagerUserApi()

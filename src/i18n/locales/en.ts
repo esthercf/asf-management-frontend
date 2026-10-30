@@ -1,6 +1,18 @@
 const en = {
     common: {
         noResults: 'No results found.',
+        scheduleCategories: {
+            ALL: 'Everyone',
+            solo: 'Solo',
+            youth_A: 'Youth A',
+            youth_B: 'Youth B',
+            youth_C: 'Youth C',
+            youth_D: 'Youth D',
+            masterClass: 'Masterclass only',
+            firstRoundFinalist: 'Solo – 2nd round',
+            secondRoundFinalist: 'Solo – final round',
+            pianist: 'Pianists',
+        },
         close: 'Close',
         add: 'Add',
         loading: 'Loading…',
@@ -417,6 +429,7 @@ const en = {
         UserNotExistsError: 'This user does not exist.',
         MasterclassPurchaseNotFoundError: 'This purchase no longer exists.',
         InvalidDurationError: 'The end time must be after the start time.',
+        UnknownScheduleCategoryError: 'Unknown schedule category.',
     },
     manager: {
         panel: 'Management Panel',
@@ -603,7 +616,17 @@ const en = {
             startTime: 'Start time',
             style: 'Style',
             noStyle: 'No style',
-            appliesToHint: 'Applies to (comma-separated, e.g. ALL, YOUTH_A, YOUTH_B)',
+            appliesToHint: 'Applies to (whose schedules show this event)',
+            validation: {
+                labelRequired: 'The label is required.',
+                dateRequired: 'The date is required.',
+                dateInvalid: 'This date does not exist.',
+                startRequired: 'The start time is required.',
+                endRequired: 'The end time is required.',
+                timeInvalid: 'Use the format HH:MM.',
+                endAfterStart: 'The end time must be after the start time.',
+                appliesToRequired: 'Choose at least one category.',
+            },
             import: 'Import from Excel',
             importRowError: 'Row {row}',
             columns: {
@@ -614,6 +637,7 @@ const en = {
                 location: 'Location',
                 appliesTo: 'Applies to',
                 style: 'Style',
+                actions: 'Actions',
             },
             filters: {
                 allTypes: 'All types',
@@ -706,6 +730,7 @@ const en = {
             category: 'Category',
             categoryPlaceholder: 'e.g. YOUTH_A, ALL',
             categoryHint: 'Matches a festival event\'s "applies to" value.',
+            studentSearchPlaceholder: 'Search by name, email or folder code…',
             blankTitle: 'Blank / category preview',
             blankDesc: 'Generate the shared category schedule with no personal masterclasses layered in — useful for checking the festival configuration itself.',
             generateBlank: 'Generate blank schedule',
