@@ -306,6 +306,7 @@ const zh: AppLocale = {
         secondRoundFinalist: '第二轮决赛选手',
         VIP: 'VIP',
         ALL: '全部',
+        pianist: '钢琴伴奏',
       },
       rehearsal: {
         artist: '钢琴伴奏',
@@ -424,6 +425,11 @@ const zh: AppLocale = {
     RoundAlreadyExistsError: '已存在同名的轮次。',
     UnknownScheduleCategoryError: '未知的日程类别。',
     NothingToScheduleError: '此日程没有可显示的内容。',
+    EventStyleNotFoundError: '该样式已不存在。',
+    FestivalEventNotFoundError: '该音乐节活动已不存在。',
+    ImportFileInvalid: '无法读取该文件。请检查是否为正确的 Excel 模板。',
+    InvalidParameter: '请求中有无效内容。',
+    NoAvailabilityError: '没有可用名额。',
     OrderReferenceAlreadyUsedError: '已有其他购买记录使用此订单号。',
     NotAMasterclassError: '所选活动不是大师课。',
     MasterclassAlreadySoldError: '该大师课已售给其他学生。',
@@ -572,6 +578,8 @@ const zh: AppLocale = {
       previewSample: '示例文本',
       actions: '操作',
       fontColorPlaceholder: '{hex}（可选）',
+      defaultForActivities: '活动默认样式',
+      defaultForActivitiesHint: '日程中的大师课和其他活动使用此样式。只应有一个样式设置为默认。',
       validation: {
         nameRequired: '名称为必填项。',
         nameTaken: '已有其他样式使用此名称。',
@@ -832,6 +840,7 @@ const zh: AppLocale = {
     },
     festivalEvents: {
       startTime: '开始时间',
+      endTime: '结束时间',
       types: {
         contest: '比赛',
         concert: '音乐会',

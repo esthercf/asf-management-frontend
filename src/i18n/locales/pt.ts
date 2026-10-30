@@ -306,6 +306,7 @@ const pt: AppLocale = {
         secondRoundFinalist: 'Finalista da segunda rodada',
         VIP: 'VIP',
         ALL: 'Todos',
+        pianist: 'Pianista',
       },
       rehearsal: {
         artist: 'Pianista',
@@ -432,6 +433,11 @@ const pt: AppLocale = {
     MasterclassPurchaseNotFoundError: 'Esta compra já não existe.',
     InvalidDurationError: 'A hora de fim deve ser posterior à de início.',
     NothingToScheduleError: 'Não há nada para pôr neste horário.',
+    EventStyleNotFoundError: 'Este estilo já não existe.',
+    FestivalEventNotFoundError: 'Este evento do festival já não existe.',
+    ImportFileInvalid: 'Não foi possível ler o ficheiro. Verifique se é o modelo Excel correto.',
+    InvalidParameter: 'Há algo no pedido que não é válido.',
+    NoAvailabilityError: 'Não há disponibilidade para isto.',
   },
   manager: {
     home: {
@@ -571,6 +577,8 @@ const pt: AppLocale = {
       previewSample: 'Texto de exemplo',
       actions: 'Ações',
       fontColorPlaceholder: '{hex} (opcional)',
+      defaultForActivities: 'Estilo predefinido das atividades',
+      defaultForActivitiesHint: 'As masterclasses e outras atividades dos horários usam este estilo. Só um estilo deve tê-lo.',
       validation: {
         nameRequired: 'O nome é obrigatório.',
         nameTaken: 'Já existe outro estilo com este nome.',
@@ -613,6 +621,7 @@ const pt: AppLocale = {
         other: 'Outro',
       },
       startTime: 'Hora de início',
+      endTime: 'Hora de fim',
       create: 'Novo evento',
       createTitle: 'Criar evento do festival',
       deleteConfirm: 'Eliminar este evento do festival?',

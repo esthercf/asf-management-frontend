@@ -310,6 +310,7 @@ const ca: AppLocale = {
         secondRoundFinalist: 'Finalista de la segona ronda',
         VIP: 'VIP',
         ALL: 'Tots',
+        pianist: 'Pianista',
       },
       rehearsal: {
         artist: 'Pianista',
@@ -432,6 +433,11 @@ const ca: AppLocale = {
     InvalidDurationError: "L'hora de finalització ha de ser posterior a la d'inici.",
     UnknownScheduleCategoryError: 'Categoria d’horari desconeguda.',
     NothingToScheduleError: 'No hi ha res per posar en aquest horari.',
+    EventStyleNotFoundError: 'Aquest estil ja no existeix.',
+    FestivalEventNotFoundError: 'Aquest esdeveniment del festival ja no existeix.',
+    ImportFileInvalid: "No s'ha pogut llegir el fitxer. Comprova que sigui la plantilla Excel correcta.",
+    InvalidParameter: 'Hi ha alguna cosa a la petició que no és vàlida.',
+    NoAvailabilityError: 'No hi ha disponibilitat per a això.',
   },
   manager: {
     activities: {
@@ -802,7 +808,9 @@ const ca: AppLocale = {
       preview: 'Vista prèvia',
       previewSample: "Text d'exemple",
       actions: 'Accions',
-      fontColorPlaceholder: '{hex} (optional)',
+      fontColorPlaceholder: '{hex} (opcional)',
+      defaultForActivities: 'Estil per defecte de les activitats',
+      defaultForActivitiesHint: "Les masterclasses i altres activitats dels horaris fan servir aquest estil. Només un estil l'hauria de tenir.",
       validation: {
         nameRequired: 'El nom és obligatori.',
         nameTaken: 'Ja hi ha un altre estil amb aquest nom.',
@@ -860,6 +868,7 @@ const ca: AppLocale = {
       subtitle: 'El calendari compartit del festival — fases del concurs, concerts, cerimònies, pauses.',
       time: 'Hora',
       startTime: "Hora d'inici",
+      endTime: 'Hora de finalització',
       title: 'Esdeveniments del festival',
     },
     loginTagline: 'Andorra Sax Fest — Gestió',

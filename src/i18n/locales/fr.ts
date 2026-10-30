@@ -306,6 +306,7 @@ const fr: AppLocale = {
         secondRoundFinalist: 'Finaliste du deuxième tour',
         VIP: 'VIP',
         ALL: 'Tous',
+        pianist: 'Pianiste',
       },
       sort: {
         nameAZ: 'Nom : A–Z',
@@ -432,6 +433,11 @@ const fr: AppLocale = {
     MasterclassPurchaseNotFoundError: 'Cet achat n’existe plus.',
     InvalidDurationError: 'L’heure de fin doit être après l’heure de début.',
     NothingToScheduleError: 'Il n’y a rien à mettre dans ce planning.',
+    EventStyleNotFoundError: 'Ce style n’existe plus.',
+    FestivalEventNotFoundError: 'Cet événement du festival n’existe plus.',
+    ImportFileInvalid: 'Le fichier n’a pas pu être lu. Vérifie que c’est le bon modèle Excel.',
+    InvalidParameter: 'Quelque chose dans la demande n’est pas valide.',
+    NoAvailabilityError: 'Il n’y a pas de disponibilité pour cela.',
   },
   manager: {
     home: {
@@ -571,6 +577,8 @@ const fr: AppLocale = {
       previewSample: 'Exemple de texte',
       actions: 'Actions',
       fontColorPlaceholder: '{hex} (facultatif)',
+      defaultForActivities: 'Style par défaut des activités',
+      defaultForActivitiesHint: 'Les masterclasses et autres activités des plannings utilisent ce style. Un seul style devrait l’avoir.',
       validation: {
         nameRequired: 'Le nom est obligatoire.',
         nameTaken: 'Un autre style porte déjà ce nom.',
@@ -604,6 +612,7 @@ const fr: AppLocale = {
         type: 'Type',
       },
       startTime: 'Heure de début',
+      endTime: 'Heure de fin',
       types: {
         contest: 'Concours',
         concert: 'Concert',

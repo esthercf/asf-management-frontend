@@ -306,6 +306,7 @@ const it: AppLocale = {
         secondRoundFinalist: 'Finalista del secondo turno',
         VIP: 'VIP',
         ALL: 'Tutti',
+        pianist: 'Pianista',
       },
       rehearsal: {
         artist: 'Pianista',
@@ -424,6 +425,11 @@ const it: AppLocale = {
     RoundAlreadyExistsError: 'Esiste già un turno con questo nome.',
     UnknownScheduleCategoryError: 'Categoria di programma sconosciuta.',
     NothingToScheduleError: 'Non c’è niente da mettere in questo programma.',
+    EventStyleNotFoundError: 'Questo stile non esiste più.',
+    FestivalEventNotFoundError: 'Questo evento del festival non esiste più.',
+    ImportFileInvalid: 'Impossibile leggere il file. Controlla che sia il modello Excel corretto.',
+    InvalidParameter: 'Qualcosa nella richiesta non è valido.',
+    NoAvailabilityError: 'Non c’è disponibilità per questo.',
     OrderReferenceAlreadyUsedError: "Un altro acquisto ha già questo riferimento d'ordine.",
     NotAMasterclassError: "L'attività selezionata non è una masterclass.",
     MasterclassAlreadySoldError: 'Questa masterclass è già venduta a un altro studente.',
@@ -432,6 +438,7 @@ const it: AppLocale = {
     UserNotExistsError: 'Questo utente non esiste.',
     MasterclassPurchaseNotFoundError: 'Questo acquisto non esiste più.',
     InvalidDurationError: "L'orario di fine deve essere successivo a quello di inizio.",
+
   },
   manager: {
     home: {
@@ -571,6 +578,8 @@ const it: AppLocale = {
       previewSample: 'Testo di esempio',
       actions: 'Azioni',
       fontColorPlaceholder: '{hex} (facoltativo)',
+      defaultForActivities: 'Stile predefinito delle attività',
+      defaultForActivitiesHint: 'Le masterclass e le altre attività dei programmi usano questo stile. Solo uno stile dovrebbe averlo.',
       validation: {
         nameRequired: 'Il nome è obbligatorio.',
         nameTaken: 'Un altro stile ha già questo nome.',
@@ -613,6 +622,7 @@ const it: AppLocale = {
         allTypes: 'Tutti i tipi',
       },
       startTime: 'Ora di inizio',
+      endTime: 'Ora di fine',
       types: {
         contest: 'Concorso',
         concert: 'Concerto',

@@ -307,6 +307,7 @@ const de: AppLocale = {
         secondRoundFinalist: 'Finalist der zweiten Runde',
         VIP: 'VIP',
         ALL: 'Alle',
+        pianist: 'Pianist',
       },
       rehearsal: {
         artist: 'Pianist',
@@ -441,6 +442,11 @@ const de: AppLocale = {
     RoundAlreadyExistsError: 'Eine Runde mit diesem Namen existiert bereits.',
     UnknownScheduleCategoryError: 'Unbekannte Zeitplan-Kategorie.',
     NothingToScheduleError: 'Für diesen Zeitplan gibt es nichts anzuzeigen.',
+    EventStyleNotFoundError: 'Dieser Stil existiert nicht mehr.',
+    FestivalEventNotFoundError: 'Dieses Festivalereignis existiert nicht mehr.',
+    ImportFileInvalid: 'Die Datei konnte nicht gelesen werden. Prüfe, ob es die richtige Excel-Vorlage ist.',
+    InvalidParameter: 'Etwas in der Anfrage ist ungültig.',
+    NoAvailabilityError: 'Dafür gibt es keine Verfügbarkeit.',
     OrderReferenceAlreadyUsedError: 'Ein anderer Kauf hat bereits diese Bestellreferenz.',
     NotAMasterclassError: 'Die gewählte Aktivität ist keine Masterclass.',
     MasterclassAlreadySoldError: 'Diese Masterclass ist bereits an einen anderen Studenten verkauft.',
@@ -589,6 +595,8 @@ const de: AppLocale = {
       previewSample: 'Beispieltext',
       actions: 'Aktionen',
       fontColorPlaceholder: '{hex} (optional)',
+      defaultForActivities: 'Standardstil für Aktivitäten',
+      defaultForActivitiesHint: 'Masterclasses und andere Aktivitäten in den Zeitplänen verwenden diesen Stil. Nur ein Stil sollte ihn haben.',
       validation: {
         nameRequired: 'Der Name ist erforderlich.',
         nameTaken: 'Ein anderer Stil hat bereits diesen Namen.',
@@ -632,6 +640,7 @@ const de: AppLocale = {
     },
     festivalEvents: {
       startTime: 'Startzeit',
+      endTime: 'Endzeit',
       appliesToHint: 'Gilt für (in welchen Zeitplänen dieses Ereignis erscheint)',
       validation: {
         labelRequired: 'Die Bezeichnung ist erforderlich.',
@@ -984,7 +993,7 @@ const de: AppLocale = {
       validation: {
         durationRequired: 'Die Dauer ist erforderlich.',
         durationInvalid: 'Verwende eine ganze Zahl von Minuten, 1 oder mehr.',
-      }, 
+      },
       autoFill: 'Tage automatisch füllen',
       addMissingStudent: 'Fehlenden Studenten hinzufügen',
       noMissingStudentsFound: 'Keine passenden Studenten gefunden.',

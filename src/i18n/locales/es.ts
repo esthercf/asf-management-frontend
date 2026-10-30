@@ -306,6 +306,7 @@ const es: AppLocale = {
         secondRoundFinalist: 'Finalista de la segunda ronda',
         VIP: 'VIP',
         ALL: 'Todos',
+        pianist: 'Pianista',
       },
       sort: {
         nameAZ: 'Nombre: A–Z',
@@ -424,6 +425,11 @@ const es: AppLocale = {
     RoundAlreadyExistsError: 'Ya existe una ronda con este nombre.',
     UnknownScheduleCategoryError: 'Categoría de horario desconocida.',
     NothingToScheduleError: 'No hay nada que poner en este horario.',
+    EventStyleNotFoundError: 'Este estilo ya no existe.',
+    FestivalEventNotFoundError: 'Este evento del festival ya no existe.',
+    ImportFileInvalid: 'No se ha podido leer el archivo. Comprueba que sea la plantilla Excel correcta.',
+    InvalidParameter: 'Hay algo en la petición que no es válido.',
+    NoAvailabilityError: 'No hay disponibilidad para esto.',
     OrderReferenceAlreadyUsedError: 'Ya hay otra compra con esta referencia de pedido.',
     NotAMasterclassError: 'La actividad seleccionada no es una masterclass.',
     MasterclassAlreadySoldError: 'Esta masterclass ya está vendida a otro estudiante.',
@@ -555,6 +561,8 @@ const es: AppLocale = {
       previewSample: 'Texto de ejemplo',
       actions: 'Acciones',
       fontColorPlaceholder: '{hex} (opcional)',
+      defaultForActivities: 'Estilo por defecto de las actividades',
+      defaultForActivitiesHint: 'Las masterclasses y otras actividades de los horarios usan este estilo. Solo un estilo debería tenerlo.',
       validation: {
         nameRequired: 'El nombre es obligatorio.',
         nameTaken: 'Ya hay otro estilo con este nombre.',
@@ -567,6 +575,7 @@ const es: AppLocale = {
     },
     festivalEvents: {
       startTime: 'Hora de inicio',
+      endTime: 'Hora de fin',
       appliesToHint: 'Se aplica a (en qué horarios aparece este evento)',
       validation: {
         labelRequired: 'La etiqueta es obligatoria.',
