@@ -32,7 +32,8 @@
   </div>
 
   <div v-if="importResult" class="card import-result-card">
-    <p><strong>{{ importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount') }}</strong></p>
+    <p><strong>{{ importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount')
+    }}</strong></p>
     <ul v-if="importResult.errors.length > 0" class="import-errors">
       <li v-for="err in importResult.errors" :key="err.rowNumber">
         {{ t('manager.activities.importRow', { row: err.rowNumber }) }}: {{ err.message }}
@@ -194,6 +195,11 @@
           <span class="field-hint">{{ t('manager.activities.linkedUsersHint') }}</span>
         </div>
 
+        <div class="form-group">
+          <label class="form-label">{{ t('manager.activities.label') }}</label>
+          <input class="form-input" v-model="form.label" :placeholder="t('manager.activities.labelPlaceholder')" />
+          <span class="field-hint">{{ t('manager.activities.labelHint') }}</span>
+        </div>
         <div class="form-group">
           <label class="form-label">{{ t('manager.activities.comments') }}</label>
           <input class="form-input" v-model="form.comments" />
@@ -368,6 +374,7 @@ interface FormState {
   startTimeStr: string
   durationMinutes: number
   roomId: string | undefined
+  label: string
   comments: string
   internalComments: string
   studentEmail: string
@@ -379,7 +386,7 @@ function blankForm(): FormState {
   return {
     type: ActivityTypeEnum.MASTERCLASS, teacherRawName: '', teacherEmail: '',
     date: '', startTimeStr: '09:00', durationMinutes: 45, roomId: undefined,
-    comments: '', internalComments: '', studentEmail: '', folderCode: '', userIds: [],
+    label: '', comments: '', internalComments: '', studentEmail: '', folderCode: '', userIds: [],
   }
 }
 
@@ -420,6 +427,7 @@ function openEditModal(a: ActivityDto) {
     startTimeStr: `${a.hour.toString().padStart(2, '0')}:${a.minutes.toString().padStart(2, '0')}`,
     durationMinutes: a.endTime - a.startTime,
     roomId: a.roomId,
+    label: a.label ?? '',
     comments: a.comments ?? '',
     internalComments: a.internalComments ?? '',
     studentEmail: a.studentEmail ?? '',
@@ -456,6 +464,7 @@ async function save() {
         minutes: Number(minuteStr),
         durationMinutes: form.value.durationMinutes,
         roomId: form.value.roomId,
+        label: form.value.label.trim(),
         comments: form.value.comments || undefined,
         internalComments: form.value.internalComments || undefined,
         // A masterclass gets its student only from its purchase

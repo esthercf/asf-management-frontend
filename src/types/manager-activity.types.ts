@@ -24,6 +24,7 @@ export interface ActivityDto {
   day: number
   roomId?: string
   roomNumber: number
+  label?: string | null
   comments?: string | null
   internalComments?: string | null
   _createdAt: string
@@ -47,6 +48,7 @@ export interface CreateActivityDto {
   minutes: number
   durationMinutes?: number // defaults to 45 on the backend if omitted
   roomId?: string
+  label?: string
   comments?: string
   internalComments?: string
   studentEmail?: string
