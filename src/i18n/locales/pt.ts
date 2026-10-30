@@ -431,6 +431,7 @@ const pt: AppLocale = {
     UserNotExistsError: 'Este utilizador não existe.',
     MasterclassPurchaseNotFoundError: 'Esta compra já não existe.',
     InvalidDurationError: 'A hora de fim deve ser posterior à de início.',
+    NothingToScheduleError: 'Não há nada para pôr neste horário.',
   },
   manager: {
     home: {
@@ -654,6 +655,13 @@ const pt: AppLocale = {
       categoryHint: 'O horário mostra os eventos do festival desta categoria (e os de todos).',
       categoryPlaceholder: 'Escolha uma categoria…',
       studentSearchPlaceholder: 'Procure por nome, e-mail ou código de pasta…',
+      artistTitle: 'Artistas e júri',
+      artistDesc: 'O horário de um professor, membro do júri ou artista: as suas masterclasses, as atividades a que está ligado e os eventos do festival que escolher.',
+      artistMasterclasses: 'As suas masterclasses (vendidas: com o aluno; livres: uma caixa amarela vazia)',
+      artistLinked: 'Atividades a que está ligado (reuniões, ensaios especiais…)',
+      artistCategories: 'Eventos do festival destas categorias:',
+      artistNothingTicked: 'Marque pelo menos uma coisa para incluir.',
+      generateForArtist: 'Gerar horário',
       generateBatch: 'Gerar e descarregar lote',
       generateBlank: 'Gerar calendário em branco',
       generateForUser: 'Gerar calendário',

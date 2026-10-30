@@ -431,6 +431,7 @@ const fr: AppLocale = {
     UserNotExistsError: 'Cet utilisateur n’existe pas.',
     MasterclassPurchaseNotFoundError: 'Cet achat n’existe plus.',
     InvalidDurationError: 'L’heure de fin doit être après l’heure de début.',
+    NothingToScheduleError: 'Il n’y a rien à mettre dans ce planning.',
   },
   manager: {
     home: {
@@ -892,7 +893,14 @@ const fr: AppLocale = {
       category: 'Catégorie',
       categoryHint: 'Le planning montre les événements du festival de cette catégorie (et ceux pour tout le monde).',
       categoryPlaceholder: 'Choisis une catégorie…',
-      studentSearchPlaceholder: 'Cherche par nom, e-mail ou code de dossier…',
+           studentSearchPlaceholder: 'Cherche par nom, e-mail ou code de dossier…',
+      artistTitle: 'Artistes et jury',
+      artistDesc: 'Le planning d’un professeur, membre du jury ou artiste : ses masterclasses, les activités auxquelles il est lié et les événements du festival que tu choisis.',
+      artistMasterclasses: 'Ses masterclasses (vendues : avec l’élève ; libres : une case jaune vide)',
+      artistLinked: 'Activités auxquelles il est lié (réunions, répétitions spéciales…)',
+      artistCategories: 'Événements du festival de ces catégories :',
+      artistNothingTicked: 'Coche au moins un élément à inclure.',
+      generateForArtist: 'Générer le planning',
       generateBatch: 'Générer et télécharger le lot',
       generateBlank: 'Générer le calendrier vierge',
       generateForUser: 'Générer le calendrier',

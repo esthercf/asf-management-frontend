@@ -13,9 +13,9 @@
   <div class="form-group" style="max-width:320px;">
     <label class="form-label">{{ t('manager.scheduleGen.category') }}</label>
     <select class="form-input" v-model="category">
-  <option value="">{{ t('manager.scheduleGen.categoryPlaceholder') }}</option>
-  <option v-for="c in SCHEDULE_CATEGORIES" :key="c" :value="c">{{ t(`common.scheduleCategories.${c}`) }}</option>
-</select>
+      <option value="">{{ t('manager.scheduleGen.categoryPlaceholder') }}</option>
+      <option v-for="c in SCHEDULE_CATEGORIES" :key="c" :value="c">{{ t(`common.scheduleCategories.${c}`) }}</option>
+    </select>
     <span class="field-hint">{{ t('manager.scheduleGen.categoryHint') }}</span>
   </div>
 
@@ -61,7 +61,8 @@
       <input class="form-input" v-model="batchQuery" :placeholder="t('manager.users.searchPlaceholder')"
         @input="onBatchQueryChange" @focus="showBatchResults = true" @blur="onBatchBlur" />
       <div v-if="showBatchResults && batchResults.length > 0" class="results-dropdown">
-        <button v-for="u in batchResults" :key="u.id" type="button" class="result-row" @mousedown.prevent="addBatchUser(u)">
+        <button v-for="u in batchResults" :key="u.id" type="button" class="result-row"
+          @mousedown.prevent="addBatchUser(u)">
           {{ u.firstnames }} {{ u.surnames }} — {{ u.email }}
         </button>
       </div>
@@ -72,13 +73,60 @@
         <button class="clear-btn" type="button" @click="removeBatchUser(u.id)">✕</button>
       </div>
     </div>
-    <button class="btn btn-primary" style="margin-top:.75rem;" :disabled="!category || batchUsers.length === 0 || generatingBatch"
-      @click="generateBatch">
+    <button class="btn btn-primary" style="margin-top:.75rem;"
+      :disabled="!category || batchUsers.length === 0 || generatingBatch" @click="generateBatch">
       <InlineSpinner v-if="generatingBatch" />
       <span v-else>📦 {{ t('manager.scheduleGen.generateBatch') }} ({{ batchUsers.length }})</span>
     </button>
   </div>
-</template>
+
+  <!-- Artists & jury: their masterclasses, linked activities and the events they choose -->
+  <div class="card gen-card">
+    <h2 class="section-title">{{ t('manager.scheduleGen.artistTitle') }}</h2>
+    <p class="gen-desc">{{ t('manager.scheduleGen.artistDesc') }}</p>
+    <div class="search-wrap">
+      <input class="form-input" v-model="artistQuery" :placeholder="t('manager.scheduleGen.studentSearchPlaceholder')"
+        @input="onArtistQueryChange" @focus="showArtistResults = true" @blur="onArtistBlur" />
+      <div v-if="showArtistResults && artistResults.length > 0" class="results-dropdown">
+        <button v-for="u in artistResults" :key="u.id" type="button" class="result-row"
+          @mousedown.prevent="pickArtist(u)">
+          {{ u.firstnames }} {{ u.surnames }} — {{ u.email }}
+        </button>
+      </div>
+    </div>
+    <div v-if="pickedArtist" class="selected-chip" style="margin-top:.75rem;">
+      <span>{{ pickedArtist.firstnames }} {{ pickedArtist.surnames }}</span>
+      <button class="clear-btn" type="button" @click="pickedArtist = null">✕</button>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:.4rem; margin-top:1rem; font-size:.88rem;">
+      <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+        <input type="checkbox" v-model="artistMasterclasses" style="width:auto;" />
+        {{ t('manager.scheduleGen.artistMasterclasses') }}
+      </label>
+      <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+        <input type="checkbox" v-model="artistLinked" style="width:auto;" />
+        {{ t('manager.scheduleGen.artistLinked') }}
+      </label>
+    </div>
+
+    <p class="gen-desc" style="margin-bottom:.4rem;">{{ t('manager.scheduleGen.artistCategories') }}</p>
+    <div style="display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; font-size:.85rem;">
+      <label v-for="c in SCHEDULE_CATEGORIES" :key="c"
+        style="display:flex; align-items:center; gap:.4rem; cursor:pointer;">
+        <input type="checkbox" :value="c" v-model="artistCategories" style="width:auto;" />
+        {{ t(`common.scheduleCategories.${c}`) }}
+      </label>
+    </div>
+
+    <p v-if="!artistHasContent()" class="gen-desc">{{ t('manager.scheduleGen.artistNothingTicked') }}</p>
+    <button class="btn btn-primary" style="margin-top:.75rem;"
+      :disabled="!pickedArtist || !artistHasContent() || generatingArtist" @click="generateForArtist">
+      <InlineSpinner v-if="generatingArtist" />
+      <span v-else>📄 {{ t('manager.scheduleGen.generateForArtist') }}</span>
+    </button>
+  </div>
+</template>>
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -247,7 +295,63 @@ async function generateBatch() {
     generatingBatch.value = false
   }
 }
+
+// ── Artists & jury (the tuner counts as an artist) ──────────────────────
+const artistQuery = ref('')
+const artistResults = ref<ManagerUserBaseDto[]>([])
+const showArtistResults = ref(false)
+const pickedArtist = ref<ManagerUserBaseDto | null>(null)
+const artistMasterclasses = ref(true) // the masterclasses they teach
+const artistLinked = ref(true) // meetings, special rehearsals… they are linked to
+const artistCategories = ref<string[]>(['ALL']) // festival events of these categories
+const generatingArtist = ref(false)
+let artistDebounce: ReturnType<typeof setTimeout> | undefined
+
+/** Something must be ticked, or the schedule would be empty */
+const artistHasContent = () => artistMasterclasses.value || artistLinked.value || artistCategories.value.length > 0
+
+function onArtistQueryChange() {
+  if (artistDebounce) clearTimeout(artistDebounce)
+  artistDebounce = setTimeout(async () => {
+    artistResults.value = await searchUsers(artistQuery.value).catch(() => [])
+  }, 300)
+}
+
+function pickArtist(u: ManagerUserBaseDto) {
+  pickedArtist.value = u
+  showArtistResults.value = false
+  artistQuery.value = ''
+}
+
+function onArtistBlur() {
+  setTimeout(() => { showArtistResults.value = false }, 100)
+}
+
+async function generateForArtist() {
+  if (!pickedArtist.value) return
+  generatingArtist.value = true
+  pageError.value = ''
+  try {
+    await downloadFile(
+      `/schedule/generate/artist/${pickedArtist.value.id}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          masterclasses: artistMasterclasses.value,
+          linkedActivities: artistLinked.value,
+          categories: artistCategories.value,
+        }) as any,
+      },
+      `${pickedArtist.value.firstnames}-schedule.xlsx`,
+    )
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    generatingArtist.value = false
+  }
+}
 </script>
+
 
 <style scoped>
 .gen-card {

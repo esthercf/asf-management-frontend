@@ -3,7 +3,7 @@ import type { AppLocale } from './en'
 const ca: AppLocale = {
   common: {
     close: 'Tanca',
-     scheduleCategories: {
+    scheduleCategories: {
       ALL: 'Tothom',
       solo: 'Solo',
       youth_A: 'Youth A',
@@ -431,6 +431,7 @@ const ca: AppLocale = {
     MasterclassPurchaseNotFoundError: 'Aquesta compra ja no existeix.',
     InvalidDurationError: "L'hora de finalització ha de ser posterior a la d'inici.",
     UnknownScheduleCategoryError: 'Categoria d’horari desconeguda.',
+    NothingToScheduleError: 'No hi ha res per posar en aquest horari.',
   },
   manager: {
     activities: {
@@ -893,6 +894,13 @@ const ca: AppLocale = {
       categoryHint: 'Coincideix amb el valor "s\'aplica a" d\'un esdeveniment del festival.',
       categoryPlaceholder: 'p. ex. YOUTH_A, ALL',
       studentSearchPlaceholder: 'Cerca per nom, correu o codi de carpeta…',
+      artistTitle: 'Artistes i jurat',
+      artistDesc: "L'horari d'un professor, membre del jurat o artista: les seves masterclasses, les activitats on està vinculat i els esdeveniments del festival que triïs.",
+      artistMasterclasses: 'Les seves masterclasses (les venudes mostren l’estudiant; les lliures, una casella groga buida)',
+      artistLinked: 'Activitats on està vinculat (reunions, assajos especials…)',
+      artistCategories: 'Esdeveniments del festival d’aquestes categories:',
+      artistNothingTicked: 'Marca almenys una cosa per incloure.',
+      generateForArtist: 'Genera l’horari',
       generateBatch: 'Generar i descarregar lot',
       generateBlank: 'Generar calendari en blanc',
       generateForUser: 'Generar calendari',
