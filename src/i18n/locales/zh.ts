@@ -503,7 +503,7 @@ const zh: AppLocale = {
       filters: {
         allTypes: '所有类型',
       },
-      internalComments: '内部备注（仅限工作人员）',
+      location: '地点（例如 La Llacuna、Auditori）',
       noRoom: '未分配房间',
       searchPlaceholder: '按教师姓名搜索…',
       studentSection: '学生（如已分配）',

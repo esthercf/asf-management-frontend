@@ -698,7 +698,7 @@ const en = {
             noRoom: 'No room assigned',
             studentSection: 'Student (if already assigned)',
             comments: 'Comments',
-            internalComments: 'Internal comments (staff only)',
+            location: 'Location (e.g. La Llacuna, Auditori)',
             filterByArtistJury: 'Filter by artist/jury',
             hideArtistJuryFilter: 'Hide artist/jury filter',
             linkedUsers: 'Linked users',

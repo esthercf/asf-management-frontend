@@ -713,7 +713,7 @@ const ko: AppLocale = {
       filters: {
         allTypes: '모든 유형',
       },
-      internalComments: '내부 코멘트 (직원 전용)',
+      location: '장소 (예: La Llacuna, Auditori)',
       noRoom: '배정된 공간 없음',
       searchPlaceholder: '강사 이름으로 검색…',
       studentSection: '학생 (이미 배정된 경우)',

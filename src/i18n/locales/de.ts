@@ -520,7 +520,7 @@ const de: AppLocale = {
       filters: {
         allTypes: 'Alle Typen',
       },
-      internalComments: 'Interne Kommentare (nur Personal)',
+      location: 'Ort (z. B. La Llacuna, Auditori)',
       noRoom: 'Kein Raum zugewiesen',
       searchPlaceholder: 'Nach Lehrername suchen…',
       studentSection: 'Student (falls bereits zugewiesen)',

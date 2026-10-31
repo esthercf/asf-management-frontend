@@ -486,7 +486,7 @@ const ca: AppLocale = {
       filters: {
         allTypes: 'Tots els tipus',
       },
-      internalComments: 'Comentaris interns (només personal)',
+      location: 'Lloc (p. ex. La Llacuna, Auditori)',
       noRoom: 'Cap sala assignada',
       searchPlaceholder: 'Cerca pel nom del professor…',
       studentSection: 'Estudiant (si ja està assignat)',

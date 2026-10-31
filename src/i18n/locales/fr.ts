@@ -502,7 +502,7 @@ const fr: AppLocale = {
       filters: {
         allTypes: 'Tous les types',
       },
-      internalComments: 'Commentaires internes (personnel uniquement)',
+      location: 'Lieu (p. ex. La Llacuna, Auditori)',
       noRoom: 'Aucune salle attribuée',
       searchPlaceholder: 'Rechercher par nom du professeur…',
       studentSection: 'Étudiant (si déjà attribué)',

@@ -497,7 +497,7 @@ const it: AppLocale = {
       filters: {
         allTypes: 'Tutti i tipi',
       },
-      internalComments: 'Commenti interni (solo personale)',
+      location: 'Luogo (es. La Llacuna, Auditori)',
       noRoom: 'Nessuna sala assegnata',
       searchPlaceholder: "Cerca per nome dell'insegnante…",
       studentSection: 'Studente (se già assegnato)',

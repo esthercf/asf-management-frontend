@@ -502,7 +502,7 @@ const ja: AppLocale = {
       filters: {
         allTypes: 'すべての種類',
       },
-      internalComments: '内部コメント（スタッフのみ）',
+      location: '場所（例：La Llacuna、Auditori）',
       noRoom: '部屋が割り当てられていません',
       searchPlaceholder: '講師名で検索…',
       studentSection: '生徒（すでに割り当てられている場合）',

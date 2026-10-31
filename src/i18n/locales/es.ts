@@ -486,7 +486,7 @@ const es: AppLocale = {
       filters: {
         allTypes: 'Todos los tipos',
       },
-      internalComments: 'Comentarios internos (solo personal)',
+      location: 'Lugar (p. ej. La Llacuna, Auditori)',
       noRoom: 'Sin sala asignada',
       searchPlaceholder: 'Buscar por nombre del profesor…',
       studentSection: 'Estudiante (si ya está asignado)',
