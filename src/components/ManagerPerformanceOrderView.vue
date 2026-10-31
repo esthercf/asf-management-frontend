@@ -151,6 +151,11 @@
               <div class="entry-main entry-pause-label">⏸ {{ element.label }}</div>
             </template>
             <div class="entry-actions">
+              <button v-if="element.rowType === 'performance'" class="btn btn-secondary btn-sm"
+                :disabled="isDayValidated(dayIdx)" :title="t('manager.performanceOrder.pianistChange')"
+                @click="openPianistModal(element)">
+                🎹 {{ element.accompanistFullName || '—' }}<span v-if="element.accompanistManual"> ✎</span>
+              </button>
               <input class="entry-duration-input" type="number" min="1"
                 :value="element.stageDurationMinutes ?? element.durationMinutes" :disabled="isDayValidated(dayIdx)"
                 @change="onDurationChange(element, $event)" />
@@ -244,6 +249,49 @@
       </div>
     </div>
   </Teleport>
+
+  <!-- The pianist of one performance: the day's, one from the list, or a typed name -->
+  <Teleport to="body">
+    <div v-if="pianistModalOpen" class="modal-overlay" @click.self="pianistModalOpen = false">
+      <div class="modal">
+        <h2 class="modal-title">{{ t('manager.performanceOrder.pianistTitle') }}</h2>
+        <p class="muted-text">{{ pianistEntry?.studentFullName }}</p>
+
+        <div class="form-group">
+          <label class="checkbox-row" style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+            <input type="radio" value="day" v-model="pianistForm.choice" style="width:auto;" />
+            {{ t('manager.performanceOrder.pianistDay') }}
+          </label>
+          <label class="checkbox-row" style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+            <input type="radio" value="user" v-model="pianistForm.choice" style="width:auto;" />
+            {{ t('manager.performanceOrder.pianistUser') }}
+          </label>
+          <select v-if="pianistForm.choice === 'user'" class="form-input"
+            :class="{ 'has-error': pianistFieldErrors.userId }" v-model="pianistForm.userId">
+            <option value="">{{ t('manager.performanceOrder.pianistUserPlaceholder') }}</option>
+            <option v-for="p in pianists" :key="p._id" :value="p._id">{{ p.firstnames }} {{ p.surnames }}</option>
+          </select>
+          <span v-if="pianistFieldErrors.userId" class="field-error">{{ pianistFieldErrors.userId }}</span>
+          <label class="checkbox-row" style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+            <input type="radio" value="name" v-model="pianistForm.choice" style="width:auto;" />
+            {{ t('manager.performanceOrder.pianistName') }}
+          </label>
+          <input v-if="pianistForm.choice === 'name'" class="form-input"
+            :class="{ 'has-error': pianistFieldErrors.name }" v-model="pianistForm.name" maxlength="100" />
+          <span v-if="pianistFieldErrors.name" class="field-error">{{ pianistFieldErrors.name }}</span>
+        </div>
+
+        <div v-if="pianistError" class="error-banner">⚠️ {{ pianistError }}</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="pianistModalOpen = false">{{ t('common.cancel') }}</button>
+          <button class="btn btn-primary" :disabled="savingPianist" @click="savePianist">
+            <InlineSpinner v-if="savingPianist" />
+            <span v-else>{{ t('common.save') }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -251,11 +299,11 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { VueDraggable } from 'vue-draggable-plus'
 import { usePerformanceOrderApi, type PerformanceOrderEntryDto, type OrderScope, type MissingCandidateDto } from '../composables/usePerformanceOrderApi'
-import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto } from '../composables/useContestSettingsApi'
+import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto, type PianistDto } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
-import { pauseFormSchema, entryDurationSchema } from '../validation/performanceOrder.schema'
+import { pauseFormSchema, entryDurationSchema, pianistChoiceSchema } from '../validation/performanceOrder.schema'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
 
 const { t } = useI18n()
@@ -550,8 +598,70 @@ const searchingMissing = ref(false)
 const addingMissingId = ref<string | null>(null)
 const missingStudentError = ref('')
 
-// The page behind an open window (pause/lunch, or re-adding a missing student) must not scroll
-useModalScrollLock(pauseModalOpen, missingStudentModalOpen)
+
+// ── The pianist of one performance, chosen by hand ──
+const pianists = ref<PianistDto[]>([])
+const pianistModalOpen = ref(false)
+const pianistEntry = ref<PerformanceOrderEntryDto | null>(null)
+const pianistForm = ref({ choice: 'day' as 'day' | 'user' | 'name', userId: '', name: '' })
+const pianistFieldErrors = ref<Record<string, string>>({})
+const pianistError = ref('')
+const savingPianist = ref(false)
+
+async function openPianistModal(entry: PerformanceOrderEntryDto) {
+  pianistEntry.value = entry
+  pianistForm.value = {
+    choice: !entry.accompanistManual ? 'day' : entry.accompanistId ? 'user' : 'name',
+    userId: entry.accompanistManual ? entry.accompanistId ?? '' : '',
+    name: entry.accompanistName ?? '',
+  }
+  pianistFieldErrors.value = {}
+  pianistError.value = ''
+  pianistModalOpen.value = true
+  if (pianists.value.length === 0) {
+    try {
+      pianists.value = await settingsApi.getPianists()
+    } catch (e) {
+      pianistError.value = extractErrorMessage(e)
+    }
+  }
+}
+
+async function savePianist() {
+  const entry = pianistEntry.value
+  if (!entry) return
+  const result = pianistChoiceSchema.safeParse(pianistForm.value)
+  if (!result.success) {
+    pianistFieldErrors.value = zodErrorsToFieldMap(result.error, t)
+    return
+  }
+  pianistFieldErrors.value = {}
+  const f = result.data
+  savingPianist.value = true
+  pianistError.value = ''
+  try {
+    await api.setAccompanist(
+      entry.id,
+      f.choice === 'user' ? { accompanistId: f.userId } : f.choice === 'name' ? { accompanistName: f.name } : {},
+    )
+    pianistModalOpen.value = false
+    await loadBoard()
+  } catch (e) {
+    pianistError.value = extractErrorMessage(e)
+  } finally {
+    savingPianist.value = false
+  }
+}
+
+// Once a message is showing, re-check on every change so it goes away as soon as it's fixed
+watch(pianistForm, () => {
+  if (Object.keys(pianistFieldErrors.value).length === 0) return
+  const result = pianistChoiceSchema.safeParse(pianistForm.value)
+  pianistFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
+}, { deep: true })
+
+// The page behind an open window (pause/lunch, missing student, or pianist) must not scroll
+useModalScrollLock(pauseModalOpen, missingStudentModalOpen, pianistModalOpen)
 
 function openMissingStudentModal(dayIndex: number) {
   missingStudentTargetDayIndex.value = dayIndex

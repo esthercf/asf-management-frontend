@@ -37,6 +37,8 @@ export interface PerformanceOrderEntryDto {
   studentTeacherName?: string | null
   studentActive?: boolean | null
   accompanistFullName?: string | null
+  accompanistManual?: boolean // chosen by hand (not the day's morning/afternoon pianist)
+  accompanistName?: string | null // typed name of a pianist who is not a user
 }
 
 export interface MissingCandidateDto {
@@ -79,6 +81,14 @@ export function usePerformanceOrderApi() {
     const body: { targetDayIndex?: number; targetPosition: number } = { targetPosition }
     if (targetDayIndex !== null) body.targetDayIndex = targetDayIndex
     return client.patch(`/performance-order/${id}/move`, body).then(r => r.data)
+  }
+
+  /**
+   * The pianist of one performance: a pianist user, or a typed name for someone who is not a user.
+   * Neither = back to the day's pianist.
+   */
+  function setAccompanist(id: string, choice: { accompanistId?: string; accompanistName?: string }): Promise<void> {
+    return client.patch(`/performance-order/${id}/accompanist`, choice).then(r => r.data)
   }
 
   function updateDuration(id: string, minutes: number): Promise<void> {
@@ -162,6 +172,6 @@ export function usePerformanceOrderApi() {
   return {
     generate, getFiltered, moveEntry, updateDuration, removeEntry,
     validate, unvalidate, autoFillDays, searchMissingCandidates, addMissingStudent,
-    insertPause, exportDay, recalculate
+    insertPause, exportDay, recalculate, setAccompanist
   }
 }

@@ -22,3 +22,23 @@ export const pauseFormSchema = z.object({
 
 /** One entry's duration, as typed in its box on the board */
 export const entryDurationSchema = duration()
+
+
+/**
+ * The pianist window of one performance: the day's pianist, a pianist from the list, or a typed
+ * name (someone who is not a user). The chosen option needs its value.
+ */
+export const pianistChoiceSchema = z
+    .object({
+        choice: z.enum(['day', 'user', 'name']),
+        userId: z.string(),
+        name: z.string().trim().max(100, { message: K + 'pianistNameTooLong' }),
+    })
+    .superRefine((f, ctx) => {
+        if (f.choice === 'user' && !f.userId) {
+            ctx.addIssue({ code: 'custom', message: K + 'pianistUserRequired', path: ['userId'] })
+        }
+        if (f.choice === 'name' && !f.name) {
+            ctx.addIssue({ code: 'custom', message: K + 'pianistNameRequired', path: ['name'] })
+        }
+    })
