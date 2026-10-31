@@ -33,6 +33,17 @@ export const contestNameSchema = z.object({
   contestName: z.string().trim().max(100, { message: K + 'nameTooLong' }),
 })
 
+/** Collision check: minutes before warm-up that count as busy — a whole number from 0 to 240 */
+export const collisionMarginSchema = z.object({
+  collisionMarginMinutes: z.preprocess(
+    (v) => (v === '' || v === null ? undefined : v),
+    z.number({ error: (issue) => (issue.input === undefined ? K + 'numberRequired' : K + 'numberInvalid') })
+      .int({ message: K + 'numberInteger' })
+      .min(0, { message: K + 'marginRange' })
+      .max(240, { message: K + 'marginRange' }),
+  ),
+})
+
 /** @param existingNames the rounds this contest already has (a round is found by its name) */
 export const roundFormSchema = (existingNames: string[]) =>
   z.object({

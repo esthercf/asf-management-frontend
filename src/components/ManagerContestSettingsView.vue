@@ -38,6 +38,21 @@
         </div>
         <span v-if="nameError" class="field-error">{{ nameError }}</span>
       </div>
+
+      <div class="form-group">
+        <label class="form-label">{{ t('manager.contestSettings.collisionMargin') }}</label>
+        <div style="display:flex; gap:.6rem;">
+          <input class="form-input" :class="{ 'has-error': marginError }" type="number" min="0" max="240"
+            v-model.number="marginDraft" style="max-width:120px;" />
+          <button class="btn btn-secondary" :disabled="savingMargin || marginDraft === settings.collisionMarginMinutes"
+            @click="saveCollisionMargin">
+            <InlineSpinner v-if="savingMargin" />
+            <span v-else>{{ t('common.save') }}</span>
+          </button>
+        </div>
+        <span v-if="marginError" class="field-error">{{ marginError }}</span>
+        <span class="field-hint">{{ t('manager.contestSettings.collisionMarginHint') }}</span>
+      </div>
     </div>
 
     <div class="section-row">
@@ -301,7 +316,7 @@ import {
 } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
-import { contestNameSchema, roundFormSchema, categoryConfigSchema, contestDaySchema } from '../validation/contestSettings.schema'
+import { contestNameSchema, collisionMarginSchema, roundFormSchema, categoryConfigSchema, contestDaySchema } from '../validation/contestSettings.schema'
 import InlineSpinner from './InlineSpinner.vue'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
 
@@ -317,6 +332,11 @@ const pageError = ref('')
 
 const contestNameDraft = ref('')
 const savingName = ref(false)
+
+// Collision margin: minutes before warm-up that count as busy (saved like the contest name)
+const marginDraft = ref<number | ''>(30)
+const savingMargin = ref(false)
+const marginError = ref('')
 
 
 const pianists = ref<PianistDto[]>([])
@@ -344,12 +364,37 @@ async function reload() {
     const data = await api.getOrCreate(contestType.value, '')
     settings.value = data
     contestNameDraft.value = data.contestName
+    marginDraft.value = data.collisionMarginMinutes
+    marginError.value = ''
   } catch (e) {
     pageError.value = extractErrorMessage(e)
   } finally {
     loading.value = false
   }
 }
+
+async function saveCollisionMargin() {
+  const result = collisionMarginSchema.safeParse({ collisionMarginMinutes: marginDraft.value })
+  if (!result.success) {
+    marginError.value = zodErrorsToFieldMap(result.error, t).collisionMarginMinutes ?? ''
+    return
+  }
+  marginError.value = ''
+  savingMargin.value = true
+  try {
+    settings.value = await api.setCollisionMargin(contestType.value, result.data.collisionMarginMinutes)
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    savingMargin.value = false
+  }
+}
+
+watch(marginDraft, () => {
+  if (!marginError.value) return
+  const result = collisionMarginSchema.safeParse({ collisionMarginMinutes: marginDraft.value })
+  marginError.value = result.success ? '' : zodErrorsToFieldMap(result.error, t).collisionMarginMinutes ?? ''
+})
 
 async function saveContestName() {
   const result = contestNameSchema.safeParse({ contestName: contestNameDraft.value })

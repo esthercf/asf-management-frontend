@@ -908,6 +908,8 @@ const en = {
             solo: 'Solo',
             youth: 'Youth',
             contestName: 'Contest name',
+            collisionMargin: 'Collision margin (minutes before warm-up)',
+            collisionMarginHint: 'For the collision check: a performer counts as busy from this many minutes before their warm-up until the end of their stage time.',
             roundsTitle: 'Rounds',
             addRound: 'Add round',
             editRound: 'Edit round',
@@ -932,6 +934,7 @@ const en = {
             deleteRoundConfirm: 'Delete this round? This cannot be undone.',
             deleteDayConfirm: 'Delete this day?',
             validation: {
+                marginRange: 'Use a whole number from 0 to 240.',
                 nameRequired: 'The contest name is required.',
                 nameVenueRequired: 'Round name and venue are required.',
                 pieceRequired: 'At least one piece is required.',

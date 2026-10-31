@@ -669,6 +669,8 @@ const ca: AppLocale = {
       solo: 'Solo',
       youth: 'Youth',
       contestName: 'Nom del concurs',
+      collisionMargin: "Marge de col·lisions (minuts abans de l'escalfament)",
+      collisionMarginHint: "Per a la comprovació de col·lisions: un participant està ocupat des d'aquests minuts abans del seu escalfament fins al final de la seva hora d'escenari.",
       roundsTitle: 'Rondes',
       addRound: 'Afegir ronda',
       editRound: 'Editar ronda',
@@ -693,6 +695,7 @@ const ca: AppLocale = {
       deleteRoundConfirm: 'Eliminar aquesta ronda? Aquesta acció no es pot desfer.',
       deleteDayConfirm: 'Eliminar aquest dia?',
       validation: {
+        marginRange: 'Fes servir un nombre enter de 0 a 240.',
         nameRequired: 'El nom del concurs és obligatori.',
         nameVenueRequired: 'El nom de la ronda i el lloc són obligatoris.',
         pieceRequired: 'Cal almenys una obra.',

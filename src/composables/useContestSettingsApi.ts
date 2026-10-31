@@ -40,6 +40,7 @@ export interface ContestSettingsDto {
   id: string
   contestType: ContestTypeEnum
   contestName: string
+  collisionMarginMinutes: number // minutes before warm-up that count as "busy" in the collision check
   rounds: ContestRoundDto[]
 }
 
@@ -83,6 +84,10 @@ export function useContestSettingsApi() {
     return client.patch<ContestSettingsDto>(`/contest-settings/${contestType}/name`, { contestName }).then(r => r.data)
   }
 
+  function setCollisionMargin(contestType: ContestTypeEnum, collisionMarginMinutes: number): Promise<ContestSettingsDto> {
+    return client.patch<ContestSettingsDto>(`/contest-settings/${contestType}/collision-margin`, { collisionMarginMinutes }).then(r => r.data)
+  }
+
   function addRound(contestType: ContestTypeEnum, name: string): Promise<ContestSettingsDto> {
     return client.post<ContestSettingsDto>(`/contest-settings/${contestType}/rounds`, { name }).then(r => r.data)
   }
@@ -118,6 +123,6 @@ export function useContestSettingsApi() {
   return {
     getOrCreate, setContestName, addRound, removeRound,
     addCategoryConfig, removeCategoryConfig, updateCategoryConfig,
-    addDay, updateDay, removeDay, getPianists
+    addDay, updateDay, removeDay, getPianists, setCollisionMargin
   }
 }
