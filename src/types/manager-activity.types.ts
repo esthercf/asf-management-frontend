@@ -26,7 +26,7 @@ export interface ActivityDto {
   roomNumber: number
   label?: string | null
   comments?: string | null
-  internalComments?: string | null
+  location?: string | null
   _createdAt: string
   _createdBy?: string
   _updatedAt?: string | null
@@ -50,7 +50,7 @@ export interface CreateActivityDto {
   roomId?: string
   label?: string
   comments?: string
-  internalComments?: string
+  location?: string
   studentEmail?: string
   studentId?: string
   folderCode?: string
@@ -66,7 +66,7 @@ export interface UpdateActivityDto {
   roomId?: string
   comments?: string
   label?: string
-  internalComments?: string
+  location?: string
   studentEmail?: string
   studentId?: string
   folderCode?: string,

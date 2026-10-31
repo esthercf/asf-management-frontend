@@ -33,7 +33,7 @@
 
   <div v-if="importResult" class="card import-result-card">
     <p><strong>{{ importResult.succeeded }}/{{ importResult.total }} {{ t('manager.activities.importedCount')
-    }}</strong></p>
+        }}</strong></p>
     <ul v-if="importResult.errors.length > 0" class="import-errors">
       <li v-for="err in importResult.errors" :key="err.rowNumber">
         {{ t('manager.activities.importRow', { row: err.rowNumber }) }}: {{ err.message }}
@@ -72,7 +72,11 @@
             <strong>{{ a.teacherRawName }}</strong>
             <div v-if="a.teacherEmail" class="muted-text">{{ a.teacherEmail }}</div>
           </td>
-          <td><span class="badge badge-sky">{{ a.type }}</span></td>
+          <td>
+            <span class="badge badge-sky">{{ a.type }}</span>
+            <div v-if="a.label" style="font-size:.8rem; margin-top:.3rem;">{{ a.label }}</div>
+            <div v-if="a.location" class="muted-text" style="font-size:.75rem;">{{ a.location }}</div>
+          </td>
           <td>{{ a.date }}</td>
           <td>{{ formatMinutes(a.startTime) }} – {{ formatMinutes(a.endTime) }}</td>
           <td>{{ a.roomNumber ? '#' + a.roomNumber : '—' }}</td>
@@ -103,7 +107,7 @@
   <div v-if="totalPages > 1" class="pagination-row">
     <button class="btn btn-secondary btn-sm" :disabled="page <= 1" @click="goToPage(page - 1)">←</button>
     <span class="pagination-label">{{ page }} / {{ totalPages }}</span>
-    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)"></button>
+    <button class="btn btn-secondary btn-sm" :disabled="page >= totalPages" @click="goToPage(page + 1)">→</button>
   </div>
 
   <!-- Create/Edit Modal -->
@@ -190,7 +194,13 @@
         </div>
 
         <div class="form-group">
-          <MultiUserSelector v-model="form.userIds" :options="artistJuryOptions"
+          <select class="form-input" v-model="linkedRoleFilter" style="max-width:200px; margin-bottom:.4rem;">
+            <option value="">{{ t('manager.activities.linkedRoles.all') }}</option>
+            <option :value="RoleType.Artist">{{ t('manager.activities.linkedRoles.Artist') }}</option>
+            <option :value="RoleType.Jury">{{ t('manager.activities.linkedRoles.Jury') }}</option>
+            <option :value="RoleType.Staff">{{ t('manager.activities.linkedRoles.Staff') }}</option>
+          </select>
+          <MultiUserSelector v-model="form.userIds" :options="linkedUserOptions"
             :label="t('manager.activities.linkedUsers')" />
           <span class="field-hint">{{ t('manager.activities.linkedUsersHint') }}</span>
         </div>
@@ -205,8 +215,8 @@
           <input class="form-input" v-model="form.comments" />
         </div>
         <div class="form-group">
-          <label class="form-label">{{ t('manager.activities.internalComments') }}</label>
-          <input class="form-input" v-model="form.internalComments" />
+          <label class="form-label">{{ t('manager.activities.location') }}</label>
+          <input class="form-input" v-model="form.location" />
         </div>
 
         <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
@@ -324,8 +334,21 @@ function onUserFilterChange() {
   reload()
 }
 
+// ── "Linked users": a small role filter, done here in the browser on the list already loaded ──
+const linkableRoles = new Map<string, RoleType[]>() // person id → roles
+const linkedRoleFilter = ref<RoleType | ''>('') // '' = everyone
+/** The people shown in the "Linked users" list: those of the chosen role, plus anyone already ticked */
+const linkedUserOptions = computed(() => artistJuryOptions.value.filter(u =>
+  !linkedRoleFilter.value ||
+  linkableRoles.get(u.id)?.includes(linkedRoleFilter.value) ||
+  form.value.userIds.includes(u.id)))
+
 async function loadArtistJuryOptions() {
-  const data = await userApi.getUsers({ roleType: [RoleType.Artist, RoleType.Jury], limit: 200 })
+  // People an activity can be linked to (and whose schedules can show it): artists (the tuner too),
+  // jury, and staff volunteers
+  const data = await userApi.getUsers({ roleType: [RoleType.Artist, RoleType.Jury, RoleType.Staff], limit: 200 })
+  linkableRoles.clear()
+  for (const u of data?.data ?? []) linkableRoles.set(u.id, u.roles)
   artistJuryOptions.value = (data?.data ?? []).map(u => ({
     id: u.id, email: u.email, firstnames: u.firstnames, surnames: u.surnames,
   }))
@@ -376,7 +399,7 @@ interface FormState {
   roomId: string | undefined
   label: string
   comments: string
-  internalComments: string
+  location: string
   studentEmail: string
   folderCode: string
   userIds: string[]
@@ -386,7 +409,7 @@ function blankForm(): FormState {
   return {
     type: ActivityTypeEnum.MASTERCLASS, teacherRawName: '', teacherEmail: '',
     date: '', startTimeStr: '09:00', durationMinutes: 45, roomId: undefined,
-    label: '', comments: '', internalComments: '', studentEmail: '', folderCode: '', userIds: [],
+    label: '', comments: '', location: '', studentEmail: '', folderCode: '', userIds: [],
   }
 }
 
@@ -429,7 +452,7 @@ function openEditModal(a: ActivityDto) {
     roomId: a.roomId,
     label: a.label ?? '',
     comments: a.comments ?? '',
-    internalComments: a.internalComments ?? '',
+    location: a.location ?? '',
     studentEmail: a.studentEmail ?? '',
     folderCode: a.folderCode ?? '',
     userIds: a.userIds ?? [],
@@ -466,7 +489,7 @@ async function save() {
         roomId: form.value.roomId,
         label: form.value.label.trim(),
         comments: form.value.comments || undefined,
-        internalComments: form.value.internalComments || undefined,
+        location: form.value.location.trim(), // empty = clear it
         // A masterclass gets its student only from its purchase
         studentEmail: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.studentEmail || undefined,
         folderCode: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.folderCode || undefined,
@@ -482,11 +505,12 @@ async function save() {
         minutes: Number(minuteStr),
         durationMinutes: form.value.durationMinutes,
         roomId: form.value.roomId,
+        label: form.value.label.trim() || undefined,
         comments: form.value.comments || undefined,
-        internalComments: form.value.internalComments || undefined,
-        studentEmail: form.value.studentEmail || undefined,
-        folderCode: form.value.folderCode || undefined,
-        userIds: form.value.userIds.length > 0 ? form.value.userIds : undefined,
+        location: form.value.location || undefined,
+        // A masterclass gets its student only from its purchase
+        studentEmail: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.studentEmail || undefined,
+        folderCode: form.value.type === ActivityTypeEnum.MASTERCLASS ? undefined : form.value.folderCode || undefined,
       })
     }
     modalOpen.value = false
