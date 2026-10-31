@@ -83,7 +83,7 @@
     <p><strong>{{ userImportResult.message }}</strong></p>
     <ul v-if="userImportResult.errors.length > 0" class="import-errors">
       <li v-for="err in userImportResult.errors" :key="err.row">
-        {{ t('manager.festivalEvents.importRowError', { row: err.row }) }}: {{ err.reason }}
+        {{ t('manager.users.importRow', { row: err.row }) }}: {{ err.reason }}
       </li>
     </ul>
     <button class="btn btn-secondary btn-sm" @click="userImportResult = null">{{ t('common.close') }}</button>
@@ -321,7 +321,7 @@
             <div v-for="r in (editingUser.rehearsals ?? [])" :key="r.category" class="rehearsal-list-row">
               <div>
                 <strong>{{ r.category }}</strong>
-                — {{ r.artistFullName || '—' }} · #{{ r.roomNumber }} · {{ t('manager.rehearsals.columns.day') }}
+                — {{ r.artistFullName || '—' }} · #{{ r.roomNumber }} · {{ t('manager.users.rehearsal.day') }}
                 {{ r.day }} · {{ r.startTime }}–{{ r.endTime }}
               </div>
               <div style="display:flex; gap:.4rem;">
@@ -332,18 +332,18 @@
               </div>
             </div>
           </div>
-          <p v-else class="muted-text" style="margin-bottom:.75rem;">{{ t('manager.rehearsals.empty') }}</p>
+          <p v-else class="muted-text" style="margin-bottom:.75rem;">{{ t('manager.users.rehearsalEmpty') }}</p>
 
           <button v-if="!rehearsalFormOpen" class="btn btn-secondary btn-sm" @click="startAddRehearsal">
-            + {{ t('manager.rehearsals.create') }}
+            + {{ t('manager.users.rehearsalAdd') }}
           </button>
 
           <div v-if="rehearsalFormOpen" class="rehearsal-form">
             <div class="form-group">
-              <label class="form-label">{{ t('manager.rehearsals.columns.category') }}</label>
+              <label class="form-label">{{ t('manager.users.rehearsalCategory') }}</label>
               <select class="form-input" :class="{ 'has-error': rehearsalFieldErrors.category }"
                 v-model="rehearsalForm.category" :disabled="!!editingRehearsalCategory">
-                <option value="" disabled>{{ t('manager.diplomas.bookingTypePlaceholder') }}</option>
+                <option value="" disabled>{{ t('manager.users.rehearsalCategoryPlaceholder') }}</option>
                 <option v-for="bt in availableRehearsalCategories" :key="bt" :value="bt">{{ bt }}</option>
               </select>
               <span v-if="rehearsalFieldErrors.category" class="field-error">{{ rehearsalFieldErrors.category }}</span>
@@ -777,7 +777,7 @@ async function saveRehearsal() {
 
 async function removeRehearsal(category: BookingTypeEnum) {
   const user = editingUser.value
-  if (!user || !confirm(t('manager.rehearsals.deleteConfirm'))) return
+  if (!user || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
   savingRehearsal.value = true
   try {
     await userRehearsalApi.deleteRehearsal(user.id, category)
