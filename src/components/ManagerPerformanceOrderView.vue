@@ -15,7 +15,7 @@
       <button class="btn" :class="contestType === ContestTypeEnum.SOLO ? 'btn-primary' : 'btn-secondary'"
         @click="switchContestType(ContestTypeEnum.SOLO)">{{ t('manager.performanceOrder.solo') }}</button>
       <button class="btn" :class="contestType === ContestTypeEnum.YOUTH ? 'btn-primary' : 'btn-secondary'"
-        @click="switchContestType(ContestTypeEnum.YOUTH)">{{t('manager.performanceOrder.youth')}}</button>
+        @click="switchContestType(ContestTypeEnum.YOUTH)">{{ t('manager.performanceOrder.youth') }}</button>
     </div>
 
     <select class="form-input filter-select" v-model="selectedRoundName" @change="onRoundOrCategoryChange">
@@ -58,7 +58,28 @@
           <InlineSpinner v-if="recalculating" />
           <span v-else>🔄 {{ t('manager.performanceOrder.recalculate') }}</span>
         </button>
+        <button class="btn btn-secondary" :disabled="checkingCollisions" @click="checkCollisions">
+          <InlineSpinner v-if="checkingCollisions" />
+          <span v-else>⚠ {{ t('manager.performanceOrder.checkCollisions') }}</span>
+        </button>
       </div>
+    </div>
+
+    <!-- Collision report (information only: nothing is blocked) -->
+    <div v-if="collisions" class="card" style="padding:1rem 1.25rem; margin-bottom:1rem;">
+      <p v-if="collisions.length === 0"><strong>✅ {{ t('manager.performanceOrder.noCollisions') }}</strong></p>
+      <template v-else>
+        <p><strong>⚠ {{ t('manager.performanceOrder.collisionsFound', { count: collisions.length }) }}</strong></p>
+        <ul class="collision-list">
+          <li v-for="(c, i) in collisions" :key="i">
+            <strong>{{ c.studentFullName }}</strong> · {{ c.date }} ·
+            {{ t('manager.performanceOrder.collisionPerformance') }} {{ c.performance }} ↔
+            <strong>{{ t(`manager.performanceOrder.collisionKinds.${c.otherKind}`) }}</strong>
+            <span v-if="c.otherLabel"> ({{ c.otherLabel }})</span> {{ c.other }}
+          </li>
+        </ul>
+      </template>
+      <button class="btn btn-secondary btn-sm" @click="collisions = null">{{ t('common.close') }}</button>
     </div>
 
     <div v-if="loadingBoard" class="empty-state">
@@ -196,7 +217,7 @@
             <input class="form-input" :class="{ 'has-error': pauseFieldErrors.durationMinutes }" type="number" min="1"
               v-model.number="pauseForm.durationMinutes" />
             <span v-if="pauseFieldErrors.durationMinutes" class="field-error">{{ pauseFieldErrors.durationMinutes
-              }}</span>
+            }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">{{ t('manager.performanceOrder.pauseLabel') }}</label>
@@ -298,7 +319,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { VueDraggable } from 'vue-draggable-plus'
-import { usePerformanceOrderApi, type PerformanceOrderEntryDto, type OrderScope, type MissingCandidateDto } from '../composables/usePerformanceOrderApi'
+import { usePerformanceOrderApi, type PerformanceOrderEntryDto, type OrderScope, type MissingCandidateDto, PerformanceCollisionDto } from '../composables/usePerformanceOrderApi'
 import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto, type PianistDto } from '../composables/useContestSettingsApi'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import InlineSpinner from './InlineSpinner.vue'
@@ -344,6 +365,22 @@ async function loadRounds() {
 }
 
 const recalculating = ref(false)
+
+// ── Collision check: performances overlapping something else of the same student ──
+const collisions = ref<PerformanceCollisionDto[] | null>(null)
+const checkingCollisions = ref(false)
+
+async function checkCollisions() {
+  checkingCollisions.value = true
+  pageError.value = ''
+  try {
+    collisions.value = await api.getCollisions(currentScope.value)
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    checkingCollisions.value = false
+  }
+}
 
 async function doRecalculate() {
   recalculating.value = true
@@ -950,5 +987,12 @@ loadRounds()
   border: 1.5px solid var(--border);
   border-radius: 8px;
   font-size: .85rem;
+}
+
+.collision-list {
+  margin: .75rem 0;
+  padding-left: 1.25rem;
+  font-size: .85rem;
+  color: var(--red, #c00);
 }
 </style>

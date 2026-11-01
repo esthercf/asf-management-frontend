@@ -1035,6 +1035,16 @@ const en = {
             pianistUser: 'A pianist from the list',
             pianistUserPlaceholder: 'Choose a pianist…',
             pianistName: 'Another pianist (not in the app): type the name',
+            checkCollisions: 'Check collisions',
+            noCollisions: 'No collisions: no performance overlaps another commitment of its student.',
+            collisionsFound: '{count} collisions found (information only, nothing is blocked):',
+            collisionPerformance: 'performance (with margin)',
+            collisionKinds: {
+                performance: 'another performance',
+                rehearsal: 'rehearsal',
+                masterclass: 'masterclass',
+                activity: 'activity',
+            },
             validation: {
                 pianistUserRequired: 'Choose a pianist from the list.',
                 pianistNameRequired: "Type the pianist's name.",

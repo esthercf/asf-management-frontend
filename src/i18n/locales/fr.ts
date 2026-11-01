@@ -890,6 +890,16 @@ const fr: AppLocale = {
       pianistUser: 'Un pianiste de la liste',
       pianistUserPlaceholder: 'Choisis un pianiste…',
       pianistName: 'Un autre pianiste (pas dans l’application) : saisis le nom',
+      checkCollisions: 'Vérifier les collisions',
+      noCollisions: 'Aucune collision : aucun passage ne chevauche un autre engagement de son élève.',
+      collisionsFound: '{count} collisions trouvées (à titre informatif, rien n’est bloqué) :',
+      collisionPerformance: 'passage (avec marge)',
+      collisionKinds: {
+        performance: 'un autre passage',
+        rehearsal: 'répétition',
+        masterclass: 'masterclass',
+        activity: 'activité',
+      },
       validation: {
         pianistUserRequired: 'Choisis un pianiste dans la liste.',
         pianistNameRequired: 'Saisis le nom du pianiste.',

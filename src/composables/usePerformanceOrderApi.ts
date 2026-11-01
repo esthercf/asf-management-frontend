@@ -12,6 +12,16 @@ export enum PerformanceOrderStatusEnum {
   VALIDATED = 'validated',
 }
 
+/** One performance that overlaps something else of the same student (information only) */
+export interface PerformanceCollisionDto {
+  studentFullName: string
+  date: string
+  performance: string // 'HH:MM–HH:MM', from the margin before warm-up to the end of stage time
+  otherKind: 'performance' | 'rehearsal' | 'masterclass' | 'activity'
+  otherLabel: string
+  other: string // 'HH:MM–HH:MM'
+}
+
 export interface PerformanceOrderEntryDto {
   id: string
   contestType: ContestTypeEnum
@@ -165,6 +175,13 @@ export function usePerformanceOrderApi() {
     URL.revokeObjectURL(link.href)
   }
 
+  /** This order's performances that overlap something else of the same student (information only) */
+  function getCollisions(scope: OrderScope): Promise<PerformanceCollisionDto[]> {
+    const q = new URLSearchParams({ contestType: scope.contestType, round: scope.round })
+    if (scope.category) q.set('category', scope.category)
+    return client.get<PerformanceCollisionDto[]>(`/performance-order/collisions?${q}`).then(r => r.data)
+  }
+
   async function recalculate(scope: OrderScope): Promise<void> {
     return client.post('/performance-order/recalculate', { contestType: scope.contestType, round: scope.round, category: scope.category || undefined }).then(r => r.data)
   }
@@ -172,6 +189,6 @@ export function usePerformanceOrderApi() {
   return {
     generate, getFiltered, moveEntry, updateDuration, removeEntry,
     validate, unvalidate, autoFillDays, searchMissingCandidates, addMissingStudent,
-    insertPause, exportDay, recalculate, setAccompanist
+    insertPause, exportDay, recalculate, setAccompanist, getCollisions
   }
 }
