@@ -57,6 +57,16 @@ export interface RehearsalBoardViewDto {
     unplaced: RehearsalOrderEntryDto[]
 }
 
+/** One rehearsal that overlaps something else of the same student (information only) */
+export interface RehearsalCollisionDto {
+    studentFullName: string
+    date: string
+    rehearsal: string // 'HH:MM–HH:MM'
+    otherKind: 'performance' | 'rehearsal' | 'masterclass' | 'activity'
+    otherLabel: string
+    other: string // 'HH:MM–HH:MM'
+}
+
 /** Changes to one row; only the fields sent change, null clears the optional ones */
 export interface UpdateRehearsalEntryPayload {
     durationMinutes?: number
@@ -109,6 +119,10 @@ export function useRehearsalOrderApi() {
         return client.post(`/rehearsal-order/insert-pause?${scopeQuery(scope)}`, { dayIndex, durationMinutes, label }).then(r => r.data)
     }
 
+    function getCollisions(scope: OrderScope): Promise<RehearsalCollisionDto[]> {
+        return client.get<RehearsalCollisionDto[]>(`/rehearsal-order/collisions?${scopeQuery(scope)}`).then(r => r.data)
+    }
+
     function validateDay(scope: OrderScope, dayIndex: number): Promise<{ written: number }> {
         return client.post<{ written: number }>(`/rehearsal-order/validate?${scopeQuery(scope)}`, { dayIndex }).then(r => r.data)
     }
@@ -119,6 +133,6 @@ export function useRehearsalOrderApi() {
 
     return {
         getBoardView, updateBoard, generateFromPerformance, fillFromRehearsals,
-        moveEntry, updateEntry, removeEntry, insertPause, validateDay, unvalidateDay,
+        moveEntry, updateEntry, removeEntry, insertPause, validateDay, unvalidateDay, getCollisions,
     }
 }

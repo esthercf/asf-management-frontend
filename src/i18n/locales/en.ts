@@ -988,6 +988,16 @@ const en = {
             piecePlaceholder: 'The piece the student plays (optional)',
             pauseLabel: 'Label',
             deleteConfirm: 'Delete this row from the board?',
+            checkCollisions: 'Check collisions',
+            noCollisions: 'No collisions: no rehearsal overlaps a performance, masterclass or activity of its student.',
+            collisionsFound: '{count} collisions found (information only, nothing is blocked):',
+            collisionRehearsal: 'rehearsal',
+            collisionKinds: {
+                performance: 'performance',
+                rehearsal: 'another rehearsal',
+                masterclass: 'masterclass',
+                activity: 'activity',
+            },
             validation: {
                 dateRequired: 'The date is required.',
                 dateInvalid: 'This date does not exist.',

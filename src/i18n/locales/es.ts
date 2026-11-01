@@ -988,6 +988,16 @@ const es: AppLocale = {
       piecePlaceholder: 'La obra que toca el estudiante (opcional)',
       pauseLabel: 'Etiqueta',
       deleteConfirm: '¿Eliminar esta fila del tablero?',
+      checkCollisions: 'Comprobar colisiones',
+      noCollisions: 'Ninguna colisión: ningún ensayo se solapa con una actuación, masterclass o actividad de su estudiante.',
+      collisionsFound: 'Se han encontrado {count} colisiones (solo informativo, no se bloquea nada):',
+      collisionRehearsal: 'ensayo',
+      collisionKinds: {
+        performance: 'actuación',
+        rehearsal: 'otro ensayo',
+        masterclass: 'masterclass',
+        activity: 'actividad',
+      },
       validation: {
         dateRequired: 'La fecha es obligatoria.',
         dateInvalid: 'Esta fecha no existe.',

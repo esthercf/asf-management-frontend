@@ -843,6 +843,16 @@ const fr: AppLocale = {
       piecePlaceholder: 'L’œuvre que joue l’élève (facultatif)',
       pauseLabel: 'Libellé',
       deleteConfirm: 'Supprimer cette ligne du tableau ?',
+      checkCollisions: 'Vérifier les collisions',
+      noCollisions: 'Aucune collision : aucune répétition ne chevauche un passage, une masterclass ou une activité de son élève.',
+      collisionsFound: '{count} collisions trouvées (à titre informatif, rien n’est bloqué) :',
+      collisionRehearsal: 'répétition',
+      collisionKinds: {
+        performance: 'passage',
+        rehearsal: 'une autre répétition',
+        masterclass: 'masterclass',
+        activity: 'activité',
+      },
       validation: {
         dateRequired: 'La date est obligatoire.',
         dateInvalid: 'Cette date n’existe pas.',

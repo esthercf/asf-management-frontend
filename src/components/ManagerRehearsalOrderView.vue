@@ -31,28 +31,29 @@
         <select v-if="contestType === ContestTypeEnum.YOUTH" class="form-input filter-select" v-model="selectedCategory"
             @change="onScopeChange">
             <option value="" disabled>{{ t('manager.rehearsalOrder.selectCategory') }}</option>
-      <option v-for="c in categoriesOfRound" :key="c" :value="c">{{ t(`common.scheduleCategories.${c}`) }}</option>
-    </select>
+            <option v-for="c in categoriesOfRound" :key="c" :value="c">{{ t(`common.scheduleCategories.${c}`) }}
+            </option>
+        </select>
 
-    <!-- The rehearsals Excel (any categories); a board then takes them with "Fill from imported rehearsals" -->
-    <button class="btn btn-secondary" :disabled="importing" @click="fileInput?.click()"
-      :title="t('manager.rehearsalOrder.importHint')">
-      <InlineSpinner v-if="importing" />
-      <span v-else>📄 {{ t('manager.rehearsalOrder.importExcel') }}</span>
-    </button>
-    <input ref="fileInput" type="file" accept=".xlsx" style="display:none;" @change="onFileSelected" />
-  </div>
+        <!-- The rehearsals Excel (any categories); a board then takes them with "Fill from imported rehearsals" -->
+        <button class="btn btn-secondary" :disabled="importing" @click="fileInput?.click()"
+            :title="t('manager.rehearsalOrder.importHint')">
+            <InlineSpinner v-if="importing" />
+            <span v-else>📄 {{ t('manager.rehearsalOrder.importExcel') }}</span>
+        </button>
+        <input ref="fileInput" type="file" accept=".xlsx" style="display:none;" @change="onFileSelected" />
+    </div>
 
-  <div v-if="importResult" class="card" style="padding:1rem 1.25rem; margin-bottom:1rem;">
-    <p><strong>{{ importResult.message }}</strong></p>
-    <ul v-if="importResult.errors.length > 0" class="import-errors">
-      <li v-for="err in importResult.errors" :key="err.row">
-        {{ t('manager.rehearsalOrder.importRow', { row: err.row }) }}: {{ err.reason }}
-      </li>
-    </ul>
-    <p class="muted-text">{{ t('manager.rehearsalOrder.importNext') }}</p>
-    <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
-  </div>
+    <div v-if="importResult" class="card" style="padding:1rem 1.25rem; margin-bottom:1rem;">
+        <p><strong>{{ importResult.message }}</strong></p>
+        <ul v-if="importResult.errors.length > 0" class="import-errors">
+            <li v-for="err in importResult.errors" :key="err.row">
+                {{ t('manager.rehearsalOrder.importRow', { row: err.row }) }}: {{ err.reason }}
+            </li>
+        </ul>
+        <p class="muted-text">{{ t('manager.rehearsalOrder.importNext') }}</p>
+        <button class="btn btn-secondary btn-sm" @click="importResult = null">{{ t('common.close') }}</button>
+    </div>
 
     <div v-if="!scopeReady" class="empty-state">
         <div class="empty-icon">🎹</div>
@@ -73,6 +74,28 @@
             <button class="btn btn-secondary" :disabled="!view" @click="toggleSettings">
                 ⚙ {{ t('manager.rehearsalOrder.settings') }}
             </button>
+            <button class="btn btn-secondary" :disabled="!view || checkingCollisions" @click="checkCollisions">
+                <InlineSpinner v-if="checkingCollisions" />
+                <span v-else>⚠ {{ t('manager.rehearsalOrder.checkCollisions') }}</span>
+            </button>
+        </div>
+
+        <!-- Collision report (information only: nothing is blocked) -->
+        <div v-if="collisions" class="card" style="padding:1rem 1.25rem; margin-bottom:1rem;">
+            <p v-if="collisions.length === 0"><strong>✅ {{ t('manager.rehearsalOrder.noCollisions') }}</strong></p>
+            <template v-else>
+                <p><strong>⚠ {{ t('manager.rehearsalOrder.collisionsFound', { count: collisions.length }) }}</strong>
+                </p>
+                <ul class="import-errors">
+                    <li v-for="(c, i) in collisions" :key="i">
+                        <strong>{{ c.studentFullName }}</strong> · {{ c.date }} ·
+                        {{ t('manager.rehearsalOrder.collisionRehearsal') }} {{ c.rehearsal }} ↔
+                        <strong>{{ t(`manager.rehearsalOrder.collisionKinds.${c.otherKind}`) }}</strong>
+                        <span v-if="c.otherLabel"> ({{ c.otherLabel }})</span> {{ c.other }}
+                    </li>
+                </ul>
+            </template>
+            <button class="btn btn-secondary btn-sm" @click="collisions = null">{{ t('common.close') }}</button>
         </div>
 
         <!-- The board's settings -->
@@ -315,7 +338,7 @@ import type { OrderScope } from '../composables/usePerformanceOrderApi'
 import { useUserRehearsalApi, type ImportUserRehearsalsResult } from '../composables/useUserRehearsalApi'
 import {
     useRehearsalOrderApi, RehearsalOrderRowTypeEnum, RehearsalOrderStatusEnum,
-    type RehearsalBoardViewDto, type RehearsalOrderEntryDto,
+    type RehearsalBoardViewDto, type RehearsalOrderEntryDto, type RehearsalCollisionDto,
 } from '../composables/useRehearsalOrderApi'
 
 const { t } = useI18n()
@@ -366,6 +389,7 @@ const scope = computed<OrderScope>(() => ({
 
 function onScopeChange() {
     settingsOpen.value = false
+    collisions.value = null
     if (scopeReady.value) loadBoard()
 }
 
@@ -625,20 +649,35 @@ const importing = ref(false)
 const importResult = ref<ImportUserRehearsalsResult | null>(null)
 
 async function onFileSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-  importing.value = true
-  importResult.value = null
-  pageError.value = ''
-  try {
-    importResult.value = await userRehearsalApi.importFromExcel(file)
-  } catch (e) {
-    pageError.value = extractErrorMessage(e)
-  } finally {
-    importing.value = false
-    input.value = '' // allow choosing the same file again
-  }
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    if (!file) return
+    importing.value = true
+    importResult.value = null
+    pageError.value = ''
+    try {
+        importResult.value = await userRehearsalApi.importFromExcel(file)
+    } catch (e) {
+        pageError.value = extractErrorMessage(e)
+    } finally {
+        importing.value = false
+        input.value = '' // allow choosing the same file again
+    }
+}
+// ── Collision check: rehearsals overlapping a performance, masterclass, activity or other rehearsal ──
+const collisions = ref<RehearsalCollisionDto[] | null>(null)
+const checkingCollisions = ref(false)
+
+async function checkCollisions() {
+    checkingCollisions.value = true
+    pageError.value = ''
+    try {
+        collisions.value = await api.getCollisions(scope.value)
+    } catch (e) {
+        pageError.value = extractErrorMessage(e)
+    } finally {
+        checkingCollisions.value = false
+    }
 }
 
 // ── Starting the board: from the performance order, or from imported rehearsals ──
@@ -773,9 +812,9 @@ loadRounds()
 }
 
 .import-errors {
-  margin: .75rem 0;
-  padding-left: 1.25rem;
-  font-size: .85rem;
-  color: var(--red, #c00);
+    margin: .75rem 0;
+    padding-left: 1.25rem;
+    font-size: .85rem;
+    color: var(--red, #c00);
 }
 </style>
