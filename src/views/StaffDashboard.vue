@@ -858,7 +858,6 @@ import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import InlineSpinner from '../components/InlineSpinner.vue'
 import { FilterActiveEnum, SortEnum } from '../enums/user.enum'
 import { useRoomApi, type ImportRoomsResult } from '../composables/useRoomApi'
-import { useUserRehearsalApi } from '../composables/useUserRehearsalApi'
 
 // ── i18n ──────────────────────────────────────────────────────────────────
 const { t, locale } = useI18n()
@@ -877,7 +876,6 @@ async function logout() {
 const userApi = useUserApi();
 const roomApi = useRoomApi();
 const bookingApi = useBookingApi();
-const userRehearsalApi = useUserRehearsalApi();
 const { bookingTypeLabel, usageLabel, sizeLabel } = useBookingLabels();
 
 // ── Enum option arrays ────────────────────────────────────────────────────

@@ -75,7 +75,7 @@
       <ManagerScheduleGenerationView v-if="view === 'scheduleGen'" />
       <ManagerBookingLimitsView v-if="view === 'bookingLimits'" />
       <ManagerDiplomasView v-if="view === 'diplomas'" />
-      <ManagerRehearsalsView v-if="view === 'rehearsals'" />
+      <ManagerRehearsalOrderView v-if="view === 'rehearsals'" />
       <ManagerContestSettingsView v-if="view === 'contestSettings'" />
       <ManagerPerformanceOrderView v-if="view === 'performanceOrder'" />
       <ManagerDaySchedulesView v-if="view === 'daySchedules'" />
@@ -99,7 +99,7 @@ import ManagerScheduleGenerationView from '../components/ManagerScheduleGenerati
 import ManagerBookingLimitsView from '../components/ManagerBookingLimitsView.vue'
 import logoUrl from '../assets/logo.jpg'
 import ManagerDiplomasView from '../components/ManagerDiplomasView.vue'
-import ManagerRehearsalsView from '../components/ManagerRehearsalsView.vue'
+import ManagerRehearsalOrderView from '../components/ManagerRehearsalOrderView.vue'
 import ManagerContestSettingsView from '../components/ManagerContestSettingsView.vue'
 import ManagerPerformanceOrderView from '../components/ManagerPerformanceOrderView.vue'
 import ManagerDaySchedulesView from '../components/ManagerDaySchedulesView.vue'

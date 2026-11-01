@@ -313,10 +313,9 @@
             {{ t('manager.users.gdprConsent') }}
           </label>
         </div>
-
+        <!-- The student's rehearsals: shown here, built on the Rehearsals screen (one single truth) -->
         <div v-if="editingUser" class="rehearsal-section">
           <h3 class="section-title" style="font-size:.9rem;">{{ t('manager.users.rehearsal.title') }}</h3>
-
           <div v-if="(editingUser.rehearsals ?? []).length > 0" class="rehearsal-list">
             <div v-for="r in (editingUser.rehearsals ?? [])" :key="r.category" class="rehearsal-list-row">
               <div>
@@ -324,90 +323,11 @@
                 — {{ r.artistFullName || '—' }} · #{{ r.roomNumber }} · {{ t('manager.users.rehearsal.day') }}
                 {{ r.day }} · {{ r.startTime }}–{{ r.endTime }}
               </div>
-              <div style="display:flex; gap:.4rem;">
-                <button class="btn btn-secondary btn-sm" @click="startEditRehearsal(r)">{{ t('common.edit') }}</button>
-                <button class="btn btn-danger btn-sm" :disabled="savingRehearsal" @click="removeRehearsal(r.category)">
-                  {{ t('common.delete') }}
-                </button>
-              </div>
             </div>
           </div>
-          <p v-else class="muted-text" style="margin-bottom:.75rem;">{{ t('manager.users.rehearsalEmpty') }}</p>
-
-          <button v-if="!rehearsalFormOpen" class="btn btn-secondary btn-sm" @click="startAddRehearsal">
-            + {{ t('manager.users.rehearsalAdd') }}
-          </button>
-
-          <div v-if="rehearsalFormOpen" class="rehearsal-form">
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsalCategory') }}</label>
-              <select class="form-input" :class="{ 'has-error': rehearsalFieldErrors.category }"
-                v-model="rehearsalForm.category" :disabled="!!editingRehearsalCategory">
-                <option value="" disabled>{{ t('manager.users.rehearsalCategoryPlaceholder') }}</option>
-                <option v-for="bt in availableRehearsalCategories" :key="bt" :value="bt">{{ bt }}</option>
-              </select>
-              <span v-if="rehearsalFieldErrors.category" class="field-error">{{ rehearsalFieldErrors.category }}</span>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.artistEmail') }}</label>
-                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.artistEmail }"
-                  v-model="rehearsalForm.artistEmail" type="email" />
-                <span v-if="rehearsalFieldErrors.artistEmail" class="field-error">{{ rehearsalFieldErrors.artistEmail
-                }}</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.artistFullName') }}</label>
-                <input class="form-input" v-model="rehearsalForm.artistFullName" />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.room') }}</label>
-                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.roomNumber }" type="number"
-                  v-model.number="rehearsalForm.roomNumber" />
-                <span v-if="rehearsalFieldErrors.roomNumber" class="field-error">{{ rehearsalFieldErrors.roomNumber
-                }}</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.day') }}</label>
-                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.day }" type="number"
-                  v-model.number="rehearsalForm.day" />
-                <span v-if="rehearsalFieldErrors.day" class="field-error">{{ rehearsalFieldErrors.day }}</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.startTime') }}</label>
-                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.startTime }" type="time"
-                  v-model="rehearsalForm.startTime" />
-                <span v-if="rehearsalFieldErrors.startTime" class="field-error">{{ rehearsalFieldErrors.startTime
-                  }}</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">{{ t('manager.users.rehearsal.endTime') }}</label>
-                <input class="form-input" :class="{ 'has-error': rehearsalFieldErrors.endTime }" type="time"
-                  v-model="rehearsalForm.endTime" />
-                <span v-if="rehearsalFieldErrors.endTime" class="field-error">{{ rehearsalFieldErrors.endTime }}</span>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">{{ t('manager.users.rehearsal.comments') }}</label>
-              <input class="form-input" v-model="rehearsalForm.comments" />
-            </div>
-            <div v-if="rehearsalFormError" class="error-banner">⚠️ {{ rehearsalFormError }}</div>
-            <div class="rehearsal-form-actions">
-              <button class="btn btn-secondary btn-sm" :disabled="savingRehearsal" @click="rehearsalFormOpen = false">
-                {{ t('common.cancel') }}
-              </button>
-              <div style="flex:1"></div>
-              <button class="btn btn-primary btn-sm" :disabled="savingRehearsal" @click="saveRehearsal">
-                <InlineSpinner v-if="savingRehearsal" />
-                <span v-else>{{ t('manager.users.rehearsal.save') }}</span>
-              </button>
-            </div>
-          </div>
+          <p v-else class="muted-text">{{ t('manager.users.rehearsalEmpty') }}</p>
+          <p class="muted-text">{{ t('manager.users.rehearsalReadOnlyHint') }}</p>
         </div>
-
-        <div v-if="formError" class="error-banner">⚠️ {{ formError }}</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="userModal = false">{{ t('common.cancel') }}</button>
           <button class="btn btn-primary" :disabled="saving" @click="saveUser">
@@ -427,19 +347,16 @@ import { ImportFolderCodesResult, ImportUsersResult, useManagerUserApi } from '.
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { userFormSchema } from '../validation/user.schema'
-import { rehearsalFormSchema } from '../validation/rehearsal.schema'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
 import InlineSpinner from './InlineSpinner.vue'
 import { RoleType } from '../enums/roles.enum'
 import { BookingTypeEnum } from '../enums/booking.enum'
 import { CountryCode, GenderEnum, LanguageEnum, TshirtEnum, FilterActiveEnum } from '../enums/user.enum'
 import type { ManagerUserDto } from '../types/manager-user.types'
-import { useUserRehearsalApi, type ImportUserRehearsalsResult } from '../composables/useUserRehearsalApi'
-import { UserRehearsalInfo } from '../types/user.types'
 import { useCountryNames } from '../composables/useCountryNames'
+
 const { t } = useI18n()
 const userApi = useManagerUserApi()
-const userRehearsalApi = useUserRehearsalApi()
 
 // ── User import ────────────────────────────────────────────────────────
 const userFileInput = ref<HTMLInputElement | null>(null)
@@ -669,126 +586,7 @@ async function openEditModal(u: ManagerUserDto) {
     gdpr: u.gdpr ?? false,
   }
   formError.value = ''
-  rehearsalFormOpen.value = false
-  editingRehearsalCategory.value = null
-  rehearsalFormError.value = ''
   userModal.value = true
-}
-
-// ── Rehearsal edit (a student can now have several — one per category) ──
-const savingRehearsal = ref(false)
-const rehearsalFormError = ref('')
-const rehearsalFormOpen = ref(false)
-// null while adding a new one; set to the category being edited when
-// editing an existing row (locks the category dropdown, since category
-// is part of the record's identity and can't be changed in place).
-const editingRehearsalCategory = ref<BookingTypeEnum | null>(null)
-
-function blankRehearsalForm() {
-  return {
-    category: '' as BookingTypeEnum | '',
-    artistEmail: '',
-    artistFullName: '',
-    roomNumber: undefined as number | undefined,
-    day: undefined as number | undefined,
-    startTime: '',
-    endTime: '',
-    comments: '',
-  }
-}
-const rehearsalForm = ref(blankRehearsalForm())
-
-// Only categories the user actually holds, and that don't already have
-// a rehearsal — a rehearsal's category isn't a free choice, it has to
-// correspond to one of this student's own BookingTypeEnum tags.
-const availableRehearsalCategories = computed(() => {
-  const existing = new Set((editingUser.value?.rehearsals ?? []).map(r => r.category))
-  return (editingUser.value?.bookingTypeEnum ?? []).filter(bt => !existing.has(bt))
-})
-
-function startAddRehearsal() {
-  editingRehearsalCategory.value = null
-  rehearsalForm.value = blankRehearsalForm()
-  rehearsalFormError.value = ''
-  rehearsalFormOpen.value = true
-}
-
-function startEditRehearsal(r: UserRehearsalInfo) {
-  editingRehearsalCategory.value = r.category
-  rehearsalForm.value = {
-    category: r.category,
-    artistEmail: r.artistEmail ?? '',
-    artistFullName: r.artistFullName ?? '',
-    roomNumber: r.roomNumber,
-    day: r.day,
-    startTime: r.startTime,
-    endTime: r.endTime,
-    comments: r.comments ?? '',
-  }
-  rehearsalFormError.value = ''
-  rehearsalFormOpen.value = true
-}
-
-async function saveRehearsal() {
-  const user = editingUser.value
-  if (!user) return
-  const result = rehearsalFormSchema.safeParse(rehearsalForm.value)
-  if (!result.success) {
-    rehearsalFieldErrors.value = zodErrorsToFieldMap(result.error, t)
-    return
-  }
-  rehearsalFieldErrors.value = {}
-  rehearsalFormError.value = ''
-  const data = result.data // the validated (and trimmed) copy of the form: room and day are numbers here
-  savingRehearsal.value = true
-  try {
-    const payload = {
-      artistEmail: data.artistEmail || undefined,
-      artistFullName: data.artistFullName || undefined,
-      roomNumber: data.roomNumber,
-      day: data.day,
-      startTime: data.startTime,
-      endTime: data.endTime,
-      comments: data.comments || undefined,
-    }
-    const category = data.category as BookingTypeEnum
-
-    if (editingRehearsalCategory.value) {
-      await userRehearsalApi.updateRehearsal(user.id, category, payload)
-    } else {
-      await userRehearsalApi.createRehearsal(user.id, category, payload)
-    }
-
-    // Keep the local list in sync so re-opening this modal shows the
-    // fresh data without a full page reload.
-    const savedInfo: UserRehearsalInfo = { category, ...payload, artistEmail: payload.artistEmail ?? '', artistFullName: payload.artistFullName ?? '' }
-    const others = user.rehearsals.filter(r => r.category !== category)
-    user.rehearsals = [...others, savedInfo]
-    const idx = users.value.findIndex(u => u.id === user.id)
-    if (idx !== -1) users.value[idx].rehearsals = user.rehearsals
-
-    rehearsalFormOpen.value = false
-  } catch (e) {
-    rehearsalFormError.value = extractErrorMessage(e)
-  } finally {
-    savingRehearsal.value = false
-  }
-}
-
-async function removeRehearsal(category: BookingTypeEnum) {
-  const user = editingUser.value
-  if (!user || !confirm(t('manager.users.rehearsal.deleteConfirm'))) return
-  savingRehearsal.value = true
-  try {
-    await userRehearsalApi.deleteRehearsal(user.id, category)
-    user.rehearsals = user.rehearsals.filter(r => r.category !== category)
-    const idx = users.value.findIndex(u => u.id === user.id)
-    if (idx !== -1) users.value[idx].rehearsals = user.rehearsals
-  } catch (e) {
-    pageError.value = extractErrorMessage(e)
-  } finally {
-    savingRehearsal.value = false
-  }
 }
 
 async function saveUser() {
@@ -875,17 +673,6 @@ watch(form, () => {
 }, { deep: true })
 
 watch(userModal, () => { fieldErrors.value = {} })
-
-// Same for the rehearsal form (live re-check first, "form opened" clean-up last).
-const rehearsalFieldErrors = ref<Record<string, string>>({})
-
-watch(rehearsalForm, () => {
-  if (Object.keys(rehearsalFieldErrors.value).length === 0) return
-  const result = rehearsalFormSchema.safeParse(rehearsalForm.value)
-  rehearsalFieldErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
-}, { deep: true })
-
-watch(rehearsalFormOpen, () => { rehearsalFieldErrors.value = {} })
 
 // The page behind the open window must not scroll
 useModalScrollLock(userModal)
