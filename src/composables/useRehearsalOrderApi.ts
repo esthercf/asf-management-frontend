@@ -27,7 +27,6 @@ export interface RehearsalBoardDto {
     defaultSlotMinutes: number
     defaultPauseMinutes: number
     defaultRoomNumber: number | null
-    rehearsalCategory: string | null // empty = the board's category (Youth) or 'solo'
 }
 
 /** One row of the board: a student's rehearsal or a pause */
@@ -65,6 +64,14 @@ export interface RehearsalCollisionDto {
     otherKind: 'performance' | 'rehearsal' | 'masterclass' | 'activity'
     otherLabel: string
     other: string // 'HH:MM–HH:MM'
+}
+
+/** The rehearsal list (Excel): categories of one contest and round, each with its piece, and the place */
+export interface ExportRehearsalListPayload {
+    contestType: ContestTypeEnum
+    round: string
+    categories: { category: string | null; piece?: string }[]
+    place?: string
 }
 
 /** Changes to one row; only the fields sent change, null clears the optional ones */
@@ -123,6 +130,24 @@ export function useRehearsalOrderApi() {
         return client.get<RehearsalCollisionDto[]>(`/rehearsal-order/collisions?${scopeQuery(scope)}`).then(r => r.data)
     }
 
+    /** Downloads the rehearsal list (Excel), named as the server says */
+    async function exportList(payload: ExportRehearsalListPayload): Promise<void> {
+        const response = await client.request({
+            url: '/rehearsal-order/export',
+            method: 'post',
+            data: payload,
+            responseType: 'blob',
+        })
+        const blob = response.data as Blob
+        const disposition = response.headers['content-disposition'] as string | undefined
+        const match = disposition?.match(/filename="?([^"]+)"?/)
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = match?.[1] ?? 'rehearsals.xlsx'
+        link.click()
+        URL.revokeObjectURL(link.href)
+    }
+
     function validateDay(scope: OrderScope, dayIndex: number): Promise<{ written: number }> {
         return client.post<{ written: number }>(`/rehearsal-order/validate?${scopeQuery(scope)}`, { dayIndex }).then(r => r.data)
     }
@@ -132,7 +157,7 @@ export function useRehearsalOrderApi() {
     }
 
     return {
-        getBoardView, updateBoard, generateFromPerformance, fillFromRehearsals,
+        getBoardView, updateBoard, generateFromPerformance, fillFromRehearsals, exportList,
         moveEntry, updateEntry, removeEntry, insertPause, validateDay, unvalidateDay, getCollisions,
     }
 }

@@ -28,8 +28,7 @@ export const boardSettingsSchema = z
         defaultRoomNumber: z.preprocess(
             (v) => (v === '' || v === null || v === undefined ? null : v),
             z.number({ message: K + 'roomInvalid' }).int({ message: K + 'roomInvalid' }).min(1, { message: K + 'roomInvalid' }).nullable(),
-        ),
-        rehearsalCategory: z.string(), // '' = empty (see the board's settings)
+        )
     })
     .superRefine((f, ctx) => {
         // The same date only once (the message goes on its second appearance)
@@ -69,3 +68,14 @@ export const rowFormSchema = z
             ctx.addIssue({ code: 'custom', message: K + 'pianistNameRequired', path: ['accompanistName'] })
         }
     })
+
+
+/**
+ * The export window: at least one category (Youth; Solo always has its one), and typed texts
+ * within the backend's limits (place 150, piece 200).
+ */
+export const exportFormSchema = z.object({
+    categories: z.array(z.string()).min(1, { message: K + 'exportCategoryRequired' }),
+    placeOther: z.string().trim().max(150, { message: K + 'placeTooLong' }),
+    pieceOther: z.record(z.string(), z.string().trim().max(200, { message: K + 'pieceTooLong' })),
+})

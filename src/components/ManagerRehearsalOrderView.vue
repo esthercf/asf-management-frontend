@@ -146,17 +146,6 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ t('manager.rehearsalOrder.rehearsalCategory') }}</label>
-                <select class="form-input" v-model="settingsForm.rehearsalCategory" style="max-width:280px;">
-                    <option value="">{{ t('manager.rehearsalOrder.rehearsalCategoryEmpty') }}</option>
-                    <option v-for="c in rehearsalCategoryOptions" :key="c" :value="c">{{
-                        t(`common.scheduleCategories.${c}`) }}
-                    </option>
-                </select>
-                <span class="field-hint">{{ t('manager.rehearsalOrder.rehearsalCategoryHint') }}</span>
-            </div>
-
             <div class="modal-footer">
                 <button class="btn btn-secondary" @click="settingsOpen = false">{{ t('common.cancel') }}</button>
                 <button class="btn btn-primary" :disabled="savingSettings" @click="saveSettings">
@@ -332,7 +321,6 @@ import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { boardSettingsSchema, rowFormSchema } from '../validation/rehearsalOrder.schema'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
-import { SCHEDULE_CATEGORIES } from '../constants/scheduleCategories'
 import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto, type PianistDto } from '../composables/useContestSettingsApi'
 import type { OrderScope } from '../composables/usePerformanceOrderApi'
 import { useUserRehearsalApi, type ImportUserRehearsalsResult } from '../composables/useUserRehearsalApi'
@@ -354,13 +342,25 @@ const rounds = ref<ContestRoundDto[]>([])
 const selectedRoundName = ref('')
 const selectedCategory = ref('')
 
+/** The last round and category chosen in each contest, so switching back returns to the same board */
+const lastChoice: Record<string, { round: string; category: string }> = {}
+
 async function switchContestType(type: ContestTypeEnum) {
-    contestType.value = type
-    selectedRoundName.value = ''
-    selectedCategory.value = ''
-    view.value = null
-    settingsOpen.value = false
-    await loadRounds()
+  if (type === contestType.value) return
+  lastChoice[contestType.value] = { round: selectedRoundName.value, category: selectedCategory.value }
+
+  contestType.value = type
+  view.value = null
+  settingsOpen.value = false
+  collisions.value = null
+  await loadRounds()
+
+  // Back to this contest's last board, if its round still exists
+  const previous = lastChoice[type]
+  const roundStillThere = !!previous && rounds.value.some(r => r.name === previous.round)
+  selectedRoundName.value = roundStillThere ? previous!.round : ''
+  selectedCategory.value = roundStillThere ? previous!.category : ''
+  if (scopeReady.value) await loadBoard()
 }
 
 async function loadRounds() {
@@ -452,10 +452,7 @@ const settingsForm = ref({
     defaultSlotMinutes: 15 as number | '',
     defaultPauseMinutes: 10 as number | '',
     defaultRoomNumber: '' as number | '',
-    rehearsalCategory: '',
 })
-/** The categories a rehearsal can be written under (the schedule categories, without "Everyone") */
-const rehearsalCategoryOptions = SCHEDULE_CATEGORIES.filter(c => c !== 'ALL')
 
 function toggleSettings() {
     if (!view.value) return
@@ -466,7 +463,6 @@ function toggleSettings() {
             defaultSlotMinutes: b.defaultSlotMinutes,
             defaultPauseMinutes: b.defaultPauseMinutes,
             defaultRoomNumber: b.defaultRoomNumber ?? '',
-            rehearsalCategory: b.rehearsalCategory ?? '',
         }
         settingsErrors.value = {}
     }
@@ -489,7 +485,6 @@ async function saveSettings() {
             defaultSlotMinutes: s.defaultSlotMinutes,
             defaultPauseMinutes: s.defaultPauseMinutes,
             defaultRoomNumber: s.defaultRoomNumber,
-            rehearsalCategory: s.rehearsalCategory || null,
         })
         settingsOpen.value = false
         await loadBoard()
