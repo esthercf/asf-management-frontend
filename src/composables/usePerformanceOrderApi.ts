@@ -49,6 +49,7 @@ export interface PerformanceOrderEntryDto {
   accompanistFullName?: string | null
   accompanistManual?: boolean // chosen by hand (not the day's morning/afternoon pianist)
   accompanistName?: string | null // typed name of a pianist who is not a user
+  movedByHand?: boolean // dragged by hand on the board (e.g. into the raffle order)
 }
 
 export interface MissingCandidateDto {

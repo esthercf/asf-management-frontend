@@ -9,6 +9,10 @@
     <span>⚠️ {{ pageError }}</span>
     <button class="btn btn-secondary btn-sm" @click="pageError = ''">✕</button>
   </div>
+  <div v-if="infoMessage" class="card" style="padding:.75rem 1rem; margin-bottom:1rem;">
+    {{ infoMessage }}
+    <button class="btn btn-secondary btn-sm" style="margin-left:1rem;" @click="infoMessage = ''">✕</button>
+  </div>
 
   <div class="section-row">
     <div class="contest-type-toggle">
@@ -110,7 +114,7 @@
               </div>
             </template>
             <template v-else>
-              <div class="entry-main entry-pause-label">⏸ {{ element.label }}</div>
+            <div class="entry-main entry-pause-label">⏸ {{ element.label }} · {{ element.stageDurationMinutes ?? element.durationMinutes }}'</div>
             </template>
             <div class="entry-actions">
               <input class="entry-duration-input" type="number" min="1"
@@ -128,7 +132,7 @@
       <!-- One column per configured day -->
       <div v-for="(dayEntries, dayIdx) in dayColumns" :key="dayIdx" class="board-column">
         <div class="board-column-header">
-          <h3>{{ t('manager.performanceOrder.day') }} {{ dayIdx + 1 }}</h3>
+          <h3>{{ dayLabel(dayIdx) }}</h3>
           <span class="badge badge-lav">{{ dayEntries.length }}</span>
           <span class="badge badge-sm" :class="isDayValidated(dayIdx) ? 'badge-green' : 'badge-coral'">
             {{ isDayValidated(dayIdx) ? t('manager.performanceOrder.validated') :
@@ -169,7 +173,7 @@
               </div>
             </template>
             <template v-else>
-              <div class="entry-main entry-pause-label">⏸ {{ element.label }}</div>
+            <div class="entry-main entry-pause-label">⏸ {{ element.label }} · {{ element.stageDurationMinutes ?? element.durationMinutes }}'</div>
             </template>
             <div class="entry-actions">
               <button v-if="element.rowType === 'performance'" class="btn btn-secondary btn-sm"
@@ -326,12 +330,14 @@ import InlineSpinner from './InlineSpinner.vue'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { pauseFormSchema, entryDurationSchema, pianistChoiceSchema } from '../validation/performanceOrder.schema'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
+import { shortDayLabel } from '../utiles/date-label'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const api = usePerformanceOrderApi()
 const settingsApi = useContestSettingsApi()
 
 const pageError = ref('')
+const infoMessage = ref('')
 
 const contestType = ref<ContestTypeEnum>(ContestTypeEnum.SOLO)
 const rounds = ref<ContestRoundDto[]>([])
@@ -347,6 +353,7 @@ const unassignedEntries = ref<PerformanceOrderEntryDto[]>([])
 const dayColumns = ref<PerformanceOrderEntryDto[][]>([])
 
 async function switchContestType(type: ContestTypeEnum) {
+  infoMessage.value = ''
   contestType.value = type
   selectedRoundName.value = ''
   selectedCategory.value = ''
@@ -412,11 +419,19 @@ const currentScope = computed<OrderScope>(() => ({
   category: contestType.value === ContestTypeEnum.YOUTH ? selectedCategory.value : null,
 }))
 
-const configuredDayCount = computed(() => {
+/** The days of this round and category (Contest Settings) */
+const configuredDays = computed(() => {
   const round = rounds.value.find(r => r.name === selectedRoundName.value)
   const config = round?.categoryConfigs.find(c => c.category === (currentScope.value.category || null))
-  return config?.days.length ?? 0
+  return config?.days ?? []
 })
+const configuredDayCount = computed(() => configuredDays.value.length)
+
+/** A day column's title: its real date ("SAT 20-03"), or "Day 1" if the date is missing */
+function dayLabel(dayIdx: number): string {
+  const date = configuredDays.value[dayIdx]?.date
+  return date ? shortDayLabel(date, locale.value) : `${t('manager.performanceOrder.day')} ${dayIdx + 1}`
+}
 
 function isDayValidated(dayIdx: number): boolean {
   const entries = dayColumns.value[dayIdx]
@@ -433,6 +448,7 @@ function entryClasses(element: PerformanceOrderEntryDto) {
 }
 
 function onRoundOrCategoryChange() {
+  infoMessage.value = ''
   if (readyToLoadBoard.value) loadBoard()
 }
 
@@ -455,11 +471,17 @@ async function loadBoard() {
 }
 
 async function generateOrder() {
-  if (!confirm(t('manager.performanceOrder.generateConfirm'))) return
+  // An order arranged by hand (e.g. the raffle order) would be lost: ask more clearly
+  const arrangedByHand = [...unassignedEntries.value, ...dayColumns.value.flat()].some(e => e.movedByHand)
+  const question = arrangedByHand ? t('manager.performanceOrder.generateConfirmManual') : t('manager.performanceOrder.generateConfirm')
+  if (!confirm(question)) return
   generating.value = true
   pageError.value = ''
+  infoMessage.value = ''
   try {
-    await api.generate(currentScope.value)
+    const entries = await api.generate(currentScope.value)
+    const students = entries.filter(e => e.rowType === 'performance').length
+    infoMessage.value = t('manager.performanceOrder.generated', { count: students })
     await loadBoard()
   } catch (e) {
     pageError.value = extractErrorMessage(e)

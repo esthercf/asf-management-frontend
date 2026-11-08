@@ -34,6 +34,7 @@ export interface ContestRoundCategoryConfigDto {
 export interface ContestRoundDto {
   name: string
   categoryConfigs: ContestRoundCategoryConfigDto[]
+  participantTags?: string[] // who can be in the round's performance order: any of these tags (empty = as before)
 }
 
 export interface ContestSettingsDto {
@@ -95,6 +96,12 @@ export function useContestSettingsApi() {
   function removeRound(contestType: ContestTypeEnum, roundName: string): Promise<ContestSettingsDto> {
     return client.delete<ContestSettingsDto>(`/contest-settings/${contestType}/rounds/${encodeURIComponent(roundName)}`).then(r => r.data)
   }
+  function setRoundParticipants(contestType: ContestTypeEnum, roundName: string, participantTags: string[]): Promise<ContestSettingsDto> {
+    return client.patch<ContestSettingsDto>(
+      `/contest-settings/${contestType}/rounds/${encodeURIComponent(roundName)}/participants`, { participantTags },
+    ).then(r => r.data)
+  }
+
 
   function addCategoryConfig(contestType: ContestTypeEnum, roundName: string, config: CreateCategoryConfigPayload): Promise<ContestSettingsDto> {
     return client.post<ContestSettingsDto>(`/contest-settings/${contestType}/rounds/${encodeURIComponent(roundName)}/categories`, config).then(r => r.data)
@@ -123,6 +130,6 @@ export function useContestSettingsApi() {
   return {
     getOrCreate, setContestName, addRound, removeRound,
     addCategoryConfig, removeCategoryConfig, updateCategoryConfig,
-    addDay, updateDay, removeDay, getPianists, setCollisionMargin
+    addDay, updateDay, removeDay, getPianists, setCollisionMargin, setRoundParticipants
   }
 }

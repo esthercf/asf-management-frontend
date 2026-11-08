@@ -78,6 +78,17 @@
         </div>
       </div>
 
+      <!-- Who can be in this round's performance order: students with ANY of these tags -->
+      <div class="round-participants">
+        <span class="round-participants-label">{{ t('manager.contestSettings.participants') }}</span>
+        <label v-for="tag in participantTagOptions" :key="tag" class="participant-tag">
+          <input type="checkbox" :checked="(round.participantTags ?? []).includes(tag)"
+            :disabled="savingParticipants === round.name" @change="toggleParticipantTag(round, tag)" />
+          {{ t(`common.scheduleCategories.${tag}`) }}
+        </label>
+        <span class="field-hint" style="flex-basis:100%;">{{ t('manager.contestSettings.participantsHint') }}</span>
+      </div>
+
       <div v-if="round.categoryConfigs.length === 0" class="empty-state">
         <p>{{ t('manager.contestSettings.noCategoryConfigs') }}</p>
       </div>
@@ -319,6 +330,7 @@ import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
 import { contestNameSchema, collisionMarginSchema, roundFormSchema, categoryConfigSchema, contestDaySchema } from '../validation/contestSettings.schema'
 import InlineSpinner from './InlineSpinner.vue'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
+import { SCHEDULE_CATEGORIES } from '../constants/scheduleCategories'
 
 const { t } = useI18n()
 const api = useContestSettingsApi()
@@ -453,6 +465,25 @@ async function saveRound() {
     roundFormError.value = extractErrorMessage(e)
   } finally {
     savingRound.value = false
+  }
+}
+
+// ── Participants of a round: students with any of the ticked tags (saved on each click) ──
+/** The tags a round's participants can be chosen by (not "Everyone", masterclass-only or pianists) */
+const participantTagOptions = SCHEDULE_CATEGORIES.filter(c => !['ALL', 'masterClass', 'pianist'].includes(c))
+const savingParticipants = ref('') // the round being saved
+
+async function toggleParticipantTag(round: ContestRoundDto, tag: string) {
+  const current = round.participantTags ?? []
+  const next = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]
+  savingParticipants.value = round.name
+  pageError.value = ''
+  try {
+    settings.value = await api.setRoundParticipants(contestType.value, round.name, next)
+  } catch (e) {
+    pageError.value = extractErrorMessage(e)
+  } finally {
+    savingParticipants.value = ''
   }
 }
 
@@ -758,5 +789,35 @@ watch(dayModalOpen, () => { dayFieldErrors.value = {} })
 .modal-wide {
   max-width: 640px;
   width: 90vw;
+}
+
+.round-participants {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem 1rem;
+  padding: .5rem 0 .75rem;
+  border-bottom: 1.5px solid var(--border);
+  margin-bottom: .75rem;
+}
+
+.round-participants-label {
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+
+.participant-tag {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .85rem;
+  cursor: pointer;
+}
+
+.participant-tag input {
+  width: auto;
 }
 </style>

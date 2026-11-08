@@ -78,6 +78,8 @@
                 <InlineSpinner v-if="checkingCollisions" />
                 <span v-else>⚠ {{ t('manager.rehearsalOrder.checkCollisions') }}</span>
             </button>
+            <button class="btn btn-secondary" @click="openExport">📄 {{ t('manager.rehearsalOrder.exportList')
+                }}</button>
         </div>
 
         <!-- Collision report (information only: nothing is blocked) -->
@@ -187,7 +189,7 @@
                 <!-- One column per rehearsal day -->
                 <div v-for="(day, dayIdx) in view.days" :key="day.date" class="board-column">
                     <div class="board-column-header">
-                        <h3>{{ day.date }} · {{ day.startTime }}</h3>
+                        <h3>{{ shortDayLabel(day.date, locale) }} · {{ day.startTime }}</h3>
                         <span v-if="isDayValidated(dayIdx)" class="badge badge-green badge-sm">
                             {{ t('manager.rehearsalOrder.validated') }}
                         </span>
@@ -310,6 +312,65 @@
             </div>
         </div>
     </Teleport>
+
+    <!-- Export the rehearsal list (Excel) -->
+    <Teleport to="body">
+        <div v-if="exportOpen" class="modal-overlay" @click.self="exportOpen = false">
+            <div class="modal">
+                <h2 class="modal-title">{{ t('manager.rehearsalOrder.exportTitle') }}</h2>
+
+                <div v-if="contestType === ContestTypeEnum.YOUTH" class="form-group">
+                    <label class="form-label">{{ t('manager.rehearsalOrder.exportCategories') }}</label>
+                    <span v-if="exportErrors.categories" class="field-error">{{ exportErrors.categories }}</span>
+                    <div style="display:flex; flex-wrap:wrap; gap:.4rem 1.2rem;">
+                        <label v-for="c in categoriesOfRound" :key="c" class="radio-row">
+                            <input type="checkbox" :value="c" v-model="exportForm.categories" />
+                            {{ t(`common.scheduleCategories.${c}`) }}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">{{ t('manager.rehearsalOrder.exportPlace') }}</label>
+                    <select class="form-input" v-model="exportForm.placeChoice">
+                        <option value="">{{ t('manager.rehearsalOrder.exportNone') }}</option>
+                        <option v-for="v in roundVenues" :key="v" :value="v">{{ v }}</option>
+                        <option value="__other__">{{ t('manager.rehearsalOrder.exportOther') }}</option>
+                    </select>
+                    <input v-if="exportForm.placeChoice === '__other__'" class="form-input" style="margin-top:.4rem;"
+                        :class="{ 'has-error': exportErrors.placeOther }" v-model="exportForm.placeOther"
+                        maxlength="150" />
+                    <span v-if="exportErrors.placeOther" class="field-error">{{ exportErrors.placeOther }}</span>
+                </div>
+
+                <div v-for="c in exportForm.categories" :key="c" class="form-group">
+                    <label class="form-label">
+                        {{ t('manager.rehearsalOrder.exportPiece') }}<template v-if="c"> · {{
+                            t(`common.scheduleCategories.${c}`) }}</template>
+                    </label>
+                    <select class="form-input" v-model="exportForm.pieceChoice[c]">
+                        <option value="">{{ t('manager.rehearsalOrder.exportNone') }}</option>
+                        <option v-for="p in piecesOf(c)" :key="p" :value="p">{{ p }}</option>
+                        <option value="__other__">{{ t('manager.rehearsalOrder.exportOther') }}</option>
+                    </select>
+                    <input v-if="exportForm.pieceChoice[c] === '__other__'" class="form-input" style="margin-top:.4rem;"
+                        :class="{ 'has-error': exportErrors[`pieceOther.${c}`] }" v-model="exportForm.pieceOther[c]"
+                        maxlength="200" />
+                    <span v-if="exportErrors[`pieceOther.${c}`]" class="field-error">{{ exportErrors[`pieceOther.${c}`]
+                    }}</span>
+                </div>
+
+                <div v-if="exportError" class="error-banner">⚠️ {{ exportError }}</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="exportOpen = false">{{ t('common.cancel') }}</button>
+                    <button class="btn btn-primary" :disabled="exporting" @click="doExport">
+                        <InlineSpinner v-if="exporting" />
+                        <span v-else>📄 {{ t('manager.rehearsalOrder.exportDownload') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -319,7 +380,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import InlineSpinner from './InlineSpinner.vue'
 import { extractErrorMessage } from '../utiles/error.utiles'
 import { zodErrorsToFieldMap } from '../utiles/zod.utiles'
-import { boardSettingsSchema, rowFormSchema } from '../validation/rehearsalOrder.schema'
+import { boardSettingsSchema, rowFormSchema, exportFormSchema } from '../validation/rehearsalOrder.schema'
 import { useModalScrollLock } from '../composables/useModalScrollLock'
 import { useContestSettingsApi, ContestTypeEnum, type ContestRoundDto, type PianistDto } from '../composables/useContestSettingsApi'
 import type { OrderScope } from '../composables/usePerformanceOrderApi'
@@ -328,8 +389,9 @@ import {
     useRehearsalOrderApi, RehearsalOrderRowTypeEnum, RehearsalOrderStatusEnum,
     type RehearsalBoardViewDto, type RehearsalOrderEntryDto, type RehearsalCollisionDto,
 } from '../composables/useRehearsalOrderApi'
+import { shortDayLabel } from '../utiles/date-label'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const api = useRehearsalOrderApi()
 const settingsApi = useContestSettingsApi()
 
@@ -346,21 +408,21 @@ const selectedCategory = ref('')
 const lastChoice: Record<string, { round: string; category: string }> = {}
 
 async function switchContestType(type: ContestTypeEnum) {
-  if (type === contestType.value) return
-  lastChoice[contestType.value] = { round: selectedRoundName.value, category: selectedCategory.value }
+    if (type === contestType.value) return
+    lastChoice[contestType.value] = { round: selectedRoundName.value, category: selectedCategory.value }
 
-  contestType.value = type
-  view.value = null
-  settingsOpen.value = false
-  collisions.value = null
-  await loadRounds()
+    contestType.value = type
+    view.value = null
+    settingsOpen.value = false
+    collisions.value = null
+    await loadRounds()
 
-  // Back to this contest's last board, if its round still exists
-  const previous = lastChoice[type]
-  const roundStillThere = !!previous && rounds.value.some(r => r.name === previous.round)
-  selectedRoundName.value = roundStillThere ? previous!.round : ''
-  selectedCategory.value = roundStillThere ? previous!.category : ''
-  if (scopeReady.value) await loadBoard()
+    // Back to this contest's last board, if its round still exists
+    const previous = lastChoice[type]
+    const roundStillThere = !!previous && rounds.value.some(r => r.name === previous.round)
+    selectedRoundName.value = roundStillThere ? previous!.round : ''
+    selectedCategory.value = roundStillThere ? previous!.category : ''
+    if (scopeReady.value) await loadBoard()
 }
 
 async function loadRounds() {
@@ -418,7 +480,7 @@ const dayRows = ref<RehearsalOrderEntryDto[][]>([])
 
 const isPause = (row: RehearsalOrderEntryDto) => row.rowType === RehearsalOrderRowTypeEnum.PAUSE
 /** A pause's text: its label, or "PAUSE 10'" */
-const pauseText = (row: RehearsalOrderEntryDto) => row.label || `${t('manager.rehearsalOrder.pause')} ${row.durationMinutes}'`
+const pauseText = (row: RehearsalOrderEntryDto) => `${row.label || t('manager.rehearsalOrder.pause')} · ${row.durationMinutes}'`
 
 /** A day is locked once its rows are validated */
 function isDayValidated(dayIdx: number): boolean {
@@ -602,8 +664,70 @@ watch(rowForm, () => {
     rowErrors.value = result.success ? {} : zodErrorsToFieldMap(result.error, t)
 }, { deep: true })
 
-// The page behind the window must not scroll
-useModalScrollLock(rowModalOpen)
+// ── Export the rehearsal list (Excel) ──
+// Category keys: the Youth category, or '' for Solo (its round has one config, with no category)
+const exportOpen = ref(false)
+const exporting = ref(false)
+const exportError = ref('')
+const exportErrors = ref<Record<string, string>>({})
+const exportForm = ref({
+    categories: [] as string[],
+    placeChoice: '', // '' = none, a venue, or '__other__'
+    placeOther: '',
+    pieceChoice: {} as Record<string, string>, // per category: '' = none, a piece, or '__other__'
+    pieceOther: {} as Record<string, string>,
+})
+
+const currentRound = computed(() => rounds.value.find(r => r.name === selectedRoundName.value))
+/** The round's venues (each one once), to choose the place from */
+const roundVenues = computed(() => [...new Set((currentRound.value?.categoryConfigs ?? []).map(c => c.venue).filter(Boolean))])
+/** The pieces configured for one category of the round */
+function piecesOf(categoryKey: string): string[] {
+    return currentRound.value?.categoryConfigs.find(c => (c.category ?? '') === categoryKey)?.pieces ?? []
+}
+
+function openExport() {
+    exportForm.value = {
+        categories: contestType.value === ContestTypeEnum.YOUTH ? [selectedCategory.value] : [''],
+        placeChoice: roundVenues.value[0] ?? '',
+        placeOther: '',
+        pieceChoice: {},
+        pieceOther: {},
+    }
+    exportErrors.value = {}
+    exportError.value = ''
+    exportOpen.value = true
+}
+
+async function doExport() {
+    const f = exportForm.value
+    const result = exportFormSchema.safeParse({ categories: f.categories, placeOther: f.placeOther, pieceOther: f.pieceOther })
+    if (!result.success) {
+        exportErrors.value = zodErrorsToFieldMap(result.error, t)
+        return
+    }
+    exportErrors.value = {}
+    const pieceOf = (c: string) => (f.pieceChoice[c] === '__other__' ? (f.pieceOther[c] ?? '').trim() : f.pieceChoice[c] ?? '')
+    exporting.value = true
+    exportError.value = ''
+    try {
+        await api.exportList({
+            contestType: contestType.value,
+            round: selectedRoundName.value,
+            categories: f.categories.map(c => ({ category: c || null, piece: pieceOf(c) || undefined })),
+            place: (f.placeChoice === '__other__' ? f.placeOther.trim() : f.placeChoice) || undefined,
+        })
+        exportOpen.value = false
+    } catch (e) {
+        exportError.value = extractErrorMessage(e)
+    } finally {
+        exporting.value = false
+    }
+}
+
+// The page behind a window (row details or export) must not scroll
+useModalScrollLock(rowModalOpen, exportOpen)
+
 
 // ── Per-day actions: add a pause, validate (writes the students' rehearsals), unvalidate ──
 const dayBusy = ref<number | null>(null)
